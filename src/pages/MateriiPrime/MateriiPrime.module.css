@@ -1,0 +1,600 @@
+/* Modern CSS pentru aplicația Materii Prime */
+
+/* Variabile CSS pentru consistență */
+:root {
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --warning-gradient: linear-gradient(135deg, #ffa726 0%, #ff7043 100%);
+  --danger-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  --glass-bg: rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --shadow-light: 0 8px 32px rgba(31, 38, 135, 0.37);
+  --shadow-medium: 0 16px 40px rgba(31, 38, 135, 0.25);
+  --shadow-heavy: 0 24px 48px rgba(31, 38, 135, 0.4);
+  --border-radius: 16px;
+  --border-radius-small: 8px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset și stiluri de bază */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont,
+    sans-serif;
+  line-height: 1.6;
+  color: #333;
+  overflow-x: hidden;
+}
+
+/* Container principal cu fundal dinamic */
+.container {
+  min-height: 100vh;
+  padding: 2rem;
+  background: radial-gradient(
+      circle at 20% 50%,
+      rgba(120, 119, 198, 0.3) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(255, 119, 198, 0.3) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 40% 80%,
+      rgba(120, 198, 255, 0.3) 0%,
+      transparent 50%
+    ),
+    linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-attachment: fixed;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efecte de fundal animate */
+.container::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    600px circle at var(--x, 0) var(--y, 0),
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 40%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.container:hover::before {
+  opacity: 1;
+}
+
+/* Titlu principal modern */
+.titlu {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.titlu::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: var(--secondary-gradient);
+  border-radius: 2px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.1);
+  }
+}
+
+/* Toolbar modern cu glassmorphism */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--glass-bg);
+
+  border: 1px solid var(--glass-border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-light);
+  position: relative;
+  z-index: 2;
+}
+
+.toolbar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  border-radius: var(--border-radius);
+  pointer-events: none;
+}
+
+/* Formular modern cu glassmorphism */
+.formular {
+  background: var(--glass-bg);
+
+  border: 1px solid var(--glass-border);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-medium);
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.formular::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  border-radius: var(--border-radius);
+  pointer-events: none;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Input-uri moderne */
+.input {
+  padding: 1rem;
+  border: 2px solid transparent;
+  border-radius: var(--border-radius-small);
+  background: rgba(255, 255, 255, 0.9);
+
+  font-size: 1rem;
+  transition: var(--transition);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  transform: translateY(-2px);
+}
+
+.input::placeholder {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Butoane moderne cu gradienți */
+.formButtons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.button,
+.buttonUpdate,
+.buttonCancel {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: var(--border-radius-small);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.button {
+  background: var(--success-gradient);
+  color: white;
+}
+
+.buttonUpdate {
+  background: var(--warning-gradient);
+  color: white;
+}
+
+.buttonCancel {
+  background: var(--danger-gradient);
+  color: white;
+}
+
+.button:hover,
+.buttonUpdate:hover,
+.buttonCancel:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-heavy);
+}
+
+.button:active,
+.buttonUpdate:active,
+.buttonCancel:active {
+  transform: translateY(0);
+}
+
+/* Toolbar buttons */
+.buttonRefresh,
+.buttonDelete,
+.buttonExport {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: var(--border-radius-small);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-light);
+}
+
+.buttonRefresh {
+  background: var(--primary-gradient);
+  color: white;
+}
+
+.buttonDelete {
+  background: var(--danger-gradient);
+  color: white;
+}
+
+.buttonExport {
+  background: var(--success-gradient);
+  color: white;
+}
+
+.buttonRefresh:hover,
+.buttonDelete:hover,
+.buttonExport:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+}
+
+/* Tabel modern cu glassmorphism */
+.tabelContainer {
+  background: var(--glass-bg);
+
+  border: 1px solid var(--glass-border);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-medium);
+  position: relative;
+  z-index: 2;
+}
+
+.tabel {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: transparent;
+}
+
+.headerCell {
+  background: linear-gradient(
+    135deg,
+    rgba(52, 73, 94, 0.9) 0%,
+    rgba(44, 62, 80, 0.9) 100%
+  );
+  color: white;
+  padding: 1.5rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.headerCell::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--secondary-gradient);
+}
+
+.row {
+  background: rgba(255, 255, 255, 0.05);
+  transition: var(--transition);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.row:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.01);
+}
+
+.cell {
+  padding: 1.25rem 1rem;
+  font-size: 0.9rem;
+  color: #2d3748;
+  background: rgba(255, 255, 255, 0.8);
+
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cell:last-child {
+  border-right: none;
+}
+
+.cellActions {
+  padding: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.9);
+
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Butoane de acțiune moderne */
+.buttonAdd,
+.buttonRemove,
+.buttonEdit {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: var(--border-radius-small);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  min-width: 80px;
+}
+
+.buttonAdd {
+  background: var(--success-gradient);
+  color: white;
+}
+
+.buttonRemove {
+  background: var(--warning-gradient);
+  color: white;
+}
+
+.buttonEdit {
+  background: var(--primary-gradient);
+  color: white;
+}
+
+.buttonAdd:hover,
+.buttonRemove:hover,
+.buttonEdit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cellActions .buttonDelete {
+  background: var(--danger-gradient);
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: var(--border-radius-small);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  min-width: 80px;
+}
+
+.cellActions .buttonDelete:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(238, 90, 36, 0.3);
+}
+
+/* Mesaj pentru tabela goală */
+.noResults {
+  text-align: center;
+  padding: 3rem;
+  color: #64748b;
+  font-size: 1.1rem;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.1);
+
+  border-radius: var(--border-radius-small);
+  margin: 2rem;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+}
+
+/* Input de căutare modern */
+.searchInput {
+  padding: 1rem;
+  border: 2px solid transparent;
+  border-radius: var(--border-radius-small);
+  background: rgba(255, 255, 255, 0.9);
+
+  font-size: 1rem;
+  transition: var(--transition);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Animații de încărcare */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.loading {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .formButtons {
+    flex-direction: column;
+  }
+
+  .button,
+  .buttonUpdate,
+  .buttonCancel {
+    width: 100%;
+    text-align: center;
+  }
+
+  .cellActions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .buttonAdd,
+  .buttonRemove,
+  .buttonEdit,
+  .cellActions .buttonDelete {
+    width: 100%;
+  }
+
+  .titlu {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .tabelContainer {
+    overflow-x: auto;
+  }
+
+  .headerCell,
+  .cell {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .input {
+    padding: 0.75rem;
+  }
+
+  .formular {
+    padding: 1rem;
+  }
+}
+
+/* Micro-animații pentru interactivitate */
+.input:focus {
+  animation: focusGlow 0.3s ease-in-out;
+}
+
+@keyframes focusGlow {
+  0% {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(102, 126, 234, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  }
+}
+
+/* Efecte de hover pentru rândurile tabelului */
+.row:hover .cell {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+/* Stilizare pentru scroll bar */
+.tabelContainer::-webkit-scrollbar {
+  height: 8px;
+}
+
+.tabelContainer::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.tabelContainer::-webkit-scrollbar-thumb {
+  background: var(--primary-gradient);
+  border-radius: 4px;
+}
+
+.tabelContainer::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary-gradient);
+}

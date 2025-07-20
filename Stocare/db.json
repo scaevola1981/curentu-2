@@ -1,0 +1,114 @@
+{
+  "materiiPrime": [
+    {
+      "id": 1,
+      "denumire": "Malt",
+      "tip": "malt",
+      "cantitate": 2000,
+      "unitate": "kg",
+      "producator": "Generic Malt",
+      "codProdus": "MALT-001",
+      "lot": "001",
+      "subcategorie": "peleti"
+    },
+    {
+      "id": 2,
+      "denumire": "Malt Pale Ale",
+      "tip": "malt",
+      "cantitate": 766,
+      "unitate": "kg",
+      "producator": "Generic Malt",
+      "codProdus": "MALT-002",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 3,
+      "denumire": "Drojdie Fermentis U.S 05",
+      "tip": "drojdie",
+      "cantitate": 100,
+      "unitate": "kg",
+      "producator": "Fermentis",
+      "codProdus": "DROJDIE-001",
+      "lot": "002",
+      "subcategorie": ""
+    },
+    {
+      "id": 4,
+      "denumire": "Drojdie F2",
+      "tip": "drojdie",
+      "cantitate": 0,
+      "unitate": "g",
+      "producator": "Fermentis",
+      "codProdus": "DROJDIE-002",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 5,
+      "denumire": "Drojdie B.E 256",
+      "tip": "drojdie",
+      "cantitate": 0,
+      "unitate": "g",
+      "producator": "Fermentis",
+      "codProdus": "DROJDIE-003",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 6,
+      "denumire": "B.E 256",
+      "tip": "drojdie",
+      "cantitate": 0,
+      "unitate": "g",
+      "producator": "Fermentis",
+      "codProdus": "DROJDIE-004",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 7,
+      "denumire": "Hamei Bitter",
+      "tip": "hamei",
+      "cantitate": 0,
+      "unitate": "kg",
+      "producator": "Generic Hops",
+      "codProdus": "HAMEI-001",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 8,
+      "denumire": "Hamei Aroma",
+      "tip": "hamei",
+      "cantitate": 0,
+      "unitate": "kg",
+      "producator": "Generic Hops",
+      "codProdus": "HAMEI-002",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 9,
+      "denumire": "Irish Moss",
+      "tip": "aditiv",
+      "cantitate": 0,
+      "unitate": "pachete",
+      "producator": "Generic Additives",
+      "codProdus": "ADITIV-001",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 10,
+      "denumire": "Zahar brun",
+      "tip": "aditiv",
+      "cantitate": 0,
+      "unitate": "kg",
+      "producator": "Generic Additives",
+      "codProdus": "ADITIV-002",
+      "lot": "",
+      "subcategorie": ""
+    }
+  ]
+}
