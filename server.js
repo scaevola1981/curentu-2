@@ -6,7 +6,7 @@ import {
   actualizeazaMaterial,
   stergeMaterial,
   stergeToateMaterialele,
-} from "./ingrediente.js";
+} from "./Stocare/ingrediente.js";
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';

@@ -14,7 +14,7 @@ const UNITATI = [
   "m²",
   "m³",
 ];
-const API_URL = "http://localhost:3000/api/materii-prime";
+const API_URL = "http://localhost:3001/api/materii-prime";
 
 const MateriiPrime = () => {
   const [materii, setMaterii] = useState([]);
