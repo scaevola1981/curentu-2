@@ -1,0 +1,101 @@
+import { Low } from 'lowdb';
+import { JSONFile } from 'lowdb/node';
+import { fileURLToPath } from 'url';
+import path from 'path';
+import fs from 'fs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const caleFisier = path.join(__dirname, 'reteteBere.json');
+if (!fs.existsSync(caleFisier)) {
+  fs.writeFileSync(caleFisier, JSON.stringify({ retete: [] }, null, 2), 'utf-8');
+}
+
+const adapter = new JSONFile(caleFisier);
+const db = new Low(adapter, { retete: [] });
+
+const reteteInitiale = [
+  {
+    id: 1,
+    denumire: "ADAPTOR LA SITUATIE - CB 01",
+    tip: "Blondă",
+    concentratieMust: "12 ±0.50°Plato",
+    concentratieAlcool: "5 ±0.5% vol",
+    image: "/adaptor.png",
+    durata: 0,
+    rezultat: {
+      cantitate: 1000,
+      unitate: "litri"
+    },
+    ingrediente: [
+      { denumire: "Malt Pale Ale", cantitate: 400, unitate: "kg", tip: "malt" },
+      { denumire: "Zahar brun", cantitate: 20, unitate: "kg", tip: "aditiv" },
+      { denumire: "Drojdie B.E 256", cantitate: 0.5, unitate: "kg", tip: "drojdie" },
+      { denumire: "Drojdie F2", cantitate: 0.5, unitate: "kg", tip: "drojdie" },
+      { denumire: "Hamei Bitter", cantitate: 1, unitate: "kg", tip: "hamei" },
+      { denumire: "Hamei Aroma", cantitate: 0.8, unitate: "kg", tip: "hamei" },
+      { denumire: "Irish Moss", cantitate: 0.3, unitate: "kg", tip: "aditiv" }
+    ]
+  },
+  {
+    id: 2,
+    denumire: "INTRERUPATOR DE MUNCA - CB 02",
+    tip: "IPA",
+    concentratieMust: "16 - 20,5 ±1°Plato",
+    concentratieAlcool: "7 - 9,5 ±1 %vol",
+    image: "/intrerupator.png",
+    durata: 7,
+    rezultat: {
+      cantitate: 1000,
+      unitate: "litri"
+    },
+    ingrediente: [
+      { denumire: "Malt Pale Ale", cantitate: 372, unitate: "kg", tip: "malt" },
+      { denumire: "Drojdie B.E 256", cantitate: 0.5, unitate: "kg", tip: "drojdie" },
+      { denumire: "Drojdie F2", cantitate: 0.4, unitate: "kg", tip: "drojdie" },
+      { denumire: "Hamei Bitter", cantitate: 1.15, unitate: "kg", tip: "hamei" },
+      { denumire: "Hamei Aroma", cantitate: 2.4, unitate: "kg", tip: "hamei" },
+      { denumire: "Irish Moss", cantitate: 0.3, unitate: "kg", tip: "aditiv" }
+    ]
+  },
+  {
+    id: 3,
+    denumire: "USB AMPER ALE - CB 03",
+    tip: "Pale Ale",
+    concentratieMust: "13.8 ± 0.50°Plato",
+    concentratieAlcool: "6 ± 0.50 %vol",
+    image: "/usb-amper-ale.png",
+    durata: 0,
+    rezultat: {
+      cantitate: 1000,
+      unitate: "litri"
+    },
+    ingrediente: [
+      { denumire: "Malt", cantitate: 300, unitate: "kg", tip: "malt" },
+      { denumire: "Drojdie Fermentis U.S 05", cantitate: 0.5, unitate: "kg", tip: "drojdie" },
+      { denumire: "Hamei Bitter", cantitate: 0.7, unitate: "kg", tip: "hamei" },
+      { denumire: "Hamei Aroma", cantitate: 2.4, unitate: "kg", tip: "hamei" },
+      { denumire: "Irish Moss", cantitate: 0.3, unitate: "kg", tip: "aditiv" }
+    ]
+  }
+];
+
+async function initializeDatabase() {
+  await db.read();
+  db.data.retete = db.data.retete || reteteInitiale;
+  await db.write();
+}
+
+function getReteteBere() {
+  try {
+    return db.data.retete;
+  } catch (error) {
+    console.error('Eroare la citirea rețetelor:', error);
+    return [...reteteInitiale];
+  }
+}
+
+await initializeDatabase();
+
+export { getReteteBere };

@@ -1,0 +1,64 @@
+{
+  "fermentatoare": [
+    {
+      "id": 1,
+      "nume": "Fermentator 1",
+      "capacitate": 1000,
+      "ocupat": false,
+      "reteta": null,
+      "cantitate": 0,
+      "dataInceput": null,
+      "imagine": "/Imagini/fermentator.png"
+    },
+    {
+      "id": 2,
+      "nume": "Fermentator 2",
+      "capacitate": 1000,
+      "ocupat": false,
+      "reteta": null,
+      "cantitate": 0,
+      "dataInceput": null,
+      "imagine": "/Imagini/fermentator.png"
+    },
+    {
+      "id": 3,
+      "nume": "Fermentator 3",
+      "capacitate": 1000,
+      "ocupat": true,
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": 428,
+      "dataInceput": "2025-08-03T14:18:14.555Z",
+      "imagine": "/Imagini/fermentator.png"
+    },
+    {
+      "id": 4,
+      "nume": "Fermentator 4",
+      "capacitate": 1000,
+      "ocupat": false,
+      "reteta": null,
+      "cantitate": 0,
+      "dataInceput": null,
+      "imagine": "/Imagini/fermentator.png"
+    },
+    {
+      "id": 5,
+      "nume": "Fermentator 5",
+      "capacitate": 2000,
+      "ocupat": false,
+      "reteta": null,
+      "cantitate": 0,
+      "dataInceput": null,
+      "imagine": "/Imagini/fermentator.png"
+    },
+    {
+      "id": 6,
+      "nume": "Fermentator 6",
+      "capacitate": 2000,
+      "ocupat": false,
+      "reteta": null,
+      "cantitate": 0,
+      "dataInceput": null,
+      "imagine": "/Imagini/fermentator.png"
+    }
+  ]
+}

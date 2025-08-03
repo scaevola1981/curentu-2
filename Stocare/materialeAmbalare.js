@@ -1,11 +1,15 @@
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
-const path = require('path');
-const fs = require('fs');
+import { Low } from 'lowdb';
+import { JSONFile } from 'lowdb/node';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
 
-// Configurăm calea către fișierul JSON care va servi ca bază de date pentru materialele de ambalare
-const adapter = new FileSync(path.join(__dirname, 'packaging.json'));
-const db = low(adapter);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Configurăm calea către fișierul JSON
+const adapter = new JSONFile(path.join(__dirname, 'packaging.json'));
+const db = new Low(adapter, { materialeAmbalare: [] }); // Added default data
 
 // Lista inițială de materiale de ambalare
 const materialeAmbalareInitiale = [
@@ -22,18 +26,36 @@ const materialeAmbalareInitiale = [
   { id: 11, denumire: "Capace", tip: "capace", cantitate: 0, unitate: "buc", producator: "Generic Caps", codProdus: "CAPAC-001", lot: "", subcategorie: "" }
 ];
 
-// Funcție pentru a inițializa baza de date cu materialele de ambalare specificate
-function initializeDatabase() {
-  // Inițializăm baza de date cu materialele de ambalare
-  db.defaults({ materialeAmbalare: materialeAmbalareInitiale }).write();
+// Funcție pentru a inițializa baza de date
+async function initializeDatabase() {
+  try {
+    console.log('Attempting to read packaging.json from:', path.join(__dirname, 'packaging.json')); // Debug log
+    await db.read();
+    console.log('Current db.data:', db.data); // Debug log
+    if (!db.data || !db.data.materialeAmbalare || db.data.materialeAmbalare.length === 0) {
+      console.log('packaging.json is empty or missing. Initializing with default data.'); // Debug log
+      db.data = { materialeAmbalare: [...materialeAmbalareInitiale] };
+      await db.write();
+      console.log('Initialized packaging.json with:', db.data); // Debug log
+    } else {
+      console.log('packaging.json already contains data:', db.data.materialeAmbalare); // Debug log
+    }
+  } catch (error) {
+    console.error('Failed to initialize packaging database:', error.message, error.stack);
+    db.data = { materialeAmbalare: [...materialeAmbalareInitiale] }; // Fallback to default data
+    await db.write();
+    console.log('Fallback: Initialized packaging.json with default data:', db.data);
+  }
 }
 
 // Funcție pentru a prelua toate materialele de ambalare
 function getMaterialeAmbalare() {
   try {
-    return db.get('materialeAmbalare').value();
+    db.read();
+    console.log('getMaterialeAmbalare - Current db.data:', db.data); // Debug log
+    return db.data.materialeAmbalare || [];
   } catch (error) {
-    console.error('Eroare la citirea datelor din lowDB:', error);
+    console.error('Error reading materialeAmbalare:', error.message, error.stack);
     return [...materialeAmbalareInitiale];
   }
 }
@@ -41,7 +63,7 @@ function getMaterialeAmbalare() {
 // Funcție pentru a adăuga sau actualiza un material de ambalare
 function adaugaSauSuplimenteazaMaterialAmbalare(material) {
   try {
-    console.log('Încercare de a adăuga/actualiza material de ambalare:', material);
+    console.log('Trying to add/update packaging material:', material); // Debug log
     const materii = db.get('materialeAmbalare').value();
     const existingMaterialIndex = materii.findIndex(
       (m) =>
@@ -54,14 +76,18 @@ function adaugaSauSuplimenteazaMaterialAmbalare(material) {
 
     let newMaterial;
     if (existingMaterialIndex >= 0) {
-      console.log('Actualizare material existent la index:', existingMaterialIndex);
+      console.log('Updating existing material at index:', existingMaterialIndex); // Debug log
+      const newQuantity = Number((materii[existingMaterialIndex].cantitate + material.cantitate).toFixed(2));
+      if (newQuantity < 0) {
+        console.error('Cannot reduce stock below 0 for:', material.denumire);
+        return false;
+      }
       db.get('materialeAmbalare')
         .find({ id: materii[existingMaterialIndex].id })
-        .assign({ cantitate: Number((materii[existingMaterialIndex].cantitate + material.cantitate).toFixed(2)) })
+        .assign({ cantitate: newQuantity })
         .write();
       newMaterial = db.get('materialeAmbalare').find({ id: materii[existingMaterialIndex].id }).value();
     } else {
-      // Verificăm dacă materialul există în materialeAmbalareInitiale pentru a păstra ID-ul
       const initialMaterial = materialeAmbalareInitiale.find(
         (m) =>
           m.denumire === material.denumire &&
@@ -74,14 +100,14 @@ function adaugaSauSuplimenteazaMaterialAmbalare(material) {
         : materii.length > 0
         ? Math.max(...materii.map((m) => parseInt(m.id))) + 1
         : 1;
-      console.log('Adăugare material nou cu ID:', newId);
+      console.log('Adding new material with ID:', newId); // Debug log
       newMaterial = { ...material, id: material.id || newId };
       db.get('materialeAmbalare').push(newMaterial).write();
     }
-    console.log('Material de ambalare salvat cu succes, conținut nou:', getMaterialeAmbalare());
+    console.log('Packaging material saved successfully, new content:', getMaterialeAmbalare()); // Debug log
     return true;
   } catch (error) {
-    console.error('Eroare în adaugaSauSuplimenteazaMaterialAmbalare:', error);
+    console.error('Error in adaugaSauSuplimenteazaMaterialAmbalare:', error.message, error.stack);
     return false;
   }
 }
@@ -89,12 +115,12 @@ function adaugaSauSuplimenteazaMaterialAmbalare(material) {
 // Funcție pentru a șterge un material de ambalare după ID
 function stergeMaterialAmbalare(id) {
   try {
-    console.log('Ștergere material de ambalare cu ID:', id);
+    console.log('Deleting packaging material with ID:', id); // Debug log
     db.get('materialeAmbalare').remove({ id }).write();
-    console.log('Material de ambalare șters cu succes');
+    console.log('Packaging material deleted successfully'); // Debug log
     return true;
   } catch (error) {
-    console.error('Eroare la ștergerea materialului de ambalare:', error);
+    console.error('Error deleting packaging material:', error.message, error.stack);
     return false;
   }
 }
@@ -102,12 +128,12 @@ function stergeMaterialAmbalare(id) {
 // Funcție pentru a șterge toate materialele de ambalare
 function stergeToateMaterialeleAmbalare() {
   try {
-    console.log('Ștergere toate materialele de ambalare');
+    console.log('Deleting all packaging materials'); // Debug log
     db.set('materialeAmbalare', []).write();
-    console.log('Toate materialele de ambalare au fost șterse cu succes');
+    console.log('All packaging materials deleted successfully'); // Debug log
     return true;
   } catch (error) {
-    console.error('Eroare la ștergerea tuturor materialelor de ambalare:', error);
+    console.error('Error deleting all packaging materials:', error.message, error.stack);
     return false;
   }
 }
@@ -115,7 +141,7 @@ function stergeToateMaterialeleAmbalare() {
 // Funcție pentru a exporta materialele de ambalare în CSV
 function exportMaterialeAmbalare() {
   try {
-    console.log('Exportare materiale de ambalare în CSV');
+    console.log('Exporting packaging materials to CSV'); // Debug log
     const materii = db.get('materialeAmbalare').value();
     const csvContent = [
       ['ID', 'Denumire', 'Cantitate', 'Unitate', 'Producator', 'Cod Produs', 'Lot', 'Tip', 'Subcategorie'],
@@ -134,18 +160,19 @@ function exportMaterialeAmbalare() {
       .map((row) => row.join(','))
       .join('\n');
 
-    // Salvăm fișierul CSV local
     fs.writeFileSync(path.join(__dirname, 'materiale_ambalare.csv'), csvContent, { encoding: 'utf-8' });
-    console.log('CSV exportat cu succes în materiale_ambalare.csv');
+    console.log('CSV exported successfully to materiale_ambalare.csv'); // Debug log
   } catch (error) {
-    console.error('Eroare la exportarea materialelor de ambalare:', error);
+    console.error('Error exporting packaging materials:', error.message, error.stack);
   }
 }
 
 // Inițializăm baza de date
-initializeDatabase();
+initializeDatabase().catch(error => {
+  console.error('Initialization failed:', error.message, error.stack);
+});
 
-module.exports = {
+export {
   materialeAmbalareInitiale,
   getMaterialeAmbalare,
   adaugaSauSuplimenteazaMaterialAmbalare,

@@ -1,0 +1,20 @@
+{
+  "loturi": [
+    {
+      "id": 1,
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": 428,
+      "unitate": "litri",
+      "dataInceput": "2025-08-03T14:18:47.120Z",
+      "dataAmbalare": "2025-08-03T14:18:57.292Z"
+    },
+    {
+      "id": 2,
+      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
+      "cantitate": 495,
+      "unitate": "litri",
+      "dataInceput": "2025-08-03T14:15:49.261Z",
+      "dataAmbalare": "2025-08-03T14:31:09.294Z"
+    }
+  ]
+}

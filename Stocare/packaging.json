@@ -1,0 +1,380 @@
+{
+  "materialeAmbalare": [
+    {
+      "id": 1,
+      "denumire": "Sticle 0.33l",
+      "tip": "sticle",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Packaging",
+      "codProdus": "STICLA-001",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 2,
+      "denumire": "Cutii 6 sticle",
+      "tip": "cutii",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Packaging",
+      "codProdus": "CUTIE-001",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 3,
+      "denumire": "Cutii 12 sticle",
+      "tip": "cutii",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Packaging",
+      "codProdus": "CUTIE-002",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 4,
+      "denumire": "Cutii 24 sticle",
+      "tip": "cutii",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Packaging",
+      "codProdus": "CUTIE-003",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 5,
+      "denumire": "Keg 10l",
+      "tip": "keg",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Kegs",
+      "codProdus": "KEG-001",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 6,
+      "denumire": "Keg 20l",
+      "tip": "keg",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Kegs",
+      "codProdus": "KEG-002",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 7,
+      "denumire": "Keg 30l",
+      "tip": "keg",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Kegs",
+      "codProdus": "KEG-003",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 8,
+      "denumire": "Keg 40l",
+      "tip": "keg",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Kegs",
+      "codProdus": "KEG-004",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 9,
+      "denumire": "Keg 50l",
+      "tip": "keg",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Kegs",
+      "codProdus": "KEG-005",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 10,
+      "denumire": "Etichete",
+      "tip": "etichete",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Labels",
+      "codProdus": "ETICHETA-001",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 11,
+      "denumire": "Capace",
+      "tip": "capace",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Caps",
+      "codProdus": "CAPAC-001",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "denumire": "Sticlă 0.33l",
+      "cantitate": 2010000,
+      "unitate": "buc",
+      "tip": "sticle",
+      "producator": "Generic Packaging",
+      "codProdus": "AMBALAJ-003",
+      "lot": "",
+      "subcategorie": "",
+      "id": 12
+    },
+    {
+      "denumire": "Cutii 6 sticle",
+      "cantitate": 10000,
+      "unitate": "buc",
+      "tip": "etichete",
+      "producator": "Generic Packaging",
+      "codProdus": "AMBALAJ-CUTIE-6",
+      "lot": "",
+      "subcategorie": "",
+      "id": 13
+    },
+    {
+      "denumire": "Capace",
+      "cantitate": 10000,
+      "unitate": "buc",
+      "tip": "capace",
+      "producator": "Generic Labels",
+      "codProdus": "ACCESORIU-001",
+      "lot": "",
+      "subcategorie": "",
+      "id": 14
+    },
+    {
+      "denumire": "Etichete",
+      "cantitate": 10000,
+      "unitate": "buc",
+      "tip": "etichete",
+      "producator": "Generic Labels",
+      "codProdus": "ACCESORIU-002",
+      "lot": "",
+      "subcategorie": "",
+      "id": 15
+    },
+    {
+      "denumire": "Etichetă spate",
+      "cantitate": 10000,
+      "unitate": "buc",
+      "tip": "etichete",
+      "producator": "Generic Labels",
+      "codProdus": "ACCESORIU-003",
+      "lot": "",
+      "subcategorie": "",
+      "id": 16
+    },
+    {
+      "denumire": "Keg 5l",
+      "cantitate": 4444,
+      "unitate": "buc",
+      "tip": "kegs",
+      "producator": "Generic Kegs",
+      "codProdus": "AMBALAJ-005",
+      "lot": "",
+      "subcategorie": "",
+      "id": 17
+    }
+  ],
+  "materiale": [
+    {
+      "id": 1,
+      "denumire": "Sticlă 0.33l",
+      "tip": "sticle",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Packaging",
+      "codProdus": "STICLA-001",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 2,
+      "denumire": "Sticlă 0.5L",
+      "tip": "sticle",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Packaging",
+      "codProdus": "STICLA-002",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 3,
+      "denumire": "Sticlă 0.75L",
+      "tip": "sticle",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Packaging",
+      "codProdus": "STICLA-003",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 4,
+      "denumire": "Cutii 6 sticle",
+      "tip": "cutii",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Packaging",
+      "codProdus": "CUTIE-001",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 5,
+      "denumire": "Cutii 12 sticle",
+      "tip": "cutii",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Packaging",
+      "codProdus": "CUTIE-002",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 6,
+      "denumire": "Cutii 24 sticle",
+      "tip": "cutii",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Packaging",
+      "codProdus": "CUTIE-003",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 7,
+      "denumire": "Keg 5L",
+      "tip": "kegs",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Kegs",
+      "codProdus": "KEG-001",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 8,
+      "denumire": "Keg 10L",
+      "tip": "kegs",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Kegs",
+      "codProdus": "KEG-002",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 9,
+      "denumire": "Keg 15L",
+      "tip": "kegs",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Kegs",
+      "codProdus": "KEG-003",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 10,
+      "denumire": "Keg 20L",
+      "tip": "kegs",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Kegs",
+      "codProdus": "KEG-004",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 11,
+      "denumire": "Keg 25L",
+      "tip": "kegs",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Kegs",
+      "codProdus": "KEG-005",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 12,
+      "denumire": "Keg 30L",
+      "tip": "kegs",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Kegs",
+      "codProdus": "KEG-006",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 13,
+      "denumire": "Keg 40L",
+      "tip": "kegs",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Kegs",
+      "codProdus": "KEG-007",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 14,
+      "denumire": "Keg 50L",
+      "tip": "kegs",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Kegs",
+      "codProdus": "KEG-008",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 15,
+      "denumire": "Etichete",
+      "tip": "etichete",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Labels",
+      "codProdus": "ETICHETA-001",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 16,
+      "denumire": "Etichetă spate",
+      "tip": "etichete",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Labels",
+      "codProdus": "ETICHETA-002",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 17,
+      "denumire": "Capace",
+      "tip": "capace",
+      "cantitate": 0,
+      "unitate": "buc",
+      "producator": "Generic Caps",
+      "codProdus": "CAPAC-001",
+      "lot": "",
+      "subcategorie": ""
+    }
+  ]
+}

@@ -10,7 +10,7 @@ export const materialeInitiale = [
     id: 1,
     denumire: "Malt",
     tip: "malt",
-    cantitate: 0,
+    cantitate: 1000,
     unitate: "kg",
     producator: "Generic Malt",
     codProdus: "MALT-001",
@@ -21,7 +21,7 @@ export const materialeInitiale = [
     id: 2,
     denumire: "Malt Pale Ale",
     tip: "malt",
-    cantitate: 0,
+    cantitate: 1000,
     unitate: "kg",
     producator: "Generic Malt",
     codProdus: "MALT-002",
@@ -32,7 +32,7 @@ export const materialeInitiale = [
     id: 3,
     denumire: "Drojdie Fermentis U.S 05",
     tip: "drojdie",
-    cantitate: 0,
+    cantitate: 500,
     unitate: "g",
     producator: "Fermentis",
     codProdus: "DROJDIE-001",
@@ -43,7 +43,7 @@ export const materialeInitiale = [
     id: 4,
     denumire: "Drojdie F2",
     tip: "drojdie",
-    cantitate: 0,
+    cantitate: 500,
     unitate: "g",
     producator: "Fermentis",
     codProdus: "DROJDIE-002",
@@ -54,7 +54,7 @@ export const materialeInitiale = [
     id: 5,
     denumire: "Drojdie B.E 256",
     tip: "drojdie",
-    cantitate: 0,
+    cantitate: 500,
     unitate: "g",
     producator: "Fermentis",
     codProdus: "DROJDIE-003",
@@ -65,7 +65,7 @@ export const materialeInitiale = [
     id: 6,
     denumire: "B.E 256",
     tip: "drojdie",
-    cantitate: 0,
+    cantitate: 500,
     unitate: "g",
     producator: "Fermentis",
     codProdus: "DROJDIE-004",
@@ -76,7 +76,7 @@ export const materialeInitiale = [
     id: 7,
     denumire: "Hamei Bitter",
     tip: "hamei",
-    cantitate: 0,
+    cantitate: 50,
     unitate: "kg",
     producator: "Generic Hops",
     codProdus: "HAMEI-001",
@@ -87,7 +87,7 @@ export const materialeInitiale = [
     id: 8,
     denumire: "Hamei Aroma",
     tip: "hamei",
-    cantitate: 0,
+    cantitate: 50,
     unitate: "kg",
     producator: "Generic Hops",
     codProdus: "HAMEI-002",
@@ -98,8 +98,8 @@ export const materialeInitiale = [
     id: 9,
     denumire: "Irish Moss",
     tip: "aditiv",
-    cantitate: 0,
-    unitate: "pachete",
+    cantitate: 50,
+    unitate: "kg",
     producator: "Generic Additives",
     codProdus: "ADITIV-001",
     lot: "",
@@ -109,7 +109,7 @@ export const materialeInitiale = [
     id: 10,
     denumire: "Zahar brun",
     tip: "aditiv",
-    cantitate: 0,
+    cantitate: 100,
     unitate: "kg",
     producator: "Generic Additives",
     codProdus: "ADITIV-002",
@@ -118,23 +118,18 @@ export const materialeInitiale = [
   },
 ];
 
-// Structura default pentru baza de date
 const defaultData = { materiiPrime: materialeInitiale };
 
-// Inițializează baza de date cu date default
 const adapter = new JSONFileSync(path.join(__dirname, "db.json"));
 const db = new LowSync(adapter, defaultData);
 
-// Citește datele existente sau creează fișierul cu date default
 db.read();
 
-// Dacă fișierul nu există sau nu are structura corectă, inițializează cu date default
 if (!db.data || !db.data.materiiPrime) {
   db.data = defaultData;
   db.write();
 }
 
-// Inițializează baza de date cu ingredientele specificate dacă nu există deja
 export function initializeDatabase() {
   db.read();
   if (!db.data || !db.data.materiiPrime || db.data.materiiPrime.length === 0) {
@@ -144,7 +139,6 @@ export function initializeDatabase() {
   }
 }
 
-// Preluare materiale
 export function getMateriiPrime() {
   try {
     db.read();
@@ -155,7 +149,6 @@ export function getMateriiPrime() {
   }
 }
 
-// Adăugare sau suplimentare material
 export function adaugaSauSuplimenteazaMaterial(material) {
   try {
     db.read();
@@ -171,12 +164,10 @@ export function adaugaSauSuplimenteazaMaterial(material) {
     );
 
     if (existingMaterialIndex >= 0) {
-      // Actualizează cantitatea existentă
       materii[existingMaterialIndex].cantitate = Number(
         (materii[existingMaterialIndex].cantitate + material.cantitate).toFixed(2)
       );
     } else {
-      // Adaugă material nou
       const initialMaterial = materialeInitiale.find(
         (m) =>
           m.denumire === material.denumire &&
@@ -203,7 +194,6 @@ export function adaugaSauSuplimenteazaMaterial(material) {
   }
 }
 
-// Actualizare material (pentru suplimentare cantitate cu PUT)
 export function actualizeazaMaterial(id, material) {
   try {
     db.read();
@@ -228,7 +218,6 @@ export function actualizeazaMaterial(id, material) {
   }
 }
 
-// Ștergere material după ID
 export function stergeMaterial(id) {
   try {
     db.read();
@@ -243,7 +232,6 @@ export function stergeMaterial(id) {
   }
 }
 
-// Ștergere toate materialele
 export function stergeToateMaterialele() {
   try {
     db.read();
@@ -256,5 +244,4 @@ export function stergeToateMaterialele() {
   }
 }
 
-// Inițializare la import
 initializeDatabase();
