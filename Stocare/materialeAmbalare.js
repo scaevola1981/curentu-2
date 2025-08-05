@@ -1,17 +1,10 @@
-import { Low } from 'lowdb';
-import { JSONFile } from 'lowdb/node';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
+import { LowSync } from "lowdb";
+import { JSONFileSync } from "lowdb/node";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// Configurăm calea către fișierul JSON
-const adapter = new JSONFile(path.join(__dirname, 'packaging.json'));
-const db = new Low(adapter, { materialeAmbalare: [] }); // Added default data
-
-// Lista inițială de materiale de ambalare
 const materialeAmbalareInitiale = [
   { id: 1, denumire: "Sticle 0.33l", tip: "sticle", cantitate: 0, unitate: "buc", producator: "Generic Packaging", codProdus: "STICLA-001", lot: "", subcategorie: "" },
   { id: 2, denumire: "Cutii 6 sticle", tip: "cutii", cantitate: 0, unitate: "buc", producator: "Generic Packaging", codProdus: "CUTIE-001", lot: "", subcategorie: "" },
@@ -26,46 +19,43 @@ const materialeAmbalareInitiale = [
   { id: 11, denumire: "Capace", tip: "capace", cantitate: 0, unitate: "buc", producator: "Generic Caps", codProdus: "CAPAC-001", lot: "", subcategorie: "" }
 ];
 
-// Funcție pentru a inițializa baza de date
-async function initializeDatabase() {
-  try {
-    console.log('Attempting to read packaging.json from:', path.join(__dirname, 'packaging.json')); // Debug log
-    await db.read();
-    console.log('Current db.data:', db.data); // Debug log
-    if (!db.data || !db.data.materialeAmbalare || db.data.materialeAmbalare.length === 0) {
-      console.log('packaging.json is empty or missing. Initializing with default data.'); // Debug log
-      db.data = { materialeAmbalare: [...materialeAmbalareInitiale] };
-      await db.write();
-      console.log('Initialized packaging.json with:', db.data); // Debug log
-    } else {
-      console.log('packaging.json already contains data:', db.data.materialeAmbalare); // Debug log
-    }
-  } catch (error) {
-    console.error('Failed to initialize packaging database:', error.message, error.stack);
-    db.data = { materialeAmbalare: [...materialeAmbalareInitiale] }; // Fallback to default data
-    await db.write();
-    console.log('Fallback: Initialized packaging.json with default data:', db.data);
+const defaultData = { materialeAmbalare: materialeAmbalareInitiale };
+
+const adapter = new JSONFileSync(path.join(__dirname, "materialeAmbalare.json"));
+const db = new LowSync(adapter, defaultData);
+
+db.read();
+
+if (!db.data || !db.data.materialeAmbalare) {
+  db.data = defaultData;
+  db.write();
+}
+
+export function initializeDatabase() {
+  db.read();
+  if (!db.data || !db.data.materialeAmbalare || db.data.materialeAmbalare.length === 0) {
+    db.data = defaultData;
+    db.write();
+    console.log('Baza de date inițializată cu materiale de ambalare default');
   }
 }
 
-// Funcție pentru a prelua toate materialele de ambalare
-function getMaterialeAmbalare() {
+export async function getMaterials() {
   try {
     db.read();
-    console.log('getMaterialeAmbalare - Current db.data:', db.data); // Debug log
-    return db.data.materialeAmbalare || [];
+    console.log('getMaterials - Current materialeAmbalare:', db.data.materialeAmbalare);
+    return db.data?.materialeAmbalare || [];
   } catch (error) {
-    console.error('Error reading materialeAmbalare:', error.message, error.stack);
-    return [...materialeAmbalareInitiale];
+    console.error("Error reading packaging materials:", error.message, error.stack);
+    throw error;
   }
 }
 
-// Funcție pentru a adăuga sau actualiza un material de ambalare
-function adaugaSauSuplimenteazaMaterialAmbalare(material) {
+export async function addMaterial(material) {
   try {
-    console.log('Trying to add/update packaging material:', material); // Debug log
-    const materii = db.get('materialeAmbalare').value();
-    const existingMaterialIndex = materii.findIndex(
+    db.read();
+    const materials = db.data.materialeAmbalare || [];
+    const existingMaterialIndex = materials.findIndex(
       (m) =>
         m.denumire === material.denumire &&
         m.unitate === material.unitate &&
@@ -74,109 +64,96 @@ function adaugaSauSuplimenteazaMaterialAmbalare(material) {
         m.lot === material.lot
     );
 
-    let newMaterial;
     if (existingMaterialIndex >= 0) {
-      console.log('Updating existing material at index:', existingMaterialIndex); // Debug log
-      const newQuantity = Number((materii[existingMaterialIndex].cantitate + material.cantitate).toFixed(2));
-      if (newQuantity < 0) {
-        console.error('Cannot reduce stock below 0 for:', material.denumire);
-        return false;
-      }
-      db.get('materialeAmbalare')
-        .find({ id: materii[existingMaterialIndex].id })
-        .assign({ cantitate: newQuantity })
-        .write();
-      newMaterial = db.get('materialeAmbalare').find({ id: materii[existingMaterialIndex].id }).value();
-    } else {
-      const initialMaterial = materialeAmbalareInitiale.find(
-        (m) =>
-          m.denumire === material.denumire &&
-          m.unitate === material.unitate &&
-          m.producator === material.producator &&
-          m.codProdus === material.codProdus
+      const newQuantity = Number(
+        (materials[existingMaterialIndex].cantitate + material.cantitate).toFixed(2)
       );
-      const newId = initialMaterial
-        ? initialMaterial.id
-        : materii.length > 0
-        ? Math.max(...materii.map((m) => parseInt(m.id))) + 1
-        : 1;
-      console.log('Adding new material with ID:', newId); // Debug log
-      newMaterial = { ...material, id: material.id || newId };
-      db.get('materialeAmbalare').push(newMaterial).write();
+      if (newQuantity < 0) {
+        throw new Error(
+          `Nu se poate scădea ${material.cantitate} ${material.unitate} din ${materials[existingMaterialIndex].denumire}. Stoc disponibil: ${materials[existingMaterialIndex].cantitate} ${material.unitate}`
+        );
+      }
+      materials[existingMaterialIndex].cantitate = newQuantity;
+    } else {
+      if (material.cantitate < 0) {
+        throw new Error('Nu se poate adăuga o cantitate negativă pentru un material nou');
+      }
+      const maxId = materials.length > 0 ? Math.max(...materials.map(m => m.id)) : 0;
+      const newMaterial = { id: maxId + 1, ...material, cantitate: Number(material.cantitate.toFixed(2)) };
+      materials.push(newMaterial);
     }
-    console.log('Packaging material saved successfully, new content:', getMaterialeAmbalare()); // Debug log
-    return true;
+
+    db.data.materialeAmbalare = materials;
+    db.write();
+    return materials[existingMaterialIndex] || materials[materials.length - 1];
   } catch (error) {
-    console.error('Error in adaugaSauSuplimenteazaMaterialAmbalare:', error.message, error.stack);
-    return false;
+    console.error("Error adding packaging material:", error.message, error.stack);
+    throw error;
   }
 }
 
-// Funcție pentru a șterge un material de ambalare după ID
-function stergeMaterialAmbalare(id) {
+export async function updateMaterial(id, updatedMaterial) {
   try {
-    console.log('Deleting packaging material with ID:', id); // Debug log
-    db.get('materialeAmbalare').remove({ id }).write();
-    console.log('Packaging material deleted successfully'); // Debug log
-    return true;
+    db.read();
+    const materials = db.data.materialeAmbalare || [];
+    const index = materials.findIndex(m => m.id === parseInt(id));
+    if (index === -1) throw new Error('Packaging material not found');
+    if (updatedMaterial.cantitate < 0) {
+      throw new Error('Cantitatea nu poate fi negativă');
+    }
+    materials[index] = { ...materials[index], ...updatedMaterial, id: parseInt(id), cantitate: Number(updatedMaterial.cantitate.toFixed(2)) };
+    db.data.materialeAmbalare = materials;
+    db.write();
+    return materials[index];
   } catch (error) {
-    console.error('Error deleting packaging material:', error.message, error.stack);
-    return false;
+    console.error("Error updating packaging material:", error.message, error.stack);
+    throw error;
   }
 }
 
-// Funcție pentru a șterge toate materialele de ambalare
-function stergeToateMaterialeleAmbalare() {
+export async function deleteMaterial(id) {
   try {
-    console.log('Deleting all packaging materials'); // Debug log
-    db.set('materialeAmbalare', []).write();
-    console.log('All packaging materials deleted successfully'); // Debug log
-    return true;
+    db.read();
+    const materials = db.data.materialeAmbalare || [];
+    const newMaterials = materials.filter(m => m.id !== parseInt(id));
+    if (newMaterials.length === materials.length) throw new Error('Packaging material not found');
+    db.data.materialeAmbalare = newMaterials;
+    db.write();
+    return newMaterials;
   } catch (error) {
-    console.error('Error deleting all packaging materials:', error.message, error.stack);
-    return false;
+    console.error("Error deleting packaging material:", error.message, error.stack);
+    throw error;
   }
 }
 
-// Funcție pentru a exporta materialele de ambalare în CSV
-function exportMaterialeAmbalare() {
+export async function deleteAllMaterials() {
   try {
-    console.log('Exporting packaging materials to CSV'); // Debug log
-    const materii = db.get('materialeAmbalare').value();
-    const csvContent = [
-      ['ID', 'Denumire', 'Cantitate', 'Unitate', 'Producator', 'Cod Produs', 'Lot', 'Tip', 'Subcategorie'],
-      ...materii.map((m) => [
-        m.id,
-        `"${m.denumire}"`,
-        m.cantitate,
-        m.unitate,
-        `"${m.producator || ''}"`,
-        `"${m.codProdus || ''}"`,
-        `"${m.lot || ''}"`,
-        `"${m.tip || ''}"`,
-        `"${m.subcategorie || ''}"`
-      ])
-    ]
-      .map((row) => row.join(','))
-      .join('\n');
-
-    fs.writeFileSync(path.join(__dirname, 'materiale_ambalare.csv'), csvContent, { encoding: 'utf-8' });
-    console.log('CSV exported successfully to materiale_ambalare.csv'); // Debug log
+    db.read();
+    db.data.materialeAmbalare = [];
+    db.write();
+    return [];
   } catch (error) {
-    console.error('Error exporting packaging materials:', error.message, error.stack);
+    console.error("Error deleting all packaging materials:", error.message, error.stack);
+    throw error;
   }
 }
 
-// Inițializăm baza de date
-initializeDatabase().catch(error => {
-  console.error('Initialization failed:', error.message, error.stack);
-});
+export async function exportMaterials() {
+  try {
+    db.read();
+    const materials = db.data.materialeAmbalare || [];
+    const headers = ['id', 'denumire', 'cantitate', 'unitate', 'producator', 'codProdus', 'lot', 'tip', 'subcategorie'];
+    const csvRows = [
+      headers.join(','),
+      ...materials.map(m => 
+        `"${m.id}","${m.denumire}",${m.cantitate},"${m.unitate}","${m.producator || ''}","${m.codProdus || ''}","${m.lot || ''}","${m.tip || ''}","${m.subcategorie || ''}"`
+      )
+    ];
+    return csvRows.join('\n');
+  } catch (error) {
+    console.error("Error exporting packaging materials:", error.message, error.stack);
+    throw error;
+  }
+}
 
-export {
-  materialeAmbalareInitiale,
-  getMaterialeAmbalare,
-  adaugaSauSuplimenteazaMaterialAmbalare,
-  stergeMaterialAmbalare,
-  stergeToateMaterialeleAmbalare,
-  exportMaterialeAmbalare
-};
+initializeDatabase();

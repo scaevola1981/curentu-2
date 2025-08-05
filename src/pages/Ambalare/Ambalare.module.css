@@ -8,7 +8,7 @@
 }
 
 /* Titlu principal */
-.container h1 {
+.titlu {
   font-size: 3rem;
   font-weight: 800;
   text-align: center;
@@ -21,7 +21,7 @@
 }
 
 /* Secțiuni pentru fermentatoare și loturi */
-.fermentatorStatus, .loturiSection {
+.fermentatorStatus, .loturiSection, .formular {
   margin-bottom: 3rem;
   padding: 2rem;
   background: rgba(255, 255, 255, 0.03);
@@ -30,7 +30,7 @@
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
-.fermentatorStatus h2, .loturiSection h2 {
+.fermentatorStatus h2, .loturiSection h2, .formular h2 {
   font-size: 1.8rem;
   font-weight: 700;
   color: #667eea;
@@ -38,8 +38,8 @@
   text-align: center;
 }
 
-/* Grid pentru fermentatoare și loturi */
-.fermentatoareGrid, .loturiGrid {
+/* Grid pentru fermentatoare */
+.fermentatoareGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
@@ -47,7 +47,7 @@
 }
 
 /* Fallback message */
-.fermentatoareGrid p, .loturiGrid p {
+.fermentatoareGrid p, .loading, .noResults {
   color: #ff6b6b;
   font-size: 1.2rem;
   font-weight: 600;
@@ -68,6 +68,7 @@
   position: relative;
   overflow: hidden;
   min-height: 220px;
+  cursor: pointer;
 }
 
 .fermentatorCardOverlay {
@@ -104,8 +105,8 @@
   font-size: 0.9rem;
 }
 
-/* Buton de descărcare */
-.buttonDescarcare {
+/* Butoane generale */
+.buttonDescarcare, .buttonRefresh, .buttonDelete, .buttonExport, .button, .buttonUpdate, .buttonCancel, .buttonAdauga {
   background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
   border: none;
   border-radius: 8px;
@@ -119,10 +120,18 @@
   text-align: center;
 }
 
-.buttonDescarcare:hover {
+.buttonDescarcare:hover, .buttonRefresh:hover, .buttonDelete:hover, .buttonExport:hover, .button:hover, .buttonUpdate:hover, .buttonCancel:hover, .buttonAdauga:hover {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
   background: linear-gradient(135deg, #ff8787 0%, #f76c38 100%);
+}
+
+.buttonCancel {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.buttonCancel:hover {
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
 /* Carduri pentru loturi */
@@ -193,27 +202,112 @@
   box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
+/* Toolbar and form-related styles */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.searchInput {
+  flex: 1;
+  padding: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+}
+
+.formRow {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.input {
+  flex: 1;
+  padding: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  min-width: 120px;
+}
+
+.formButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.tabelContainer {
+  margin-top: 2rem;
+}
+
+.tabel {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.headerCell {
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  font-weight: 700;
+  text-align: left;
+}
+
+.row {
+  transition: background 0.3s ease;
+}
+
+.row:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.cell, .cellActions {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cellActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .container {
     padding: 1rem;
   }
   
-  .container h1 {
+  .titlu {
     font-size: 2rem;
     margin-bottom: 2rem;
   }
   
-  .fermentatoreGrid, .loturiGrid {
+  .fermentatoareGrid {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
   
-  .fermentatorStatus, .loturiSection {
+  .fermentatorStatus, .loturiSection, .formular {
     padding: 1.5rem;
   }
   
-  .fermentatorCard, .lotCard {
+  .fermentatorCard {
     min-height: 180px;
+  }
+  
+  .formRow {
+    flex-direction: column;
+  }
+  
+  .input {
+    min-width: 100%;
   }
 }

@@ -4,10 +4,10 @@
       "id": 1,
       "nume": "Fermentator 1",
       "capacitate": 1000,
-      "ocupat": false,
-      "reteta": null,
-      "cantitate": 0,
-      "dataInceput": null,
+      "ocupat": true,
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": 197,
+      "dataInceput": "2025-08-04T07:20:52.994Z",
       "imagine": "/Imagini/fermentator.png"
     },
     {

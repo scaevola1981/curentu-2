@@ -186,6 +186,17 @@
       "lot": "",
       "subcategorie": "",
       "id": 17
+    },
+    {
+      "denumire": "sticle 0.33L",
+      "cantitate": 10000,
+      "unitate": "buc",
+      "producator": "",
+      "codProdus": "",
+      "lot": "",
+      "tip": "sticle",
+      "subcategorie": "",
+      "id": 18
     }
   ],
   "materiale": [

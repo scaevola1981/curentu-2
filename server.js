@@ -9,7 +9,7 @@ import {
 } from "./Stocare/ingrediente.js";
 import { getFermentatoare, updateFermentator } from "./Stocare/fermentatoare.js";
 import { adaugaLot, obtineLoturi } from "./Stocare/loturiProducere.js";
-import { getMaterialeAmbalare, adaugaSauSuplimenteazaMaterialAmbalare } from "./Stocare/materialeAmbalare.js";
+import { getMaterials as getMaterialeAmbalare, addMaterial as adaugaSauSuplimenteazaMaterialAmbalare } from "./Stocare/materialeAmbalare.js";
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -183,10 +183,10 @@ app.post('/api/producere', async (req, res) => {
 
 app.get('/api/materiale-ambalare', async (req, res) => {
   try {
-    const materiale = getMaterialeAmbalare();
-    console.log('GET /api/materiale-ambalare response:', materiale); // Debug log
+    const materiale = await getMaterialeAmbalare();
+    console.log('GET /api/materiale-ambalare response:', materiale);
     if (!materiale || materiale.length === 0) {
-      console.warn('No packaging materials found in database'); // Debug log
+      console.warn('No packaging materials found in database');
     }
     res.json(materiale);
   } catch (error) {
@@ -195,6 +195,7 @@ app.get('/api/materiale-ambalare', async (req, res) => {
   }
 });
 
+
 app.post('/api/materiale-ambalare', async (req, res) => {
   try {
     const material = req.body;
@@ -202,7 +203,7 @@ app.post('/api/materiale-ambalare', async (req, res) => {
     if (errors.length > 0) {
       return res.status(400).json({ error: "Date invalide", details: errors });
     }
-    const rezultat = adaugaSauSuplimenteazaMaterialAmbalare(material);
+    const rezultat = await adaugaSauSuplimenteazaMaterialAmbalare(material);
     if (rezultat) {
       res.status(201).json({ success: true });
     } else {
