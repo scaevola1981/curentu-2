@@ -19,12 +19,22 @@ const Productie = () => {
 
   const loadRetete = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/reteteBere`);
+      console.log("Fetching recipes from:", `${API_URL}/retete-bere`);
+      const res = await fetch(`${API_URL}/retete-bere`);
+      console.log("Response status:", res.status);
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const data = await res.json();
-      setRetete(data);
+      console.log("Fetched recipes data:", data);
+      if (Array.isArray(data)) {
+        setRetete(data); // Ensure data is an array
+      } else {
+        console.warn("Unexpected data format, expected array:", data);
+        setRetete([]);
+      }
     } catch (error) {
+      console.error("Eroare la încărcarea rețetelor:", error.message, error.stack);
       setError("Eroare la încărcarea rețetelor: " + error.message);
+      setRetete([]); // Reset to empty on error
     }
   }, []);
 
@@ -39,20 +49,20 @@ const Productie = () => {
     }
   }, []);
 
- const loadFermentatoare = useCallback(async () => {
-  try {
-    console.log('Fetching fermentatoare from:', `${API_URL}/fermentatoare`); // Debug log
-    const res = await fetch(`${API_URL}/fermentatoare`);
-    console.log('Response status:', res.status); // Debug log
-    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-    const data = await res.json();
-    console.log('Fermentatoare fetched:', data); // Debug log
-    setFermentatoare(data);
-  } catch (error) {
-    console.error('Eroare la încărcarea fermentatoarelor:', error.message, error.stack); // Debug log
-    setError("Eroare la încărcarea fermentatoarelor: " + error.message);
-  }
-}, []);
+  const loadFermentatoare = useCallback(async () => {
+    try {
+      console.log('Fetching fermentatoare from:', `${API_URL}/fermentatoare`);
+      const res = await fetch(`${API_URL}/fermentatoare`);
+      console.log('Response status:', res.status);
+      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+      const data = await res.json();
+      console.log('Fermentatoare fetched:', data);
+      setFermentatoare(data);
+    } catch (error) {
+      console.error('Eroare la încărcarea fermentatoarelor:', error.message, error.stack);
+      setError("Eroare la încărcarea fermentatoarelor: " + error.message);
+    }
+  }, []);
 
   const selectReteta = (reteta) => {
     setSelectedReteta(reteta);
@@ -94,7 +104,6 @@ const Productie = () => {
     const materialeConsumate = selectedReteta.ingrediente.map(ing => {
       let cantitate = Number((ing.cantitate * factorScalare).toFixed(2));
       let unitate = ing.unitate;
-      // Convert kg to g for drojdie to match ingrediente.js
       if (ing.tip === "drojdie" && ing.unitate === "kg") {
         cantitate = Number((cantitate * 1000).toFixed(2));
         unitate = "g";
@@ -130,7 +139,6 @@ const Productie = () => {
     }
 
     try {
-      // Actualizează stocul de materiale
       for (const ing of consumMateriale) {
         const stoc = stocMateriale.find(m => m.denumire === ing.denumire && m.unitate === ing.unitate);
         if (stoc) {
@@ -143,7 +151,6 @@ const Productie = () => {
         }
       }
 
-      // Actualizează fermentatorul în backend
       const updatedFermentator = {
         ...selectedFermentator,
         ocupat: true,
@@ -160,7 +167,6 @@ const Productie = () => {
 
       if (!response.ok) throw new Error(`Failed to update fermentator ${selectedFermentator.nume}`);
 
-      // Actualizează stocul local
       setStocMateriale(prev =>
         prev.map(m => {
           const consum = consumMateriale.find(c => c.denumire === m.denumire && c.unitate === m.unitate);
@@ -168,7 +174,6 @@ const Productie = () => {
         })
       );
 
-      // Actualizează fermentatoarele local
       setFermentatoare(prev =>
         prev.map(f =>
           f.id === selectedFermentator.id ? updatedFermentator : f
@@ -226,6 +231,7 @@ const Productie = () => {
   };
 
   useEffect(() => {
+    console.log("useEffect triggered, calling load functions"); // Debug log
     loadRetete();
     loadMateriale();
     loadFermentatoare();
@@ -284,27 +290,31 @@ const Productie = () => {
         <div className={styles.stepSection}>
           <h2>Pas 1: Selectați Rețeta</h2>
           <div className={styles.reteteContainer}>
-            {retete.map((reteta) => (
-              <div
-                key={reteta.id}
-                className={`${styles.retetaCard} ${selectedReteta?.id === reteta.id ? styles.selected : ""}`}
-                onClick={() => selectReteta(reteta)}
-                style={{ 
-                  backgroundImage: reteta.image ? `url(${reteta.image})` : 'none',
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center'
-                }}
-              >
-                <div className={styles.retetaCardOverlay}>
-                  <h3>{reteta.denumire}</h3>
-                  <p>Tip: {reteta.tip}</p>
-                  <p>Concentrație must: {reteta.concentratieMust}</p>
-                  <p>Concentrație alcool: {reteta.concentratieAlcool}</p>
-                  <p>Durată: {reteta.durata} zile</p>
-                  <p>Producție standard: {reteta.rezultat.cantitate} {reteta.rezultat.unitate}</p>
+            {retete.length > 0 ? (
+              retete.map((reteta) => (
+                <div
+                  key={reteta.id}
+                  className={`${styles.retetaCard} ${selectedReteta?.id === reteta.id ? styles.selected : ""}`}
+                  onClick={() => selectReteta(reteta)}
+                  style={{ 
+                    backgroundImage: reteta.image ? `url(${reteta.image})` : 'none',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center'
+                  }}
+                >
+                  <div className={styles.retetaCardOverlay}>
+                    <h3>{reteta.denumire}</h3>
+                    <p>Tip: {reteta.tip}</p>
+                    <p>Concentrație must: {reteta.concentratieMust}</p>
+                    <p>Concentrație alcool: {reteta.concentratieAlcool}</p>
+                    <p>Durată: {reteta.durata} zile</p>
+                    <p>Producție standard: {reteta.rezultat.cantitate} {reteta.rezultat.unitate}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p>Nu s-au încărcat rețetele. Verificați consola pentru erori.</p>
+            )}
           </div>
         </div>
 
@@ -370,7 +380,7 @@ const Productie = () => {
                 <h4>Ingrediente necesare:</h4>
                 <ul>
                   {consumMateriale.map((ing, index) => (
-                    <li key={index} className={
+                    <li key={index} class={
                       materialeInsuficiente.find(m => m.denumire === ing.denumire) 
                         ? styles.ingredientInsuficient 
                         : styles.ingredientOk

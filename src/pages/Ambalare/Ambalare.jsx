@@ -326,6 +326,55 @@ const Ambalare = () => {
         )}
 
         <h1 className={styles.titlu}>Materiale de Ambalare</h1>
+         <div className={styles.fermentatorStatus}>
+          <h2>Selecție Fermentator pentru Ambalare</h2>
+          <div className={styles.fermentatoareGrid}>
+            {fermentatoare.length === 0 ? (
+              <p>Nu există fermentatoare ocupate</p>
+            ) : (
+              fermentatoare.map((fermentator) => (
+                <div
+                  key={fermentator.id}
+                  className={`${styles.fermentatorCard} ${fermentator.ocupat ? styles.ocupat : ''}`}
+                  onClick={() => setSelectedFermentator(fermentator)}
+                >
+                  <div className={styles.fermentatorCardOverlay}>
+                    <h3>{fermentator.nume}</h3>
+                    <p>Cantitate: {fermentator.cantitate}L</p>
+                    <p>Data: {new Date(fermentator.dataInceput).toLocaleDateString()}</p>
+                    {selectedFermentator?.id === fermentator.id && (
+                      <select
+                        className={styles.input}
+                        value={packagingType}
+                        onChange={(e) => setPackagingType(e.target.value)}
+                      >
+                        <option value="">Selectați tipul de ambalare</option>
+                        <option value="bottles">Sticle</option>
+                        <option value="kegs">Keguri</option>
+                      </select>
+                    )}
+                    {selectedFermentator?.id === fermentator.id && packagingType && (
+                      <button className={styles.button} onClick={handleAmbalare}>
+                        Ambalare
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+          {ambalareInsuficiente.length > 0 && (
+            <div className={styles.formRow}>
+              <ul>
+                {ambalareInsuficiente.map((amb, index) => (
+                  <li key={index} className={styles.cell}>
+                    {amb.denumire}: Necesare {amb.cantitateNecesara} {amb.unitate}, Disponibile {amb.cantitateDisponibila} {amb.unitate}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
 
         <div className={styles.toolbar}>
           <input
@@ -431,56 +480,7 @@ const Ambalare = () => {
           </form>
         </div>
 
-        <div className={styles.fermentatorStatus}>
-          <h2>Selecție Fermentator pentru Ambalare</h2>
-          <div className={styles.fermentatoareGrid}>
-            {fermentatoare.length === 0 ? (
-              <p>Nu există fermentatoare ocupate</p>
-            ) : (
-              fermentatoare.map((fermentator) => (
-                <div
-                  key={fermentator.id}
-                  className={`${styles.fermentatorCard} ${fermentator.ocupat ? styles.ocupat : ''}`}
-                  onClick={() => setSelectedFermentator(fermentator)}
-                >
-                  <div className={styles.fermentatorCardOverlay}>
-                    <h3>{fermentator.nume}</h3>
-                    <p>Cantitate: {fermentator.cantitate}L</p>
-                    <p>Data: {new Date(fermentator.dataInceput).toLocaleDateString()}</p>
-                    {selectedFermentator?.id === fermentator.id && (
-                      <select
-                        className={styles.input}
-                        value={packagingType}
-                        onChange={(e) => setPackagingType(e.target.value)}
-                      >
-                        <option value="">Selectați tipul de ambalare</option>
-                        <option value="bottles">Sticle</option>
-                        <option value="kegs">Keguri</option>
-                      </select>
-                    )}
-                    {selectedFermentator?.id === fermentator.id && packagingType && (
-                      <button className={styles.button} onClick={handleAmbalare}>
-                        Ambalare
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-          {ambalareInsuficiente.length > 0 && (
-            <div className={styles.formRow}>
-              <ul>
-                {ambalareInsuficiente.map((amb, index) => (
-                  <li key={index} className={styles.cell}>
-                    {amb.denumire}: Necesare {amb.cantitateNecesara} {amb.unitate}, Disponibile {amb.cantitateDisponibila} {amb.unitate}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-
+       
         <div className={styles.tabelContainer}>
           {loading ? (
             <div className={styles.loading}>Se încarcă...</div>
@@ -534,6 +534,7 @@ const Ambalare = () => {
             </table>
           )}
         </div>
+        
       </div>
     </>
   );

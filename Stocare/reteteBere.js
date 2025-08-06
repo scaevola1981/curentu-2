@@ -1,3 +1,4 @@
+// Stocare/reteteBere.js
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import { fileURLToPath } from 'url';
@@ -24,10 +25,7 @@ const reteteInitiale = [
     concentratieAlcool: "5 ±0.5% vol",
     image: "/adaptor.png",
     durata: 0,
-    rezultat: {
-      cantitate: 1000,
-      unitate: "litri"
-    },
+    rezultat: { cantitate: 1000, unitate: "litri" },
     ingrediente: [
       { denumire: "Malt Pale Ale", cantitate: 400, unitate: "kg", tip: "malt" },
       { denumire: "Zahar brun", cantitate: 20, unitate: "kg", tip: "aditiv" },
@@ -46,10 +44,7 @@ const reteteInitiale = [
     concentratieAlcool: "7 - 9,5 ±1 %vol",
     image: "/intrerupator.png",
     durata: 7,
-    rezultat: {
-      cantitate: 1000,
-      unitate: "litri"
-    },
+    rezultat: { cantitate: 1000, unitate: "litri" },
     ingrediente: [
       { denumire: "Malt Pale Ale", cantitate: 372, unitate: "kg", tip: "malt" },
       { denumire: "Drojdie B.E 256", cantitate: 0.5, unitate: "kg", tip: "drojdie" },
@@ -67,10 +62,7 @@ const reteteInitiale = [
     concentratieAlcool: "6 ± 0.50 %vol",
     image: "/usb-amper-ale.png",
     durata: 0,
-    rezultat: {
-      cantitate: 1000,
-      unitate: "litri"
-    },
+    rezultat: { cantitate: 1000, unitate: "litri" },
     ingrediente: [
       { denumire: "Malt", cantitate: 300, unitate: "kg", tip: "malt" },
       { denumire: "Drojdie Fermentis U.S 05", cantitate: 0.5, unitate: "kg", tip: "drojdie" },
@@ -81,21 +73,28 @@ const reteteInitiale = [
   }
 ];
 
-async function initializeDatabase() {
+async function initializeazaBazaDeDate() {
   await db.read();
-  db.data.retete = db.data.retete || reteteInitiale;
-  await db.write();
-}
-
-function getReteteBere() {
-  try {
-    return db.data.retete;
-  } catch (error) {
-    console.error('Eroare la citirea rețetelor:', error);
-    return [...reteteInitiale];
+  if (!db.data.retete || db.data.retete.length === 0) {
+    db.data.retete = [...reteteInitiale]; // Use spread to avoid reference issues
+    await db.write();
+    console.log("Baza de date pentru rețete inițializată cu date implicite.");
   }
 }
 
-await initializeDatabase();
+async function getReteteBere() {
+  try {
+    await db.read();
+    return db.data.retete || [...reteteInitiale]; // Return a copy of initial recipes as fallback
+  } catch (error) {
+    console.error("Eroare la citirea rețetelor:", error.message, error.stack);
+    return [...reteteInitiale]; // Fallback to initial data
+  }
+}
+
+// Initialize database on module load
+initializeazaBazaDeDate().catch(error => {
+  console.error("Eroare la inițializarea bazei de date pentru rețete:", error.message, error.stack);
+});
 
 export { getReteteBere };

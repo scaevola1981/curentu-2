@@ -1,3 +1,4 @@
+// server.js
 import express from "express";
 import cors from "cors";
 import {
@@ -9,11 +10,19 @@ import {
 } from "./Stocare/ingrediente.js";
 import { getFermentatoare, updateFermentator } from "./Stocare/fermentatoare.js";
 import { adaugaLot, obtineLoturi } from "./Stocare/loturiProducere.js";
-import { getMaterials as getMaterialeAmbalare, addMaterial as adaugaSauSuplimenteazaMaterialAmbalare } from "./Stocare/materialeAmbalare.js";
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import {
+  getMaterialeAmbalare,
+  adaugaMaterialAmbalare,
+  actualizeazaMaterialAmbalare,
+  stergeMaterialAmbalare,
+  stergeToateMaterialeleAmbalare,
+  exportaMaterialeAmbalare,
+} from "./Stocare/materialeAmbalare.js";
+import { getReteteBere } from "./Stocare/reteteBere.js"; // New import
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -24,44 +33,45 @@ app.use(cors());
 app.use("/static", express.static("Stocare"));
 app.use(express.json());
 
-function validateMaterial(material) {
-  const errors = [];
-  if (!material.denumire || typeof material.denumire !== 'string' || material.denumire.trim() === '') {
-    errors.push('Denumirea este obligatorie');
+function valideazaMaterial(material) {
+  const erori = [];
+  if (!material.denumire || typeof material.denumire !== "string" || material.denumire.trim() === "") {
+    erori.push("Denumirea este obligatorie");
   }
   if (material.cantitate === undefined || material.cantitate === null) {
-    errors.push('Cantitatea este obligatorie');
+    erori.push("Cantitatea este obligatorie");
   } else {
     const cantitate = parseFloat(material.cantitate);
     if (isNaN(cantitate) || cantitate <= 0) {
-      errors.push('Cantitatea trebuie să fie un număr pozitiv');
+      erori.push("Cantitatea trebuie să fie un număr pozitiv");
     }
   }
-  if (!material.unitate || typeof material.unitate !== 'string' || material.unitate.trim() === '') {
-    errors.push('Unitatea este obligatorie');
+  if (!material.unitate || typeof material.unitate !== "string" || material.unitate.trim() === "") {
+    erori.push("Unitatea este obligatorie");
   }
-  return errors;
+  return erori;
 }
 
+// Rute pentru Materii Prime
 app.get("/api/materii-prime", (req, res) => {
   try {
     const materii = getMateriiPrime();
     res.json(materii);
   } catch (error) {
-    console.error("Eroare la preluarea materiilor:", error.message, error.stack);
+    console.error("Eroare la preluarea materiilor prime:", error.message, error.stack);
     res.status(500).json({ error: "Eroare la preluarea datelor" });
   }
 });
 
 app.post("/api/materii-prime", (req, res) => {
-  const errors = validateMaterial(req.body);
-  if (errors.length > 0) {
-    return res.status(400).json({ error: "Date invalide", details: errors });
+  const erori = valideazaMaterial(req.body);
+  if (erori.length > 0) {
+    return res.status(400).json({ error: "Date invalide", detalii: erori });
   }
   try {
     const rezultat = adaugaSauSuplimenteazaMaterial(req.body);
     if (rezultat) {
-      res.status(201).json({ success: true });
+      res.status(201).json({ succes: true });
     } else {
       res.status(500).json({ error: "Eroare la salvare" });
     }
@@ -72,14 +82,14 @@ app.post("/api/materii-prime", (req, res) => {
 });
 
 app.put("/api/materii-prime/:id", (req, res) => {
-  const errors = validateMaterial(req.body);
-  if (errors.length > 0) {
-    return res.status(400).json({ error: "Date invalide", details: errors });
+  const erori = valideazaMaterial(req.body);
+  if (erori.length > 0) {
+    return res.status(400).json({ error: "Date invalide", detalii: erori });
   }
   try {
     const rezultat = actualizeazaMaterial(req.params.id, req.body);
     if (rezultat) {
-      res.json({ success: true });
+      res.json({ succes: true });
     } else {
       res.status(404).json({ error: "Materialul nu a fost găsit" });
     }
@@ -93,7 +103,7 @@ app.delete("/api/materii-prime/:id", (req, res) => {
   try {
     const rezultat = stergeMaterial(req.params.id);
     if (rezultat) {
-      res.json({ success: true });
+      res.json({ succes: true });
     } else {
       res.status(404).json({ error: "Materialul nu a fost găsit" });
     }
@@ -107,7 +117,7 @@ app.delete("/api/materii-prime", (req, res) => {
   try {
     const rezultat = stergeToateMaterialele();
     if (rezultat) {
-      res.json({ success: true });
+      res.json({ succes: true });
     } else {
       res.status(500).json({ error: "Eroare la ștergerea materialelor" });
     }
@@ -117,101 +127,151 @@ app.delete("/api/materii-prime", (req, res) => {
   }
 });
 
-app.get('/api/reteteBere', (req, res) => {
+// Rute pentru Rețete de Bere
+app.get("/api/retete-bere", (req, res) => {
   try {
-    const filePath = path.join(__dirname, 'Stocare', 'reteteBere.json');
-    const rawData = fs.readFileSync(filePath, 'utf-8');
-    const retete = JSON.parse(rawData);
-    console.log('Returning reteteBere:', retete); // Debug log
+    const retete = getReteteBere();
     res.json(retete);
   } catch (error) {
-    console.error('Eroare la citirea fișierului reteteBere.json:', error.message, error.stack);
-    res.status(500).json({ error: 'Nu s-au putut încărca rețetele' });
+    console.error("Eroare la obținerea rețetelor de bere:", error.message, error.stack);
+    res.status(500).json({ error: "Nu s-au putut încărca rețetele" });
   }
 });
 
-app.get('/api/fermentatoare', async (req, res) => {
+// Rute pentru Fermentatoare
+app.get("/api/fermentatoare", async (req, res) => {
   try {
     const fermentatoare = await getFermentatoare();
-    console.log('GET /api/fermentatoare response:', fermentatoare); // Debug log
+    console.log("Răspuns GET /api/fermentatoare:", fermentatoare);
     if (!fermentatoare || fermentatoare.length === 0) {
-      console.warn('No fermenters found in database'); // Debug log
+      console.warn("Nu s-au găsit fermentatoare în baza de date");
     }
     res.json(fermentatoare);
   } catch (error) {
-    console.error('Eroare la preluarea fermentatoarelor:', error.message, error.stack);
-    res.status(500).json({ error: 'Eroare la preluarea datelor' });
+    console.error("Eroare la preluarea fermentatoarelor:", error.message, error.stack);
+    res.status(500).json({ error: "Eroare la preluarea datelor" });
   }
 });
 
-app.put('/api/fermentatoare/:id', async (req, res) => {
+app.put("/api/fermentatoare/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const updatedData = req.body;
-    const rezultat = await updateFermentator(id, updatedData);
+    const dateActualizate = req.body;
+    const rezultat = await updateFermentator(id, dateActualizate);
     if (rezultat) {
-      res.json({ success: true });
+      res.json({ succes: true });
     } else {
       res.status(404).json({ error: "Fermentatorul nu a fost găsit" });
     }
   } catch (error) {
-    console.error('Eroare la actualizarea fermentatorului:', error.message, error.stack);
-    res.status(500).json({ error: 'Eroare la actualizare' });
+    console.error("Eroare la actualizarea fermentatorului:", error.message, error.stack);
+    res.status(500).json({ error: "Eroare la actualizare" });
   }
 });
 
-app.get('/api/producere', async (req, res) => {
+// Rute pentru Producere
+app.get("/api/producere", async (req, res) => {
   try {
     const loturi = await obtineLoturi();
     res.json(loturi);
   } catch (error) {
-    console.error('Eroare la obținerea loturilor:', error.message, error.stack);
-    res.status(500).json({ error: 'Eroare la preluarea datelor' });
+    console.error("Eroare la obținerea loturilor:", error.message, error.stack);
+    res.status(500).json({ error: "Eroare la preluarea datelor" });
   }
 });
 
-app.post('/api/producere', async (req, res) => {
+app.post("/api/producere", async (req, res) => {
   try {
     const lot = req.body;
-    const newLot = await adaugaLot(lot);
-    res.status(201).json({ success: true, lot: newLot });
+    const lotNou = await adaugaLot(lot);
+    res.status(201).json({ succes: true, lot: lotNou });
   } catch (error) {
-    console.error('Eroare la adăugarea lotului:', error.message, error.stack);
-    res.status(500).json({ error: 'Eroare la salvare' });
+    console.error("Eroare la adăugarea lotului:", error.message, error.stack);
+    res.status(500).json({ error: "Eroare la salvare" });
   }
 });
 
-app.get('/api/materiale-ambalare', async (req, res) => {
+// Rute pentru Materiale de Ambalare
+app.get("/api/materiale-ambalare", async (req, res) => {
   try {
     const materiale = await getMaterialeAmbalare();
-    console.log('GET /api/materiale-ambalare response:', materiale);
-    if (!materiale || materiale.length === 0) {
-      console.warn('No packaging materials found in database');
-    }
+    console.log("Materiale ambalare returnate:", materiale);
     res.json(materiale);
   } catch (error) {
-    console.error('Eroare la preluarea materialelor de ambalare:', error.message, error.stack);
-    res.status(500).json({ error: 'Eroare la preluarea datelor' });
+    console.error("Eroare la preluarea materialelor de ambalare:", error.message, error.stack);
+    res.status(500).json({ error: "Eroare internă a serverului" });
   }
 });
 
-
-app.post('/api/materiale-ambalare', async (req, res) => {
+app.post("/api/materiale-ambalare", async (req, res) => {
+  const erori = valideazaMaterial(req.body);
+  if (erori.length > 0) {
+    return res.status(400).json({ error: "Date invalide", detalii: erori });
+  }
   try {
-    const material = req.body;
-    const errors = validateMaterial(material);
-    if (errors.length > 0) {
-      return res.status(400).json({ error: "Date invalide", details: errors });
-    }
-    const rezultat = await adaugaSauSuplimenteazaMaterialAmbalare(material);
-    if (rezultat) {
-      res.status(201).json({ success: true });
+    const materialNou = await adaugaMaterialAmbalare(req.body);
+    res.status(201).json(materialNou);
+  } catch (error) {
+    console.error("Eroare la adăugarea materialului de ambalare:", error.message, error.stack);
+    res.status(500).json({ error: "Eroare la salvare" });
+  }
+});
+
+app.put("/api/materiale-ambalare/:id", async (req, res) => {
+  const erori = valideazaMaterial(req.body);
+  if (erori.length > 0) {
+    return res.status(400).json({ error: "Date invalide", detalii: erori });
+  }
+  try {
+    const materialActualizat = await actualizeazaMaterialAmbalare(req.params.id, req.body);
+    if (materialActualizat) {
+      res.json(materialActualizat);
     } else {
-      res.status(500).json({ error: "Eroare la salvare" });
+      res.status(404).json({ error: "Materialul de ambalare nu a fost găsit" });
     }
   } catch (error) {
-    console.error('Eroare la adăugarea materialului de ambalare:', error.message, error.stack);
-    res.status(500).json({ error: 'Eroare la salvare' });
+    console.error("Eroare la actualizarea materialului de ambalare:", error.message, error.stack);
+    res.status(500).json({ error: "Eroare la actualizare" });
+  }
+});
+
+app.delete("/api/materiale-ambalare/:id", async (req, res) => {
+  try {
+    const materialeActualizate = await stergeMaterialAmbalare(req.params.id);
+    if (materialeActualizate) {
+      res.json(materialeActualizate);
+    } else {
+      res.status(404).json({ error: "Materialul de ambalare nu a fost găsit" });
+    }
+  } catch (error) {
+    console.error("Eroare la ștergerea materialului de ambalare:", error.message, error.stack);
+    res.status(500).json({ error: "Eroare la ștergere" });
+  }
+});
+
+app.delete("/api/materiale-ambalare", async (req, res) => {
+  try {
+    const rezultat = await stergeToateMaterialeleAmbalare();
+    if (rezultat) {
+      res.json({ succes: true });
+    } else {
+      res.status(500).json({ error: "Eroare la ștergerea materialelor de ambalare" });
+    }
+  } catch (error) {
+    console.error("Eroare la ștergerea tuturor materialelor de ambalare:", error.message, error.stack);
+    res.status(500).json({ error: "Eroare la ștergerea materialelor de ambalare" });
+  }
+});
+
+app.get("/api/materiale-ambalare/export", async (req, res) => {
+  try {
+    const csvData = await exportaMaterialeAmbalare();
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", "attachment; filename=materiale-ambalare.csv");
+    res.send(csvData);
+  } catch (error) {
+    console.error("Eroare la exportarea materialelor de ambalare:", error.message, error.stack);
+    res.status(500).json({ error: "Eroare la export" });
   }
 });
 
