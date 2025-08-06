@@ -1,4 +1,3 @@
-// server.js
 import express from "express";
 import cors from "cors";
 import {
@@ -18,14 +17,8 @@ import {
   stergeToateMaterialeleAmbalare,
   exportaMaterialeAmbalare,
 } from "./Stocare/materialeAmbalare.js";
-import { getReteteBere } from "./Stocare/reteteBere.js"; // New import
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
+import { getReteteBere } from "./Stocare/reteteBere.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 const app = express();
 const PORT = 3001;
 

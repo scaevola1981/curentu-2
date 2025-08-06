@@ -110,13 +110,13 @@
   background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
   border: none;
   border-radius: 8px;
-  padding: 0.8rem 1.2rem;
+  padding: 0.6rem 1rem; /* Redus padding pentru consistență */
   color: white;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 1rem;
-  width: 100%;
+  margin-top: 0.5rem; /* Redus marginea superioară */
+  width: 65%;
   text-align: center;
 }
 
@@ -132,6 +132,27 @@
 
 .buttonCancel:hover {
   box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+/* Buton Edit specific */
+.buttonEdit {
+  background: linear-gradient(135deg, #4ecdc4 0%, #45b7cd 100%); /* Tonuri de turcoaz */
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+  width: 100%;
+  text-align: center;
+}
+
+.buttonEdit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+  background: linear-gradient(135deg, #6be4da 0%, #58c5d7 100%);
 }
 
 /* Carduri pentru loturi */
@@ -255,13 +276,14 @@
 }
 
 .headerCell {
-  padding: 1rem;
+  padding: 0.8rem; /* Redus padding pentru consistență */
   background: rgba(255, 255, 255, 0.1);
   font-weight: 700;
   text-align: left;
 }
 
 .row {
+  height: 40px; /* Înălțime redusă pentru rânduri */
   transition: background 0.3s ease;
 }
 
@@ -270,7 +292,7 @@
 }
 
 .cell, .cellActions {
-  padding: 1rem;
+  padding: 0.4rem 0.8rem; /* Redus padding pentru a se potrivi cu înălțimea */
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 

@@ -9,7 +9,6 @@ const Ambalare = () => {
   const [fermentatoare, setFermentatoare] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
   const [newMaterial, setNewMaterial] = useState({
     denumire: '',
     cantitate: '',
@@ -25,6 +24,7 @@ const Ambalare = () => {
   const [selectedFermentator, setSelectedFermentator] = useState(null);
   const [packagingType, setPackagingType] = useState('');
   const [ambalareInsuficiente, setAmbalareInsuficiente] = useState([]);
+  const [supplementCantitati, setSupplementCantitati] = useState({});
 
   const loadMateriale = useCallback(async () => {
     try {
@@ -35,7 +35,7 @@ const Ambalare = () => {
     } catch (error) {
       setError(`Eroare la încărcarea materialelor: ${error.message}`);
     }
-  }, []);
+  }, []); // Fără dependențe suplimentare, presupunând că resetTot nu este necesar
 
   const loadFermentatoare = useCallback(async () => {
     try {
@@ -46,11 +46,51 @@ const Ambalare = () => {
     } catch (error) {
       setError(`Eroare la încărcarea fermentatoarelor: ${error.message}`);
     }
-  }, []);
+  }, []); // Fără dependențe suplimentare
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewMaterial(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSupplementChange = (id, value) => {
+    setSupplementCantitati(prev => ({
+      ...prev,
+      [id]: value ? Number(value) : ''
+    }));
+  };
+
+  const handleSupplementMaterial = async (id) => {
+    const cantitateSuplimentara = supplementCantitati[id];
+    if (!cantitateSuplimentara || cantitateSuplimentara <= 0) {
+      setError('Introduceți o cantitate validă pentru suplimentare!');
+      return;
+    }
+
+    const material = materiale.find(m => m.id === parseInt(id));
+    if (!material) {
+      setError('Materialul nu a fost găsit!');
+      return;
+    }
+
+    try {
+      const newCantitate = material.cantitate + cantitateSuplimentara;
+      const res = await fetch(`${API_URL}/materiale-ambalare/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...material, cantitate: newCantitate }),
+      });
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Eroare la actualizare: ${res.status} - ${errorText || 'Resursa nu a fost găsită'}`);
+      }
+      const updatedMaterial = await res.json();
+      setMateriale(prev => prev.map(m => m.id === parseInt(id) ? { ...m, ...updatedMaterial } : m));
+      setSupplementCantitati(prev => ({ ...prev, [id]: '' }));
+      setError('');
+    } catch (error) {
+      setError(`Eroare la suplimentarea materialului: ${error.message}`);
+    }
   };
 
   const handleAddMaterial = async (e) => {
@@ -152,20 +192,6 @@ const Ambalare = () => {
     }
   };
 
-  const handleDeleteAll = async () => {
-    if (!window.confirm('Sigur doriți să ștergeți toate materialele de ambalare?')) return;
-    try {
-      const res = await fetch(`${API_URL}/materiale-ambalare`, {
-        method: 'DELETE',
-      });
-      if (!res.ok) throw new Error('Eroare la ștergerea tuturor materialelor');
-      setMateriale([]);
-      setError('Toate materialele au fost șterse!');
-    } catch (error) {
-      setError(`Eroare la ștergerea tuturor materialelor: ${error.message}`);
-    }
-  };
-
   const handleExport = async () => {
     try {
       const res = await fetch(`${API_URL}/materiale-ambalare/export`);
@@ -181,10 +207,6 @@ const Ambalare = () => {
     } catch (error) {
       setError(`Eroare la exportarea materialelor: ${error.message}`);
     }
-  };
-
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
   };
 
   const verificaStocAmbalare = (cantitateBere, packagingType) => {
@@ -248,7 +270,6 @@ const Ambalare = () => {
     }
 
     try {
-      // Update material stock
       for (const amb of ambalareNecesare) {
         const stoc = materiale.find(m => m.denumire === amb.denumire && m.unitate === amb.unitate);
         if (stoc) {
@@ -261,7 +282,6 @@ const Ambalare = () => {
         }
       }
 
-      // Update fermentator
       const updatedFermentator = {
         ...selectedFermentator,
         ocupat: false,
@@ -275,9 +295,8 @@ const Ambalare = () => {
         body: JSON.stringify(updatedFermentator),
       });
 
-      // Record in LoturiAmbalate
       const lot = {
-        id: Date.now(), // Unique ID based on timestamp
+        id: Date.now(),
         fermentatorId: selectedFermentator.id,
         cantitate: selectedFermentator.cantitate,
         packagingType,
@@ -306,10 +325,6 @@ const Ambalare = () => {
     }
   };
 
-  const filteredMateriale = materiale.filter(m =>
-    m.denumire.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   useEffect(() => {
     Promise.all([loadMateriale(), loadFermentatoare()]).then(() => setLoading(false));
   }, [loadMateriale, loadFermentatoare]);
@@ -326,7 +341,7 @@ const Ambalare = () => {
         )}
 
         <h1 className={styles.titlu}>Materiale de Ambalare</h1>
-         <div className={styles.fermentatorStatus}>
+        <div className={styles.fermentatorStatus}>
           <h2>Selecție Fermentator pentru Ambalare</h2>
           <div className={styles.fermentatoareGrid}>
             {fermentatoare.length === 0 ? (
@@ -377,19 +392,9 @@ const Ambalare = () => {
         </div>
 
         <div className={styles.toolbar}>
-          <input
-            type="text"
-            className={styles.searchInput}
-            placeholder="Caută material..."
-            value={searchTerm}
-            onChange={handleSearch}
-          />
           <div>
             <button className={styles.buttonRefresh} onClick={() => Promise.all([loadMateriale(), loadFermentatoare()])}>
               Reîmprospătează
-            </button>
-            <button className={styles.buttonDelete} onClick={handleDeleteAll}>
-              Șterge Toate
             </button>
             <button className={styles.buttonExport} onClick={handleExport}>
               Exportă CSV
@@ -480,11 +485,10 @@ const Ambalare = () => {
           </form>
         </div>
 
-       
         <div className={styles.tabelContainer}>
           {loading ? (
             <div className={styles.loading}>Se încarcă...</div>
-          ) : filteredMateriale.length === 0 ? (
+          ) : materiale.length === 0 ? (
             <div className={styles.noResults}>Niciun material găsit</div>
           ) : (
             <table className={styles.tabel}>
@@ -499,11 +503,12 @@ const Ambalare = () => {
                   <th className={styles.headerCell}>Lot</th>
                   <th className={styles.headerCell}>Tip</th>
                   <th className={styles.headerCell}>Subcategorie</th>
+                  <th className={styles.headerCell}>Supliment</th>
                   <th className={styles.headerCell}>Acțiuni</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredMateriale.map(material => (
+                {materiale.map(material => (
                   <tr key={material.id} className={styles.row}>
                     <td className={styles.cell}>{material.id}</td>
                     <td className={styles.cell}>{material.denumire}</td>
@@ -514,12 +519,28 @@ const Ambalare = () => {
                     <td className={styles.cell}>{material.lot || '-'}</td>
                     <td className={styles.cell}>{material.tip || '-'}</td>
                     <td className={styles.cell}>{material.subcategorie || '-'}</td>
-                    <td className={styles.cellActions}>
+                    <td className={styles.cell}>
+                      <input
+                        type="number"
+                        className={styles.input}
+                        placeholder="Cantitate"
+                        value={supplementCantitati[material.id] || ''}
+                        onChange={(e) => handleSupplementChange(material.id, e.target.value)}
+                        step="0.01"
+                      />
                       <button
                         className={styles.buttonAdauga}
+                        onClick={() => handleSupplementMaterial(material.id)}
+                      >
+                        + Adaugă
+                      </button>
+                    </td>
+                    <td className={styles.cellActions}>
+                      <button
+                        className={styles.buttonEdit}
                         onClick={() => handleEdit(material)}
                       >
-                        + Adauga
+                        Editează
                       </button>
                       <button
                         className={styles.buttonDelete}
@@ -534,7 +555,6 @@ const Ambalare = () => {
             </table>
           )}
         </div>
-        
       </div>
     </>
   );
