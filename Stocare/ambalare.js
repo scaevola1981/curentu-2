@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Asigură-te că fișierul JSON există
-const caleFisier = path.join(__dirname, 'loturiProducere.json');
+const caleFisier = path.join(__dirname, 'loturiAmbalate.json');
 if (!fs.existsSync(caleFisier)) {
   fs.writeFileSync(caleFisier, JSON.stringify({ loturi: [] }, null, 2), 'utf-8');
 }

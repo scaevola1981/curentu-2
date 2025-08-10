@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 const defaultData = { loturi: [] };
 
 // Inițializează LowDB cu JSONFileSync (versiunea sincronă)
-const adapter = new JSONFileSync(path.join(__dirname, 'loturiProducere.json'));
+const adapter = new JSONFileSync(path.join(__dirname, 'loturiAmbalate.json'));
 const db = new LowSync(adapter, defaultData);
 
 // Citește baza de date și inițializează cu date implicite dacă este necesar

@@ -301,6 +301,8 @@
   gap: 0.5rem;
 }
 
+
+
 /* Responsive design */
 @media (max-width: 768px) {
   .container {

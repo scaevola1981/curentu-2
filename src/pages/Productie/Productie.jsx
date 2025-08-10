@@ -30,6 +30,7 @@ const Productie = () => {
       } else {
         console.warn("Unexpected data format, expected array:", data);
         setRetete([]);
+        setError("Datele rețetelor nu sunt în formatul așteptat.");
       }
     } catch (error) {
       console.error("Eroare la încărcarea rețetelor:", error.message, error.stack);
@@ -380,7 +381,7 @@ const Productie = () => {
                 <h4>Ingrediente necesare:</h4>
                 <ul>
                   {consumMateriale.map((ing, index) => (
-                    <li key={index} class={
+                    <li key={index} className={
                       materialeInsuficiente.find(m => m.denumire === ing.denumire) 
                         ? styles.ingredientInsuficient 
                         : styles.ingredientOk

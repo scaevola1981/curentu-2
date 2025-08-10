@@ -7,15 +7,53 @@
     "concentratieAlcool": "5 ±0.5% vol",
     "image": "/adaptor.png",
     "durata": 0,
-    "rezultat": { "cantitate": 1000, "unitate": "litri" },
+    "rezultat": {
+      "cantitate": 1000,
+      "unitate": "litri"
+    },
     "ingrediente": [
-      { "denumire": "Malt Pale Ale", "cantitate": 400, "unitate": "kg", "tip": "malt" },
-      { "denumire": "Zahar brun", "cantitate": 20, "unitate": "kg", "tip": "aditiv" },
-      { "denumire": "Drojdie B.E 256", "cantitate": 0.5, "unitate": "kg", "tip": "drojdie" },
-      { "denumire": "Drojdie F2", "cantitate": 0.5, "unitate": "kg", "tip": "drojdie" },
-      { "denumire": "Hamei Bitter", "cantitate": 1, "unitate": "kg", "tip": "hamei" },
-      { "denumire": "Hamei Aroma", "cantitate": 0.8, "unitate": "kg", "tip": "hamei" },
-      { "denumire": "Irish Moss", "cantitate": 0.3, "unitate": "kg", "tip": "aditiv" }
+      {
+        "denumire": "Malt Pale Ale",
+        "cantitate": 400,
+        "unitate": "kg",
+        "tip": "malt"
+      },
+      {
+        "denumire": "Zahar brun",
+        "cantitate": 20,
+        "unitate": "kg",
+        "tip": "aditiv"
+      },
+      {
+        "denumire": "Drojdie B.E 256",
+        "cantitate": 0.5,
+        "unitate": "kg",
+        "tip": "drojdie"
+      },
+      {
+        "denumire": "Drojdie F2",
+        "cantitate": 0.5,
+        "unitate": "kg",
+        "tip": "drojdie"
+      },
+      {
+        "denumire": "Hamei Bitter",
+        "cantitate": 1,
+        "unitate": "kg",
+        "tip": "hamei"
+      },
+      {
+        "denumire": "Hamei Aroma",
+        "cantitate": 0.8,
+        "unitate": "kg",
+        "tip": "hamei"
+      },
+      {
+        "denumire": "Irish Moss",
+        "cantitate": 0.3,
+        "unitate": "kg",
+        "tip": "aditiv"
+      }
     ]
   },
   {
@@ -26,14 +64,47 @@
     "concentratieAlcool": "7 - 9,5 ±1 %vol",
     "image": "/intrerupator.png",
     "durata": 7,
-    "rezultat": { "cantitate": 1000, "unitate": "litri" },
+    "rezultat": {
+      "cantitate": 1000,
+      "unitate": "litri"
+    },
     "ingrediente": [
-      { "denumire": "Malt Pale Ale", "cantitate": 372, "unitate": "kg", "tip": "malt" },
-      { "denumire": "Drojdie B.E 256", "cantitate": 0.5, "unitate": "kg", "tip": "drojdie" },
-      { "denumire": "Drojdie F2", "cantitate": 0.4, "unitate": "kg", "tip": "drojdie" },
-      { "denumire": "Hamei Bitter", "cantitate": 1.15, "unitate": "kg", "tip": "hamei" },
-      { "denumire": "Hamei Aroma", "cantitate": 2.4, "unitate": "kg", "tip": "hamei" },
-      { "denumire": "Irish Moss", "cantitate": 0.3, "unitate": "kg", "tip": "aditiv" }
+      {
+        "denumire": "Malt Pale Ale",
+        "cantitate": 372,
+        "unitate": "kg",
+        "tip": "malt"
+      },
+      {
+        "denumire": "Drojdie B.E 256",
+        "cantitate": 0.5,
+        "unitate": "kg",
+        "tip": "drojdie"
+      },
+      {
+        "denumire": "Drojdie F2",
+        "cantitate": 0.4,
+        "unitate": "kg",
+        "tip": "drojdie"
+      },
+      {
+        "denumire": "Hamei Bitter",
+        "cantitate": 1.15,
+        "unitate": "kg",
+        "tip": "hamei"
+      },
+      {
+        "denumire": "Hamei Aroma",
+        "cantitate": 2.4,
+        "unitate": "kg",
+        "tip": "hamei"
+      },
+      {
+        "denumire": "Irish Moss",
+        "cantitate": 0.3,
+        "unitate": "kg",
+        "tip": "aditiv"
+      }
     ]
   },
   {
@@ -44,13 +115,41 @@
     "concentratieAlcool": "6 ± 0.50 %vol",
     "image": "/usb-amper-ale.png",
     "durata": 0,
-    "rezultat": { "cantitate": 1000, "unitate": "litri" },
+    "rezultat": {
+      "cantitate": 1000,
+      "unitate": "litri"
+    },
     "ingrediente": [
-      { "denumire": "Malt", "cantitate": 300, "unitate": "kg", "tip": "malt" },
-      { "denumire": "Drojdie Fermentis U.S 05", "cantitate": 0.5, "unitate": "kg", "tip": "drojdie" },
-      { "denumire": "Hamei Bitter", "cantitate": 0.7, "unitate": "kg", "tip": "hamei" },
-      { "denumire": "Hamei Aroma", "cantitate": 2.4, "unitate": "kg", "tip": "hamei" },
-      { "denumire": "Irish Moss", "cantitate": 0.3, "unitate": "kg", "tip": "aditiv" }
+      {
+        "denumire": "Malt",
+        "cantitate": 300,
+        "unitate": "kg",
+        "tip": "malt"
+      },
+      {
+        "denumire": "Drojdie Fermentis U.S 05",
+        "cantitate": 0.5,
+        "unitate": "kg",
+        "tip": "drojdie"
+      },
+      {
+        "denumire": "Hamei Bitter",
+        "cantitate": 0.7,
+        "unitate": "kg",
+        "tip": "hamei"
+      },
+      {
+        "denumire": "Hamei Aroma",
+        "cantitate": 2.4,
+        "unitate": "kg",
+        "tip": "hamei"
+      },
+      {
+        "denumire": "Irish Moss",
+        "cantitate": 0.3,
+        "unitate": "kg",
+        "tip": "aditiv"
+      }
     ]
   }
 ]
