@@ -38,33 +38,39 @@ const Depozitare = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Apelăm ruta API pentru a obține loturile
         const res = await fetch(`${API_URL}/api/loturi-ambalate`);
         if (!res.ok) throw new Error(`HTTP error ${res.status}`);
         const loturiAmbalate = await res.json();
 
-        // Transformăm loturile pentru a include detalii despre ambalaj
+        // Transformăm loturile pentru a include detalii despre ambalaj în funcție de tip
         const loturiTransformate = loturiAmbalate.map(lot => {
-          let detalii = '';
           let numarUnitati = 0;
-          if (lot.unitate === 'litri') {
-            // Presupunem că toate loturile sunt în litri și calculăm sticlele (0.33L/sticlă)
-            numarUnitati = Math.ceil(lot.cantitate / 0.33); // Număr de sticle
-            detalii = `${numarUnitati} sticle (0.33L)`;
-          } else {
-            // Dacă unitatea nu este litri, afișăm cantitatea direct
-            numarUnitati = lot.cantitate;
-            detalii = `${lot.cantitate} ${lot.unitate}`;
+          let detalii = '';
+          let ambalaj = lot.packagingType;
+
+          if (lot.packagingType === 'sticle') {
+            const litriPerSticla = parseFloat(lot.bottleSize.replace('l', ''));
+            const sticlePerCutie = parseInt(lot.boxType.split(' ')[0]);
+            const numarSticle = Math.ceil(lot.cantitate / litriPerSticla);
+            const numarCutii = Math.floor(numarSticle / sticlePerCutie);
+            const sticleLibere = numarSticle % sticlePerCutie;
+            numarUnitati = numarSticle;
+            detalii = `${numarCutii} cutii (${sticlePerCutie} sticle/cutie) + ${sticleLibere} sticle libere`;
+          } else if (lot.packagingType === 'keguri') {
+            const litriPerKeg = parseFloat(lot.kegSize.replace('Keg ', '').replace('l', ''));
+            const numarKeguri = Math.ceil(lot.cantitate / litriPerKeg);
+            numarUnitati = numarKeguri;
+            detalii = `${litriPerKeg}L / keg`;
           }
 
           return {
             id: lot.id,
             reteta: lot.reteta,
             cantitate: parseFloat(lot.cantitate).toFixed(2),
-            ambalaj: 'sticle', // Presupunem sticle implicit; ajustează dacă ai tipul de ambalaj
+            ambalaj,
             numarUnitati,
-            data: lot.dataAmbalare || lot.dataCreare, // Folosim data ambalării sau creării
             detalii,
+            dataAmbalare: lot.dataAmbalare || new Date().toISOString(),
           };
         });
 
@@ -117,51 +123,61 @@ const Depozitare = () => {
   };
 
   const scoateDinStoc = async (lotId, cantitateScoasa) => {
-    const cantitateScoasaNum = parseFloat(cantitateScoasa).toFixed(2);
+    const cantitateScoasaNum = parseFloat(cantitateScoasa);
     const lot = loturi.find((l) => l.id === lotId);
-    if (!lot || parseFloat(cantitateScoasaNum) > parseFloat(lot.cantitate)) {
+    if (!lot || cantitateScoasaNum > parseFloat(lot.cantitate)) {
       showErrorModal('Cantitatea de scos depășește stocul sau lotul nu există!');
       return;
     }
 
-    // Apelăm ruta API pentru a actualiza lotul
+    const cantitateNoua = (parseFloat(lot.cantitate) - cantitateScoasaNum).toFixed(2);
+
     try {
-      const res = await fetch(`${API_URL}/api/producere/${lotId}`, {
+      const res = await fetch(`${API_URL}/api/ambalare/${lotId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          cantitate: (parseFloat(lot.cantitate) - parseFloat(cantitateScoasaNum)).toFixed(2),
-          numarUnitati: Math.floor(
-            (parseFloat(lot.cantitate) - parseFloat(cantitateScoasaNum)) / 0.33 // Ajustăm pentru sticle
-          ),
+          cantitate: cantitateNoua,
         }),
       });
       if (!res.ok) throw new Error('Eroare la actualizarea lotului');
-      const updatedLoturi = await fetch(`${API_URL}/api/producere`);
-      const loturiAmbalate = await updatedLoturi.json();
+
+      // Reîncărcăm loturile actualizate
+      const updatedRes = await fetch(`${API_URL}/api/loturi-ambalate`);
+      const loturiAmbalate = await updatedRes.json();
       const loturiTransformate = loturiAmbalate.map(lot => {
-        let detalii = '';
         let numarUnitati = 0;
-        if (lot.unitate === 'litri') {
-          numarUnitati = Math.ceil(lot.cantitate / 0.33);
-          detalii = `${numarUnitati} sticle (0.33L)`;
-        } else {
-          numarUnitati = lot.cantitate;
-          detalii = `${lot.cantitate} ${lot.unitate}`;
+        let detalii = '';
+        let ambalaj = lot.packagingType;
+
+        if (lot.packagingType === 'sticle') {
+          const litriPerSticla = parseFloat(lot.bottleSize.replace('l', ''));
+          const sticlePerCutie = parseInt(lot.boxType.split(' ')[0]);
+          const numarSticle = Math.ceil(lot.cantitate / litriPerSticla);
+          const numarCutii = Math.floor(numarSticle / sticlePerCutie);
+          const sticleLibere = numarSticle % sticlePerCutie;
+          numarUnitati = numarSticle;
+          detalii = `${numarCutii} cutii (${sticlePerCutie} sticle/cutie) + ${sticleLibere} sticle libere`;
+        } else if (lot.packagingType === 'keguri') {
+          const litriPerKeg = parseFloat(lot.kegSize.replace('Keg ', '').replace('l', ''));
+          const numarKeguri = Math.ceil(lot.cantitate / litriPerKeg);
+          numarUnitati = numarKeguri;
+          detalii = `${litriPerKeg}L / keg`;
         }
+
         return {
           id: lot.id,
           reteta: lot.reteta,
           cantitate: parseFloat(lot.cantitate).toFixed(2),
-          ambalaj: 'sticle',
+          ambalaj,
           numarUnitati,
-          data: lot.dataAmbalare || lot.dataCreare,
           detalii,
+          dataAmbalare: lot.dataAmbalare || new Date().toISOString(),
         };
       });
       setLoturi(loturiTransformate);
 
-      showSuccessModal(`Cantitate scoasă: ${cantitateScoasaNum}L`);
+      showSuccessModal(`Cantitate scoasă: ${cantitateScoasaNum.toFixed(2)}L`);
     } catch (error) {
       showErrorModal(`Eroare la scoaterea din stoc: ${error.message}`);
     }
@@ -191,13 +207,13 @@ const Depozitare = () => {
 
 \\section*{Stocul Curent}
 
-\\begin{longtable}{p{3cm} p{2.5cm} p{2.5cm} p{3cm} p{3cm}}
+\\begin{longtable}{p{3cm} p{2.5cm} p{2.5cm} p{3cm} p{3cm} p{3cm}}
 \\toprule
-\\textbf{Rețetă} & \\textbf{Cantitate (L)} & \\textbf{Număr Unități} & \\textbf{Detalii} & \\textbf{Data} \\\\
+\\textbf{Rețetă} & \\textbf{Cantitate (L)} & \\textbf{Ambalaj} & \\textbf{Număr Unități} & \\textbf{Detalii} & \\textbf{Data Ambalării} \\\\
 \\midrule
 \\endhead
 ${loturi.map(lot => `
-  ${lot.reteta} & ${lot.cantitate} & ${lot.numarUnitati} & ${lot.detalii} & ${new Date(lot.data).toLocaleDateString('ro-RO')} \\\\
+  ${lot.reteta} & ${lot.cantitate} & ${lot.ambalaj} & ${lot.numarUnitati} & ${lot.detalii} & ${new Date(lot.dataAmbalare).toLocaleDateString('ro-RO')} \\\\
 `).join('')}
 \\bottomrule
 \\end{longtable}
@@ -234,9 +250,10 @@ ${loturi.map(lot => `
                 <tr>
                   <th>Rețetă</th>
                   <th>Cantitate (L)</th>
-                  <th>Unități</th>
+                  <th>Ambalaj</th>
+                  <th>Număr Unități</th>
                   <th>Detalii</th>
-                  <th>Data ambalarii</th>
+                  <th>Data Ambalării</th>
                   <th>Acțiuni</th>
                 </tr>
               </thead>
@@ -245,9 +262,10 @@ ${loturi.map(lot => `
                   <tr key={lot.id}>
                     <td>{lot.reteta}</td>
                     <td>{lot.cantitate}</td>
+                    <td>{lot.ambalaj}</td>
                     <td>{lot.numarUnitati}</td>
                     <td>{lot.detalii}</td>
-                    <td>{new Date(lot.data).toLocaleDateString()}</td>
+                    <td>{new Date(lot.dataAmbalare).toLocaleDateString()}</td>
                     <td>
                       <button
                         onClick={() =>

@@ -40,7 +40,6 @@
       "fermentatorId": 3,
       "reteta": "USB AMPER ALE - CB 03",
       "cantitate": 96,
-      "unitate": "litri",
       "dataInceput": "2025-08-10T15:01:33.572Z",
       "dataAmbalare": "2025-08-11T18:07:49.328Z",
       "packagingType": "sticle",
@@ -85,6 +84,26 @@
       "materialsUsed": [
         {
           "denumire": "Keg 50l",
+          "cantitate": 1,
+          "unitate": "buc"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "fermentatorId": 1,
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": 995,
+      "unitate": "litri",
+      "dataInceput": "2025-08-10T16:23:58.196Z",
+      "dataAmbalare": "2025-08-11T18:24:37.868Z",
+      "packagingType": "keguri",
+      "bottleSize": null,
+      "boxType": null,
+      "kegSize": "Keg 40l",
+      "materialsUsed": [
+        {
+          "denumire": "Keg 40l",
           "cantitate": 1,
           "unitate": "buc"
         }

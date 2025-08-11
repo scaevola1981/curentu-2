@@ -183,35 +183,56 @@ app.put('/api/fermentatoare/:id', async (req, res) => {
 });
 
 // Rute pentru Producere
+// app.get('/api/loturi-ambalate', async (req, res) => {
+//   try {
+//     db.read();
+//     res.json(db.data.loturi || []);
+//   } catch (error) {
+//     console.error('Eroare la obținerea loturilor ambalate:', error);
+//     res.status(500).json({ error: 'Eroare la preluarea datelor' });
+//   }
+// });
+
 app.get('/api/loturi-ambalate', async (req, res) => {
   try {
-    db.read();
-    res.json(db.data.loturi || []);
+    const loturi = await obtineLoturi(); // Use the imported function
+    res.json(loturi || []);
   } catch (error) {
     console.error('Eroare la obținerea loturilor ambalate:', error);
     res.status(500).json({ error: 'Eroare la preluarea datelor' });
   }
 });
 
+// app.post('/api/loturi-ambalate', async (req, res) => {
+//   try {
+//     const lot = req.body;
+//     db.read();
+    
+//     // Generate a new ID
+//     const newId = db.data.loturi.length > 0 
+//       ? Math.max(...db.data.loturi.map(l => l.id)) + 1 
+//       : 1;
+    
+//     const lotNou = {
+//       id: newId,
+//       ...lot,
+//       dataAmbalare: new Date().toISOString()
+//     };
+    
+//     db.data.loturi.push(lotNou);
+//     await db.write();
+    
+//     res.status(201).json(lotNou);
+//   } catch (error) {
+//     console.error('Eroare la adăugarea lotului ambalat:', error);
+//     res.status(500).json({ error: 'Eroare la salvare' });
+//   }
+// });
+
 app.post('/api/loturi-ambalate', async (req, res) => {
   try {
     const lot = req.body;
-    db.read();
-    
-    // Generate a new ID
-    const newId = db.data.loturi.length > 0 
-      ? Math.max(...db.data.loturi.map(l => l.id)) + 1 
-      : 1;
-    
-    const lotNou = {
-      id: newId,
-      ...lot,
-      dataAmbalare: new Date().toISOString()
-    };
-    
-    db.data.loturi.push(lotNou);
-    await db.write();
-    
+    const lotNou = await adaugaLot(lot); // Use the imported function
     res.status(201).json(lotNou);
   } catch (error) {
     console.error('Eroare la adăugarea lotului ambalat:', error);
