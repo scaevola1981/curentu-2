@@ -39,7 +39,7 @@ const Depozitare = () => {
     const loadData = async () => {
       try {
         // Apelăm ruta API pentru a obține loturile
-        const res = await fetch(`${API_URL}/api/ambalare`);
+        const res = await fetch(`${API_URL}/api/loturi-ambalate`);
         if (!res.ok) throw new Error(`HTTP error ${res.status}`);
         const loturiAmbalate = await res.json();
 
@@ -236,7 +236,7 @@ ${loturi.map(lot => `
                   <th>Cantitate (L)</th>
                   <th>Unități</th>
                   <th>Detalii</th>
-                  <th>Data</th>
+                  <th>Data ambalarii</th>
                   <th>Acțiuni</th>
                 </tr>
               </thead>

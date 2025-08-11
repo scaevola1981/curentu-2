@@ -1,3 +1,94 @@
 {
-  "loturi": []
+  "loturi": [
+    {
+      "id": 1,
+      "fermentatorId": 1,
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": 496,
+      "unitate": "litri",
+      "dataInceput": "2025-08-10T16:19:21.084Z",
+      "dataAmbalare": "2025-08-10T16:21:33.715Z",
+      "packagingType": "sticle",
+      "bottleSize": "0.33l",
+      "boxType": "6 sticle",
+      "kegSize": null,
+      "materialsUsed": [
+        {
+          "denumire": "Sticle 0.33l",
+          "cantitate": 1504,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Capace",
+          "cantitate": 1504,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Etichete",
+          "cantitate": 1504,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Cutii 6 sticle",
+          "cantitate": 251,
+          "unitate": "buc"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "fermentatorId": 3,
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": 96,
+      "unitate": "litri",
+      "dataInceput": "2025-08-10T15:01:33.572Z",
+      "dataAmbalare": "2025-08-11T18:07:49.328Z",
+      "packagingType": "sticle",
+      "bottleSize": "0.33l",
+      "boxType": "24 sticle",
+      "kegSize": null,
+      "materialsUsed": [
+        {
+          "denumire": "Sticle 0.33l",
+          "cantitate": 291,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Capace",
+          "cantitate": 291,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Etichete",
+          "cantitate": 291,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Cutii 24 sticle",
+          "cantitate": 13,
+          "unitate": "buc"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "fermentatorId": 4,
+      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
+      "cantitate": 296,
+      "unitate": "litri",
+      "dataInceput": "2025-08-10T16:20:20.478Z",
+      "dataAmbalare": "2025-08-11T18:08:24.926Z",
+      "packagingType": "keguri",
+      "bottleSize": null,
+      "boxType": null,
+      "kegSize": "Keg 50l",
+      "materialsUsed": [
+        {
+          "denumire": "Keg 50l",
+          "cantitate": 1,
+          "unitate": "buc"
+        }
+      ]
+    }
+  ]
 }
