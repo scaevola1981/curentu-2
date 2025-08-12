@@ -15,6 +15,120 @@
       "unitate": "litri",
       "dataInceput": "2025-08-03T14:15:49.261Z",
       "dataAmbalare": "2025-08-03T14:31:09.294Z"
+    },
+    {
+      "id": 3,
+      "fermentatorId": 2,
+      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
+      "cantitate": 96,
+      "unitate": "litri",
+      "dataInceput": "2025-08-10T15:01:17.931Z",
+      "dataAmbalare": "2025-08-12T17:12:53.249Z",
+      "packagingType": "keguri",
+      "bottleSize": null,
+      "boxType": null,
+      "kegSize": "Keg 40l",
+      "materialsUsed": [
+        {
+          "denumire": "Keg 40l",
+          "cantitate": 1,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2025-08-12T17:12:53.260Z"
+    },
+    {
+      "id": 4,
+      "fermentatorId": 1,
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": 106,
+      "unitate": "litri",
+      "dataInceput": "2025-08-12T17:13:26.650Z",
+      "dataAmbalare": "2025-08-12T17:14:38.102Z",
+      "packagingType": "sticle",
+      "bottleSize": "0.33l",
+      "boxType": "6 sticle",
+      "kegSize": null,
+      "materialsUsed": [
+        {
+          "denumire": "Sticle 0.33l",
+          "cantitate": 322,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Capace",
+          "cantitate": 322,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Etichete",
+          "cantitate": 322,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Cutii 6 sticle",
+          "cantitate": 54,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2025-08-12T17:14:38.114Z"
+    },
+    {
+      "id": 5,
+      "fermentatorId": 2,
+      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
+      "cantitate": 115,
+      "unitate": "litri",
+      "dataInceput": "2025-08-12T17:13:44.127Z",
+      "dataAmbalare": "2025-08-12T17:15:28.529Z",
+      "packagingType": "sticle",
+      "bottleSize": "0.33l",
+      "boxType": "12 sticle",
+      "kegSize": null,
+      "materialsUsed": [
+        {
+          "denumire": "Sticle 0.33l",
+          "cantitate": 349,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Capace",
+          "cantitate": 349,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Etichete",
+          "cantitate": 349,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Cutii 12 sticle",
+          "cantitate": 30,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2025-08-12T17:15:28.539Z"
+    },
+    {
+      "id": 6,
+      "fermentatorId": 3,
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": 125,
+      "unitate": "litri",
+      "dataInceput": "2025-08-12T17:14:01.469Z",
+      "dataAmbalare": "2025-08-12T17:15:58.954Z",
+      "packagingType": "keguri",
+      "bottleSize": null,
+      "boxType": null,
+      "kegSize": "Keg 30l",
+      "materialsUsed": [
+        {
+          "denumire": "Keg 30l",
+          "cantitate": 1,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2025-08-12T17:15:58.958Z"
     }
   ]
 }
