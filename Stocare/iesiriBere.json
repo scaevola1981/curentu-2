@@ -1,0 +1,29 @@
+{
+  "iesiri": [
+    {
+      "id": 1,
+      "lotId": 4,
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": "100.00",
+      "ambalaj": "sticle",
+      "motiv": "vanzare",
+      "dataIesire": "2025-08-12T18:03:21.505Z",
+      "utilizator": "Administrator",
+      "observatii": "",
+      "createdAt": "2025-08-12T18:03:21.514Z"
+    },
+    {
+      "id": 2,
+      "lotId": "3",
+      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
+      "cantitate": "40.00",
+      "numarUnitatiScoase": 1,
+      "ambalaj": "keguri",
+      "motiv": "vanzare",
+      "dataIesire": "2025-08-14T16:36:27.023Z",
+      "utilizator": "Administrator",
+      "observatii": "",
+      "createdAt": "2025-08-14T16:36:27.063Z"
+    }
+  ]
+}

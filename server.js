@@ -18,8 +18,16 @@ import {
   exportaMaterialeAmbalare,
 } from './Stocare/materialeAmbalare.js';
 import { getReteteBere } from './Stocare/reteteBere.js';
-
-// Importuri ES Modules pentru lowdb și path
+import {
+  getIesiriBere,
+  adaugaIesireBere,
+  getIesiriPentruLot,
+  getSumarIesiriPeRetete,
+  getIesiriPerioadă,
+  getStatisticiIesiri,
+  stergeIesireBere,
+  exportaIesiriCSV
+} from './Stocare/iesiriBere.js';
 import { LowSync } from 'lowdb';
 import { JSONFileSync } from 'lowdb/node';
 import path from 'path';
@@ -50,13 +58,11 @@ function valideazaMaterial(material) {
   return erori;
 }
 
-// Configurarea bazei de date pentru loturi
 const __dirname = path.resolve();
 const filePath = path.join(__dirname, 'Stocare', 'loturiProducere.json');
 const adapter = new JSONFileSync(filePath);
 const db = new LowSync(adapter, { loturi: [] });
 
-// Inițializare bază de date
 db.read();
 if (!db.data || !db.data.loturi) {
   db.data = { loturi: [] };
@@ -64,7 +70,6 @@ if (!db.data || !db.data.loturi) {
   console.log('Baza de date pentru loturi inițializată cu date implicite');
 }
 
-// Rute pentru Materii Prime
 app.get('/api/materii-prime', (req, res) => {
   try {
     const materii = getMateriiPrime();
@@ -139,7 +144,6 @@ app.delete('/api/materii-prime', (req, res) => {
   }
 });
 
-// Rute pentru Rețete de Bere
 app.get('/api/retete-bere', async (req, res) => {
   try {
     const retete = await getReteteBere();
@@ -151,7 +155,6 @@ app.get('/api/retete-bere', async (req, res) => {
   }
 });
 
-// Rute pentru Fermentatoare
 app.get('/api/fermentatoare', async (req, res) => {
   try {
     const fermentatoare = await getFermentatoare();
@@ -182,20 +185,9 @@ app.put('/api/fermentatoare/:id', async (req, res) => {
   }
 });
 
-// Rute pentru Producere
-// app.get('/api/loturi-ambalate', async (req, res) => {
-//   try {
-//     db.read();
-//     res.json(db.data.loturi || []);
-//   } catch (error) {
-//     console.error('Eroare la obținerea loturilor ambalate:', error);
-//     res.status(500).json({ error: 'Eroare la preluarea datelor' });
-//   }
-// });
-
 app.get('/api/loturi-ambalate', async (req, res) => {
   try {
-    const loturi = await obtineLoturi(); // Use the imported function
+    const loturi = await obtineLoturi();
     res.json(loturi || []);
   } catch (error) {
     console.error('Eroare la obținerea loturilor ambalate:', error);
@@ -203,36 +195,10 @@ app.get('/api/loturi-ambalate', async (req, res) => {
   }
 });
 
-// app.post('/api/loturi-ambalate', async (req, res) => {
-//   try {
-//     const lot = req.body;
-//     db.read();
-    
-//     // Generate a new ID
-//     const newId = db.data.loturi.length > 0 
-//       ? Math.max(...db.data.loturi.map(l => l.id)) + 1 
-//       : 1;
-    
-//     const lotNou = {
-//       id: newId,
-//       ...lot,
-//       dataAmbalare: new Date().toISOString()
-//     };
-    
-//     db.data.loturi.push(lotNou);
-//     await db.write();
-    
-//     res.status(201).json(lotNou);
-//   } catch (error) {
-//     console.error('Eroare la adăugarea lotului ambalat:', error);
-//     res.status(500).json({ error: 'Eroare la salvare' });
-//   }
-// });
-
 app.post('/api/loturi-ambalate', async (req, res) => {
   try {
     const lot = req.body;
-    const lotNou = await adaugaLot(lot); // Use the imported function
+    const lotNou = await adaugaLot(lot);
     res.status(201).json(lotNou);
   } catch (error) {
     console.error('Eroare la adăugarea lotului ambalat:', error);
@@ -258,7 +224,6 @@ app.put('/api/ambalare/:id', async (req, res) => {
   }
 });
 
-// Rute pentru Materiale de Ambalare
 app.get('/api/materiale-ambalare', async (req, res) => {
   try {
     const materiale = await getMaterialeAmbalare();
@@ -341,6 +306,153 @@ app.get('/api/materiale-ambalare/export', async (req, res) => {
     res.status(500).json({ error: 'Eroare la export' });
   }
 });
+
+app.get('/api/iesiri-bere', (req, res) => {
+  try {
+    const iesiri = getIesiriBere();
+    res.json(iesiri);
+  } catch (error) {
+    console.error('Eroare la obținerea ieșirilor:', error);
+    res.status(500).json({ error: 'Eroare la preluarea datelor' });
+  }
+});
+
+app.post('/api/iesiri-bere', (req, res) => {
+  try {
+    const {
+      lotId,
+      reteta,
+      cantitate,
+      numarUnitatiScoase,
+      ambalaj,
+      motiv,
+      dataIesire,
+      utilizator,
+      observatii
+    } = req.body;
+
+    console.log('Received payload for /api/iesiri-bere:', req.body);
+
+    if (!lotId || !reteta || cantitate === undefined || cantitate === null) {
+      return res.status(400).json({ 
+        error: 'Date invalide. LotId, reteta și cantitatea sunt obligatorii.' 
+      });
+    }
+
+    const parsedCantitate = parseFloat(cantitate);
+    if (isNaN(parsedCantitate) || parsedCantitate <= 0) {
+      return res.status(400).json({ 
+        error: 'Cantitatea trebuie să fie un număr pozitiv.' 
+      });
+    }
+
+    if (numarUnitatiScoase !== undefined && (isNaN(parseInt(numarUnitatiScoase)) || parseInt(numarUnitatiScoase) < 0)) {
+      return res.status(400).json({ 
+        error: 'NumarUnitatiScoase trebuie să fie un număr nenegativ.' 
+      });
+    }
+
+    const iesireNoua = adaugaIesireBere({
+      lotId,
+      reteta,
+      cantitate: parsedCantitate,
+      numarUnitatiScoase: numarUnitatiScoase !== undefined ? parseInt(numarUnitatiScoase) : undefined,
+      ambalaj,
+      motiv,
+      dataIesire,
+      utilizator,
+      observatii
+    });
+    
+    res.status(201).json({ 
+      id: iesireNoua.id, 
+      message: 'Ieșire înregistrată cu succes',
+      data: iesireNoua
+    });
+  } catch (error) {
+    console.error('Eroare la înregistrarea ieșirii:', error.message);
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/api/iesiri-bere/lot/:lotId', (req, res) => {
+  try {
+    const { lotId } = req.params;
+    const iesiri = getIesiriPentruLot(lotId);
+    res.json(iesiri);
+  } catch (error) {
+    console.error('Eroare la obținerea ieșirilor pentru lot:', error);
+    res.status(500).json({ error: 'Eroare la preluarea datelor' });
+  }
+});
+
+app.get('/api/iesiri-bere/sumar', (req, res) => {
+  try {
+    const sumar = getSumarIesiriPeRetete();
+    res.json(sumar);
+  } catch (error) {
+    console.error('Eroare la obținerea sumarului:', error);
+    res.status(500).json({ error: 'Eroare la calcularea sumarului' });
+  }
+});
+
+app.get('/api/iesiri-bere/statistici', (req, res) => {
+  try {
+    const statistici = getStatisticiIesiri();
+    res.json(statistici);
+  } catch (error) {
+    console.error('Eroare la obținerea statisticilor:', error);
+    res.status(500).json({ error: 'Eroare la calcularea statisticilor' });
+  }
+});
+
+app.get('/api/iesiri-bere/perioada', (req, res) => {
+  try {
+    const { dataInceput, dataSfarsit } = req.query;
+    
+    if (!dataInceput || !dataSfarsit) {
+      return res.status(400).json({ 
+        error: 'Parametrii dataInceput și dataSfarsit sunt obligatorii' 
+      });
+    }
+    
+    const iesiri = getIesiriPerioadă(dataInceput, dataSfarsit);
+    res.json(iesiri);
+  } catch (error) {
+    console.error('Eroare la obținerea ieșirilor pe perioadă:', error);
+    res.status(500).json({ error: 'Eroare la preluarea datelor' });
+  }
+});
+
+app.delete('/api/iesiri-bere/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const rezultat = stergeIesireBere(parseInt(id));
+    
+    if (rezultat) {
+      res.json({ succes: true, message: 'Ieșire ștearsă cu succes' });
+    } else {
+      res.status(404).json({ error: 'Ieșirea nu a fost găsită' });
+    }
+  } catch (error) {
+    console.error('Eroare la ștergerea ieșirii:', error);
+    res.status(500).json({ error: 'Eroare la ștergere' });
+  }
+});
+
+app.get('/api/iesiri-bere/export/csv', (req, res) => {
+  try {
+    const csvData = exportaIesiriCSV();
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename=iesiri-bere-${new Date().toISOString().split('T')[0]}.csv`);
+    res.send('\uFEFF' + csvData);
+  } catch (error) {
+    console.error('Eroare la exportarea ieșirilor:', error);
+    res.status(500).json({ error: 'Eroare la export' });
+  }
+});
+
+
 
 app.listen(PORT, () => {
   console.log(`✅ Serverul rulează pe http://localhost:${PORT}`);
