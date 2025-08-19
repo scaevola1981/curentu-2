@@ -129,6 +129,42 @@
         }
       ],
       "dataCreare": "2025-08-12T17:15:58.958Z"
+    },
+    {
+      "id": 7,
+      "fermentatorId": 1,
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": 108,
+      "unitate": "litri",
+      "dataInceput": "2025-08-15T15:16:41.136Z",
+      "dataAmbalare": "2025-08-19T09:07:09.908Z",
+      "packagingType": "sticle",
+      "bottleSize": "0.33l",
+      "boxType": "24 sticle",
+      "kegSize": null,
+      "materialsUsed": [
+        {
+          "denumire": "Sticle 0.33l",
+          "cantitate": 328,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Capace",
+          "cantitate": 328,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Etichete",
+          "cantitate": 328,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Cutii 24 sticle",
+          "cantitate": 14,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2025-08-19T09:07:09.912Z"
     }
   ]
 }

@@ -224,6 +224,22 @@ app.put('/api/ambalare/:id', async (req, res) => {
   }
 });
 
+app.delete('/api/ambalare/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    db.read();
+    const loturi = db.data.loturi || [];
+    const index = loturi.findIndex(l => l.id === id);
+    if (index === -1) return res.status(404).json({ error: 'Lotul nu a fost găsit' });
+    db.data.loturi = loturi.filter(l => l.id !== id);
+    db.write();
+    res.json({ message: 'Lot șters cu succes' });
+  } catch (error) {
+    console.error('Eroare la ștergerea lotului:', error.message, error.stack);
+    res.status(500).json({ error: 'Eroare la ștergere' });
+  }
+});
+
 app.get('/api/materiale-ambalare', async (req, res) => {
   try {
     const materiale = await getMaterialeAmbalare();

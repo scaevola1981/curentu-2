@@ -24,6 +24,58 @@
       "utilizator": "Administrator",
       "observatii": "",
       "createdAt": "2025-08-14T16:36:27.063Z"
+    },
+    {
+      "id": 3,
+      "lotId": "4",
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": "105.93",
+      "numarUnitatiScoase": 321,
+      "ambalaj": "sticle",
+      "motiv": "vanzare",
+      "dataIesire": "2025-08-19T08:19:31.167Z",
+      "utilizator": "Administrator",
+      "observatii": "",
+      "createdAt": "2025-08-19T08:19:31.197Z"
+    },
+    {
+      "id": 4,
+      "lotId": "3",
+      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
+      "cantitate": "80.00",
+      "numarUnitatiScoase": 2,
+      "ambalaj": "keguri",
+      "motiv": "vanzare",
+      "dataIesire": "2025-08-19T08:27:40.241Z",
+      "utilizator": "Administrator",
+      "observatii": "",
+      "createdAt": "2025-08-19T08:27:40.246Z"
+    },
+    {
+      "id": 5,
+      "lotId": "3",
+      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
+      "cantitate": "80.00",
+      "numarUnitatiScoase": 2,
+      "ambalaj": "keguri",
+      "motiv": "vanzare",
+      "dataIesire": "2025-08-19T08:41:43.668Z",
+      "utilizator": "Administrator",
+      "observatii": "",
+      "createdAt": "2025-08-19T08:41:43.674Z"
+    },
+    {
+      "id": 6,
+      "lotId": "3",
+      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
+      "cantitate": "80.00",
+      "numarUnitatiScoase": 2,
+      "ambalaj": "keguri",
+      "motiv": "vanzare",
+      "dataIesire": "2025-08-19T09:05:46.624Z",
+      "utilizator": "Administrator",
+      "observatii": "",
+      "createdAt": "2025-08-19T09:05:46.650Z"
     }
   ]
 }

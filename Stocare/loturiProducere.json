@@ -73,7 +73,7 @@
       "id": 3,
       "fermentatorId": 4,
       "reteta": "INTRERUPATOR DE MUNCA - CB 02",
-      "cantitate": "56.00",
+      "cantitate": "16.00",
       "unitate": "litri",
       "dataInceput": "2025-08-10T16:20:20.478Z",
       "dataAmbalare": "2025-08-11T18:08:24.926Z",
@@ -88,13 +88,13 @@
           "unitate": "buc"
         }
       ],
-      "dataActualizare": "2025-08-14T16:36:27.091Z"
+      "dataActualizare": "2025-08-19T09:05:46.678Z"
     },
     {
       "id": 4,
       "fermentatorId": 1,
       "reteta": "USB AMPER ALE - CB 03",
-      "cantitate": "6.00",
+      "cantitate": "0.07",
       "unitate": "litri",
       "dataInceput": "2025-08-10T16:23:58.196Z",
       "dataAmbalare": "2025-08-11T18:24:37.868Z",
@@ -109,7 +109,7 @@
           "unitate": "buc"
         }
       ],
-      "dataActualizare": "2025-08-12T18:03:21.502Z"
+      "dataActualizare": "2025-08-19T08:19:31.206Z"
     }
   ]
 }
