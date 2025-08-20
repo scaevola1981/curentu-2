@@ -22,6 +22,7 @@ import {
   stergeMaterialAmbalare,
   stergeToateMaterialeleAmbalare,
   exportaMaterialeAmbalare,
+  getMaterialePentruLot,
 } from './Stocare/materialeAmbalare.js';
 import { getReteteBere } from './Stocare/reteteBere.js';
 import {
@@ -29,12 +30,11 @@ import {
   adaugaIesireBere,
   getIesiriPentruLot,
   getSumarIesiriPeRetete,
-  getIesiriPerioadă, // Changed from getIesiriPerioada
   getStatisticiIesiri,
   stergeIesireBere,
   exportaIesiriCSV,
+  getIesiriPerioada,
 } from './Stocare/iesiriBere.js';
-
 const app = express();
 const PORT = 3001;
 
@@ -238,9 +238,9 @@ app.delete('/api/ambalare/:id', async (req, res) => {
     if (isNaN(id)) {
       return res.status(400).json({ error: 'ID invalid' });
     }
-    console.log(`Caut lotul cu ID: ${id}`); // Debug log
+    console.log(`Caut lotul cu ID: ${id}`);
     const result = await stergeLot(id);
-    console.log(`Lotul cu ID ${id} a fost șters`); // Debug log
+    console.log(`Lotul cu ID ${id} a fost șters`);
     res.json({ message: 'Lot șters cu succes' });
   } catch (error) {
     console.error('Eroare la ștergerea lotului:', error.message, error.stack);
@@ -382,7 +382,7 @@ app.post('/api/iesiri-bere', (req, res) => {
     }
 
     const iesireNoua = adaugaIesireBere({
-      lotId: lotId.toString(), // Convert to string to match iesiriBere.js validation
+      lotId: lotId.toString(),
       reteta,
       cantitate: parsedCantitate,
       numarUnitatiScoase: numarUnitatiScoase !== undefined ? parseInt(numarUnitatiScoase) : undefined,
@@ -444,7 +444,7 @@ app.get('/api/iesiri-bere/perioada', (req, res) => {
         error: 'Parametrii dataInceput și dataSfarsit sunt obligatorii',
       });
     }
-    const iesiri = getIesiriPerioadă(dataInceput, dataSfarsit);
+    const iesiri = getIesiriPerioada(dataInceput, dataSfarsit);
     res.json(iesiri);
   } catch (error) {
     console.error('Eroare la obținerea ieșirilor pe perioadă:', error);
@@ -476,6 +476,25 @@ app.get('/api/iesiri-bere/export/csv', (req, res) => {
   } catch (error) {
     console.error('Eroare la exportarea ieșirilor:', error);
     res.status(500).json({ error: 'Eroare la export' });
+  }
+});
+
+app.get('/api/rebuturi', async (req, res) => {
+  try {
+    const iesiri = getIesiriBere();
+    const rebuturi = iesiri.filter(iesire => iesire.motiv === 'rebut' || iesire.motiv === 'pierdere');
+    const rebuturiCuMateriale = await Promise.all(
+      rebuturi.map(async (iesire) => {
+        const lot = await obtineLotDupaId(parseInt(iesire.lotId));
+        const boxType = lot ? lot.boxType || lot.kegSize || '' : '';
+        const materiale = await getMaterialePentruLot(iesire.lotId, iesire.numarUnitatiScoase, iesire.ambalaj, boxType);
+        return { ...iesire, materiale, boxType };
+      })
+    );
+    res.json(rebuturiCuMateriale);
+  } catch (error) {
+    console.error('Eroare la obținerea rebuturilor:', error.message, error.stack);
+    res.status(500).json({ error: 'Eroare la preluarea rebuturilor' });
   }
 });
 

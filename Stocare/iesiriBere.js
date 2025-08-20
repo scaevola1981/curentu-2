@@ -55,8 +55,8 @@ export function adaugaIesireBere(iesire) {
     if (iesire.ambalaj && !['sticle', 'keguri'].includes(iesire.ambalaj)) {
       throw new Error('ambalaj trebuie să fie "sticle" sau "keguri"');
     }
-    if (iesire.motiv && !['vanzare', 'degustare', 'pierdere', 'donatie', 'consum_intern', 'altul', 'alta_vanzare'].includes(iesire.motiv)) {
-      throw new Error('motiv invalid; valorile permise sunt: vanzare, degustare, pierdere, donatie, consum_intern, altul, alta_vanzare');
+    if (iesire.motiv && !['vanzare', 'degustare', 'pierdere', 'donatie', 'consum_intern', 'altul', 'alta_vanzare', 'rebut'].includes(iesire.motiv)) {
+      throw new Error('motiv invalid; valorile permise sunt: vanzare, degustare, pierdere, donatie, consum_intern, altul, alta_vanzare, rebut');
     }
 
     const newId = db.data.iesiri.length > 0 
@@ -148,7 +148,7 @@ export function getSumarIesiriPeRetete() {
  * @param {string} dataSfarsit - Data de sfârșit (ISO string)
  * @returns {Array} Lista ieșirilor din perioada specificată
  */
-export function getIesiriPerioadă(dataInceput, dataSfarsit) {
+export function getIesiriPerioada(dataInceput, dataSfarsit) {
   try {
     db.read();
     const iesiri = db.data.iesiri || [];

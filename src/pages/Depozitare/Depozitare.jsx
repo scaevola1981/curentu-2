@@ -23,7 +23,7 @@ const Depozitare = () => {
       const res = await fetch(`${API_URL}/api/loturi-ambalate`);
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const loturiAmbalate = await res.json();
-      console.log('Date primite de la /api/loturi-ambalate:', loturiAmbalate); // Debug log
+      console.log('Date primite de la /api/loturi-ambalate:', loturiAmbalate);
 
       const loturiTransformate = loturiAmbalate.map(lot => {
         let numarUnitati = 0;
@@ -52,7 +52,6 @@ const Depozitare = () => {
             maxUnits = numarKeguri;
           }
         } else {
-          // Handle lots without packagingType
           detalii = 'Fără detalii ambalaj';
           numarUnitati = lot.cantitate;
           maxUnits = lot.cantitate;
@@ -75,7 +74,7 @@ const Depozitare = () => {
         };
       });
 
-      console.log('Loturi transformate:', loturiTransformate); // Debug log
+      console.log('Loturi transformate:', loturiTransformate);
       setLoturi(loturiTransformate);
       const newInputValues = {};
       const newSticleLibereValues = {};
@@ -116,7 +115,7 @@ const Depozitare = () => {
 
     try {
       const parsedLotId = parseInt(lotId);
-      console.log(`Încerc să șterg lotul cu ID: ${parsedLotId}`); // Debug log
+      console.log(`Încerc să șterg lotul cu ID: ${parsedLotId}`);
       const res = await fetch(`${API_URL}${LOT_UPDATE_ENDPOINT}/${parsedLotId}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
@@ -197,7 +196,6 @@ const Depozitare = () => {
       unitatiMesaj = `${parsedUnits} keg${parsedUnits === 1 ? '' : 'uri'} (${cantitateScoasaNum.toFixed(2)}L)`;
       totalUnitatiScoase = parsedUnits;
     } else {
-      // Handle lots without packagingType
       cantitateScoasaNum = parsedUnits;
       unitatiMesaj = `${parsedUnits} litri`;
       totalUnitatiScoase = parsedUnits;
@@ -215,7 +213,7 @@ const Depozitare = () => {
     const cantitateNoua = (parseFloat(lot.cantitate) - cantitateScoasaNum).toFixed(2);
     const parsedLotId = parseInt(lotId);
     const payload = {
-      lotId: parsedLotId.toString(), // Convert to string for iesiriBere.js
+      lotId: parsedLotId.toString(),
       reteta: lot.reteta,
       cantitate: parseFloat(cantitateScoasaNum.toFixed(2)),
       numarUnitatiScoase: totalUnitatiScoase,
@@ -239,7 +237,7 @@ const Depozitare = () => {
         const contentType = iesireRes.headers.get('content-type');
         let errorMessage = 'Eroare la înregistrarea ieșirii';
         if (contentType && contentType.includes('application/json')) {
-          const errorData = await res.json();
+          const errorData = await iesireRes.json();
           errorMessage = errorData.error || `HTTP error ${iesireRes.status}`;
         } else {
           errorMessage = `Server returned non-JSON response (status ${iesireRes.status})`;
@@ -497,7 +495,8 @@ Total litri ieșiți: ${iesiri.reduce((total, iesire) => total + parseFloat(iesi
                           >
                             <option value="vanzare">Vânzare</option>
                             <option value="degustare">Degustare</option>
-                            <option value="pierdere">Pierdere/Defect</option>
+                            <option value="pierdere">Pierdere</option>
+                            <option value="rebut">Rebut</option>
                             <option value="donatie">Donație</option>
                             <option value="consum_intern">Consum intern</option>
                             <option value="altul">Altul</option>

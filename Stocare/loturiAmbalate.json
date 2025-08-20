@@ -1,98 +1,40 @@
 {
   "loturi": [
     {
-      "id": 5,
-      "fermentatorId": 2,
-      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
-      "cantitate": 115,
-      "unitate": "litri",
-      "dataInceput": "2025-08-12T17:13:44.127Z",
-      "dataAmbalare": "2025-08-12T17:15:28.529Z",
-      "packagingType": "sticle",
-      "bottleSize": "0.33l",
-      "boxType": "12 sticle",
-      "kegSize": null,
-      "materialsUsed": [
-        {
-          "denumire": "Sticle 0.33l",
-          "cantitate": 349,
-          "unitate": "buc"
-        },
-        {
-          "denumire": "Capace",
-          "cantitate": 349,
-          "unitate": "buc"
-        },
-        {
-          "denumire": "Etichete",
-          "cantitate": 349,
-          "unitate": "buc"
-        },
-        {
-          "denumire": "Cutii 12 sticle",
-          "cantitate": 30,
-          "unitate": "buc"
-        }
-      ],
-      "dataCreare": "2025-08-12T17:15:28.539Z"
-    },
-    {
-      "id": 6,
+      "id": 2,
       "fermentatorId": 3,
       "reteta": "USB AMPER ALE - CB 03",
-      "cantitate": "5.00",
+      "cantitate": 333,
       "unitate": "litri",
-      "dataInceput": "2025-08-12T17:14:01.469Z",
-      "dataAmbalare": "2025-08-12T17:15:58.954Z",
-      "packagingType": "keguri",
-      "bottleSize": null,
-      "boxType": null,
-      "kegSize": "Keg 30l",
-      "materialsUsed": [
-        {
-          "denumire": "Keg 30l",
-          "cantitate": 1,
-          "unitate": "buc"
-        }
-      ],
-      "dataCreare": "2025-08-12T17:15:58.958Z",
-      "dataActualizare": "2025-08-20T09:17:16.714Z"
-    },
-    {
-      "id": 7,
-      "fermentatorId": 1,
-      "reteta": "ADAPTOR LA SITUATIE - CB 01",
-      "cantitate": 108,
-      "unitate": "litri",
-      "dataInceput": "2025-08-15T15:16:41.136Z",
-      "dataAmbalare": "2025-08-19T09:07:09.908Z",
+      "dataInceput": "2025-08-15T15:17:46.925Z",
+      "dataAmbalare": "2025-08-20T09:42:29.658Z",
       "packagingType": "sticle",
       "bottleSize": "0.33l",
-      "boxType": "24 sticle",
+      "boxType": "6 sticle",
       "kegSize": null,
       "materialsUsed": [
         {
           "denumire": "Sticle 0.33l",
-          "cantitate": 328,
+          "cantitate": 1010,
           "unitate": "buc"
         },
         {
           "denumire": "Capace",
-          "cantitate": 328,
+          "cantitate": 1010,
           "unitate": "buc"
         },
         {
           "denumire": "Etichete",
-          "cantitate": 328,
+          "cantitate": 1010,
           "unitate": "buc"
         },
         {
-          "denumire": "Cutii 24 sticle",
-          "cantitate": 14,
+          "denumire": "Cutii 6 sticle",
+          "cantitate": 169,
           "unitate": "buc"
         }
       ],
-      "dataCreare": "2025-08-19T09:07:09.912Z"
+      "dataCreare": "2025-08-20T09:42:29.661Z"
     }
   ]
 }

@@ -14,20 +14,20 @@
       "id": 2,
       "nume": "Fermentator 2",
       "capacitate": 1000,
-      "ocupat": true,
-      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
-      "cantitate": 222,
-      "dataInceput": "2025-08-15T15:17:30.335Z",
+      "ocupat": false,
+      "reteta": null,
+      "cantitate": 0,
+      "dataInceput": null,
       "imagine": "/Imagini/fermentator.png"
     },
     {
       "id": 3,
       "nume": "Fermentator 3",
       "capacitate": 1000,
-      "ocupat": true,
-      "reteta": "USB AMPER ALE - CB 03",
-      "cantitate": 333,
-      "dataInceput": "2025-08-15T15:17:46.925Z",
+      "ocupat": false,
+      "reteta": null,
+      "cantitate": 0,
+      "dataInceput": null,
       "imagine": "/Imagini/fermentator.png"
     },
     {

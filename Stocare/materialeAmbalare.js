@@ -1,4 +1,3 @@
-// Stocare/materialeAmbalare.js
 import { LowSync } from "lowdb";
 import { JSONFileSync } from "lowdb/node";
 import path, { dirname } from "path";
@@ -155,6 +154,62 @@ async function exportaMaterialeAmbalare() {
   }
 }
 
+async function getMaterialePentruLot(lotId, numarUnitatiScoase, ambalaj, boxType) {
+  try {
+    db.read();
+    const materiale = db.data.materialeAmbalare || [];
+    const materialeLot = {
+      capace: 0,
+      etichete: 0,
+      cutii: 0,
+      sticle: 0,
+      keguri: 0,
+      alteMateriale: [],
+    };
+
+    if (ambalaj === 'sticle') {
+      // Calculate caps and labels (1 per bottle)
+      const capace = materiale.find(m => m.denumire === 'Capace' && m.tip === 'capace' && m.unitate === 'buc');
+      const etichete = materiale.find(m => m.denumire === 'Etichete' && m.tip === 'etichete' && m.unitate === 'buc');
+      const sticle = materiale.find(m => m.denumire.includes('Sticle') && m.tip === 'sticle' && m.unitate === 'buc');
+
+      if (capace) {
+        materialeLot.capace = parseInt(numarUnitatiScoase);
+      }
+      if (etichete) {
+        materialeLot.etichete = parseInt(numarUnitatiScoase);
+      }
+      if (sticle) {
+        materialeLot.sticle = parseInt(numarUnitatiScoase);
+      }
+
+      // Calculate boxes based on boxType
+      if (boxType) {
+        const sticlePerCutie = parseInt(boxType.split(' ')[0]);
+        if (sticlePerCutie) {
+          const cutieDenumire = `Cutii ${sticlePerCutie} sticle`;
+          const cutie = materiale.find(m => m.denumire === cutieDenumire && m.tip === 'cutii' && m.unitate === 'buc');
+          if (cutie) {
+            const numarCutii = Math.ceil(numarUnitatiScoase / sticlePerCutie);
+            materialeLot.cutii = numarCutii;
+          }
+        }
+      }
+    } else if (ambalaj === 'keguri') {
+      // Identify keg size from lot details (requires boxType or kegSize from lot)
+      const keg = materiale.find(m => m.denumire === boxType && m.tip === 'keg' && m.unitate === 'buc');
+      if (keg) {
+        materialeLot.keguri = parseInt(numarUnitatiScoase);
+      }
+    }
+
+    return materialeLot;
+  } catch (error) {
+    console.error('Eroare la obținerea materialelor pentru lot:', error.message, error.stack);
+    return { capace: 0, etichete: 0, cutii: 0, sticle: 0, keguri: 0, alteMateriale: [] };
+  }
+}
+
 initializeazaBazaDeDate();
 
 export {
@@ -164,4 +219,5 @@ export {
   stergeMaterialAmbalare,
   stergeToateMaterialeleAmbalare,
   exportaMaterialeAmbalare,
+  getMaterialePentruLot,
 };
