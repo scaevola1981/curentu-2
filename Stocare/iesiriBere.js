@@ -1,4 +1,3 @@
-
 import { LowSync } from 'lowdb';
 import { JSONFileSync } from 'lowdb/node';
 import path from 'path';
@@ -41,8 +40,8 @@ export function adaugaIesireBere(iesire) {
     db.read();
     
     // Validări
-    if (!iesire.lotId || typeof iesire.lotId !== 'string') {
-      throw new Error('lotId este obligatoriu și trebuie să fie un șir de caractere');
+    if (!iesire.lotId) {
+      throw new Error('lotId este obligatoriu');
     }
     if (!iesire.reteta || typeof iesire.reteta !== 'string') {
       throw new Error('reteta este obligatorie și trebuie să fie un șir de caractere');
@@ -56,8 +55,8 @@ export function adaugaIesireBere(iesire) {
     if (iesire.ambalaj && !['sticle', 'keguri'].includes(iesire.ambalaj)) {
       throw new Error('ambalaj trebuie să fie "sticle" sau "keguri"');
     }
-    if (iesire.motiv && !['vanzare', 'degustare', 'pierdere', 'donatie', 'consum_intern', 'altul'].includes(iesire.motiv)) {
-      throw new Error('motiv invalid; valorile permise sunt: vanzare, degustare, pierdere, donatie, consum_intern, altul');
+    if (iesire.motiv && !['vanzare', 'degustare', 'pierdere', 'donatie', 'consum_intern', 'altul', 'alta_vanzare'].includes(iesire.motiv)) {
+      throw new Error('motiv invalid; valorile permise sunt: vanzare, degustare, pierdere, donatie, consum_intern, altul, alta_vanzare');
     }
 
     const newId = db.data.iesiri.length > 0 
@@ -66,7 +65,7 @@ export function adaugaIesireBere(iesire) {
     
     const iesireNoua = {
       id: newId,
-      lotId: iesire.lotId,
+      lotId: iesire.lotId.toString(), // Convert to string for consistency
       reteta: iesire.reteta,
       cantitate: parseFloat(iesire.cantitate).toFixed(2),
       numarUnitatiScoase: iesire.numarUnitatiScoase !== undefined ? parseInt(iesire.numarUnitatiScoase) : undefined,

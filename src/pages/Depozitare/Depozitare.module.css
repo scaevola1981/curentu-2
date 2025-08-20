@@ -407,6 +407,17 @@ label {
   font-weight: 700;
 }
 
+.buttonSmall {
+  padding: 6px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.buttonSmall[style*="background-color: #e74c3c"] {
+  color: white;
+}
+
 /* Enhanced animations */
 @keyframes modalSlideIn {
   from {

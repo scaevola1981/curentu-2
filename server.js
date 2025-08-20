@@ -8,7 +8,13 @@ import {
   stergeToateMaterialele,
 } from './Stocare/ingrediente.js';
 import { getFermentatoare, updateFermentator } from './Stocare/fermentatoare.js';
-import { adaugaLot, obtineLoturi } from './Stocare/loturiAmbalate.js';
+import {
+  adaugaLot,
+  obtineLoturi,
+  actualizeazaLot,
+  stergeLot,
+  obtineLotDupaId,
+} from './Stocare/loturiAmbalate.js';
 import {
   getMaterialeAmbalare,
   adaugaMaterialAmbalare,
@@ -23,14 +29,11 @@ import {
   adaugaIesireBere,
   getIesiriPentruLot,
   getSumarIesiriPeRetete,
-  getIesiriPerioadă,
+  getIesiriPerioadă, // Changed from getIesiriPerioada
   getStatisticiIesiri,
   stergeIesireBere,
-  exportaIesiriCSV
+  exportaIesiriCSV,
 } from './Stocare/iesiriBere.js';
-import { LowSync } from 'lowdb';
-import { JSONFileSync } from 'lowdb/node';
-import path from 'path';
 
 const app = express();
 const PORT = 3001;
@@ -56,18 +59,6 @@ function valideazaMaterial(material) {
     erori.push('Unitatea este obligatorie');
   }
   return erori;
-}
-
-const __dirname = path.resolve();
-const filePath = path.join(__dirname, 'Stocare', 'loturiProducere.json');
-const adapter = new JSONFileSync(filePath);
-const db = new LowSync(adapter, { loturi: [] });
-
-db.read();
-if (!db.data || !db.data.loturi) {
-  db.data = { loturi: [] };
-  db.write();
-  console.log('Baza de date pentru loturi inițializată cu date implicite');
 }
 
 app.get('/api/materii-prime', (req, res) => {
@@ -206,18 +197,35 @@ app.post('/api/loturi-ambalate', async (req, res) => {
   }
 });
 
+app.get('/api/ambalare/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: 'ID invalid' });
+    }
+    const lot = await obtineLotDupaId(id);
+    if (!lot) {
+      return res.status(404).json({ error: 'Lotul nu a fost găsit' });
+    }
+    res.json(lot);
+  } catch (error) {
+    console.error('Eroare la obținerea lotului:', error.message, error.stack);
+    res.status(500).json({ error: 'Eroare la obținerea lotului' });
+  }
+});
+
 app.put('/api/ambalare/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ error: 'ID invalid' });
+    }
     const updatedLot = req.body;
-    db.read();
-    const loturi = db.data.loturi || [];
-    const index = loturi.findIndex(l => l.id === id);
-    if (index === -1) return res.status(404).json({ error: 'Lotul nu a fost găsit' });
-    loturi[index] = { ...loturi[index], ...updatedLot, dataActualizare: new Date().toISOString() };
-    db.data.loturi = loturi;
-    db.write();
-    res.json(loturi[index]);
+    const lot = await actualizeazaLot(id, updatedLot);
+    if (!lot) {
+      return res.status(404).json({ error: 'Lotul nu a fost găsit' });
+    }
+    res.json(lot);
   } catch (error) {
     console.error('Eroare la actualizarea lotului:', error.message, error.stack);
     res.status(500).json({ error: 'Eroare la actualizare' });
@@ -227,16 +235,20 @@ app.put('/api/ambalare/:id', async (req, res) => {
 app.delete('/api/ambalare/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    db.read();
-    const loturi = db.data.loturi || [];
-    const index = loturi.findIndex(l => l.id === id);
-    if (index === -1) return res.status(404).json({ error: 'Lotul nu a fost găsit' });
-    db.data.loturi = loturi.filter(l => l.id !== id);
-    db.write();
+    if (isNaN(id)) {
+      return res.status(400).json({ error: 'ID invalid' });
+    }
+    console.log(`Caut lotul cu ID: ${id}`); // Debug log
+    const result = await stergeLot(id);
+    console.log(`Lotul cu ID ${id} a fost șters`); // Debug log
     res.json({ message: 'Lot șters cu succes' });
   } catch (error) {
     console.error('Eroare la ștergerea lotului:', error.message, error.stack);
-    res.status(500).json({ error: 'Eroare la ștergere' });
+    if (error.message === 'Lotul nu a fost găsit') {
+      res.status(404).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'Eroare la ștergere' });
+    }
   }
 });
 
@@ -344,32 +356,33 @@ app.post('/api/iesiri-bere', (req, res) => {
       motiv,
       dataIesire,
       utilizator,
-      observatii
+      observatii,
+      detaliiIesire,
     } = req.body;
 
     console.log('Received payload for /api/iesiri-bere:', req.body);
 
     if (!lotId || !reteta || cantitate === undefined || cantitate === null) {
-      return res.status(400).json({ 
-        error: 'Date invalide. LotId, reteta și cantitatea sunt obligatorii.' 
+      return res.status(400).json({
+        error: 'Date invalide. LotId, reteta și cantitatea sunt obligatorii.',
       });
     }
 
     const parsedCantitate = parseFloat(cantitate);
     if (isNaN(parsedCantitate) || parsedCantitate <= 0) {
-      return res.status(400).json({ 
-        error: 'Cantitatea trebuie să fie un număr pozitiv.' 
+      return res.status(400).json({
+        error: 'Cantitatea trebuie să fie un număr pozitiv.',
       });
     }
 
     if (numarUnitatiScoase !== undefined && (isNaN(parseInt(numarUnitatiScoase)) || parseInt(numarUnitatiScoase) < 0)) {
-      return res.status(400).json({ 
-        error: 'NumarUnitatiScoase trebuie să fie un număr nenegativ.' 
+      return res.status(400).json({
+        error: 'NumarUnitatiScoase trebuie să fie un număr nenegativ.',
       });
     }
 
     const iesireNoua = adaugaIesireBere({
-      lotId,
+      lotId: lotId.toString(), // Convert to string to match iesiriBere.js validation
       reteta,
       cantitate: parsedCantitate,
       numarUnitatiScoase: numarUnitatiScoase !== undefined ? parseInt(numarUnitatiScoase) : undefined,
@@ -377,13 +390,14 @@ app.post('/api/iesiri-bere', (req, res) => {
       motiv,
       dataIesire,
       utilizator,
-      observatii
+      observatii,
+      detaliiIesire,
     });
-    
-    res.status(201).json({ 
-      id: iesireNoua.id, 
+
+    res.status(201).json({
+      id: iesireNoua.id,
       message: 'Ieșire înregistrată cu succes',
-      data: iesireNoua
+      data: iesireNoua,
     });
   } catch (error) {
     console.error('Eroare la înregistrarea ieșirii:', error.message);
@@ -425,13 +439,11 @@ app.get('/api/iesiri-bere/statistici', (req, res) => {
 app.get('/api/iesiri-bere/perioada', (req, res) => {
   try {
     const { dataInceput, dataSfarsit } = req.query;
-    
     if (!dataInceput || !dataSfarsit) {
-      return res.status(400).json({ 
-        error: 'Parametrii dataInceput și dataSfarsit sunt obligatorii' 
+      return res.status(400).json({
+        error: 'Parametrii dataInceput și dataSfarsit sunt obligatorii',
       });
     }
-    
     const iesiri = getIesiriPerioadă(dataInceput, dataSfarsit);
     res.json(iesiri);
   } catch (error) {
@@ -444,7 +456,6 @@ app.delete('/api/iesiri-bere/:id', (req, res) => {
   try {
     const { id } = req.params;
     const rezultat = stergeIesireBere(parseInt(id));
-    
     if (rezultat) {
       res.json({ succes: true, message: 'Ieșire ștearsă cu succes' });
     } else {
@@ -467,8 +478,6 @@ app.get('/api/iesiri-bere/export/csv', (req, res) => {
     res.status(500).json({ error: 'Eroare la export' });
   }
 });
-
-
 
 app.listen(PORT, () => {
   console.log(`✅ Serverul rulează pe http://localhost:${PORT}`);
