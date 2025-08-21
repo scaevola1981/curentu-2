@@ -154,6 +154,32 @@
       "utilizator": "Administrator",
       "observatii": "",
       "createdAt": "2025-08-20T09:46:45.027Z"
+    },
+    {
+      "id": 13,
+      "lotId": "2",
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": "134.97",
+      "numarUnitatiScoase": 409,
+      "ambalaj": "sticle",
+      "motiv": "rebut",
+      "dataIesire": "2025-08-21T07:43:41.819Z",
+      "utilizator": "Administrator",
+      "observatii": "",
+      "createdAt": "2025-08-21T07:43:41.843Z"
+    },
+    {
+      "id": 14,
+      "lotId": "2",
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": "19.80",
+      "numarUnitatiScoase": 60,
+      "ambalaj": "sticle",
+      "motiv": "rebut",
+      "dataIesire": "2025-08-21T08:46:17.380Z",
+      "utilizator": "Administrator",
+      "observatii": "",
+      "createdAt": "2025-08-21T08:46:17.384Z"
     }
   ]
 }

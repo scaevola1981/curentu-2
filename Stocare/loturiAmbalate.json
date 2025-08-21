@@ -4,7 +4,7 @@
       "id": 2,
       "fermentatorId": 3,
       "reteta": "USB AMPER ALE - CB 03",
-      "cantitate": 333,
+      "cantitate": "178.23",
       "unitate": "litri",
       "dataInceput": "2025-08-15T15:17:46.925Z",
       "dataAmbalare": "2025-08-20T09:42:29.658Z",
@@ -34,7 +34,65 @@
           "unitate": "buc"
         }
       ],
-      "dataCreare": "2025-08-20T09:42:29.661Z"
+      "dataCreare": "2025-08-20T09:42:29.661Z",
+      "dataActualizare": "2025-08-21T08:46:17.391Z"
+    },
+    {
+      "id": 3,
+      "fermentatorId": 1,
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": 500,
+      "unitate": "litri",
+      "dataInceput": "2025-08-21T08:18:39.920Z",
+      "dataAmbalare": "2025-08-21T08:20:03.786Z",
+      "packagingType": "sticle",
+      "bottleSize": "0.33l",
+      "boxType": "24 sticle",
+      "kegSize": null,
+      "materialsUsed": [
+        {
+          "denumire": "Sticle 0.33l",
+          "cantitate": 1516,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Capace",
+          "cantitate": 1516,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Etichete",
+          "cantitate": 1516,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Cutii 24 sticle",
+          "cantitate": 64,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2025-08-21T08:20:03.791Z"
+    },
+    {
+      "id": 4,
+      "fermentatorId": 1,
+      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
+      "cantitate": 196,
+      "unitate": "litri",
+      "dataInceput": "2025-08-21T08:22:33.795Z",
+      "dataAmbalare": "2025-08-21T08:22:46.621Z",
+      "packagingType": "keguri",
+      "bottleSize": null,
+      "boxType": null,
+      "kegSize": "Keg 40l",
+      "materialsUsed": [
+        {
+          "denumire": "Keg 40l",
+          "cantitate": 1,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2025-08-21T08:22:46.624Z"
     }
   ]
 }
