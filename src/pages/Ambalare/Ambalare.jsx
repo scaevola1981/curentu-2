@@ -28,8 +28,8 @@ const Ambalare = () => {
   const [kegSize, setKegSize] = useState('');
   const [ambalareInsuficiente, setAmbalareInsuficiente] = useState([]);
   const [supplementCantitati, setSupplementCantitati] = useState({});
+  const [cantitateDeAmbalat, setCantitateDeAmbalat] = useState(''); // Cantitatea de ambalat (parțială)
   
-
   // Data loading functions
   const loadMateriale = useCallback(async () => {
     try {
@@ -48,7 +48,7 @@ const Ambalare = () => {
       const res = await fetch(`${API_URL}/fermentatoare`);
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const data = await res.json();
-      setFermentatoare(data.filter(f => f.ocupat));
+      setFermentatoare(data.filter(f => f.ocupat && f.cantitate > 0));
     } catch (error) {
       setError(`Eroare la încărcarea fermentatoarelor: ${error.message}`);
     }
@@ -247,8 +247,19 @@ const Ambalare = () => {
         { denumire: "Keg 40l", capacitate: 40 },
         { denumire: "Keg 50l", capacitate: 50 },
       ];
-      const selectedKeg = kegSizes.find(k => k.denumire === kegSize) || kegSizes.find(k => k.capacitate >= cantitateBere) || kegSizes[kegSizes.length - 1];
-      ambalareNecesare = [{ denumire: selectedKeg.denumire, cantitate: 1, unitate: "buc", tip: "keg" }];
+      
+      // Calculăm numărul de keg-uri necesare pentru cantitatea specificată
+      const selectedKeg = kegSizes.find(k => k.denumire === kegSize) || kegSizes[kegSizes.length - 1];
+      const numKegs = Math.ceil(cantitateBere / selectedKeg.capacitate);
+      
+      ambalareNecesare = [
+        { 
+          denumire: selectedKeg.denumire, 
+          cantitate: numKegs, 
+          unitate: "buc", 
+          tip: "keg" 
+        }
+      ];
     }
 
     const insuficiente = ambalareNecesare
@@ -274,115 +285,140 @@ const Ambalare = () => {
     return { ambalareNecesare, insuficiente };
   };
 
-  
-const handleAmbalare = async () => {
-  if (!selectedFermentator || !packagingType || 
-      (packagingType === "sticle" && (!bottleSize || !boxType)) || 
-      (packagingType === "keguri" && !kegSize)) {
-    setError('Selectați un fermentator, tipul de ambalare și toate detaliile necesare!');
-    return;
-  }
+  const handleAmbalare = async () => {
+    if (!selectedFermentator || !packagingType || 
+        (packagingType === "sticle" && (!bottleSize || !boxType)) || 
+        (packagingType === "keguri" && !kegSize)) {
+      setError('Selectați un fermentator, tipul de ambalare și toate detaliile necesare!');
+      return;
+    }
 
-  const { ambalareNecesare, insuficiente } = verificaStocAmbalare(
-    selectedFermentator.cantitate, 
-    packagingType, 
-    bottleSize, 
-    boxType, 
-    kegSize
-  );
-  setAmbalareInsuficiente(insuficiente);
+    // Validare cantitate de ambalat
+    const cantitateDeAmbalatNum = parseFloat(cantitateDeAmbalat);
+    if (isNaN(cantitateDeAmbalatNum) || cantitateDeAmbalatNum <= 0) {
+      setError('Introduceți o cantitate validă de ambalat!');
+      return;
+    }
+    
+    if (cantitateDeAmbalatNum > selectedFermentator.cantitate) {
+      setError('Cantitatea de ambalat nu poate depăși cantitatea disponibilă în fermentator!');
+      return;
+    }
 
-  if (insuficiente.length > 0) {
-    setError(`⚠️ Materiale insuficiente pentru ${selectedFermentator.cantitate}L:\n` +
-      insuficiente.map(amb => `${amb.denumire}: Necesare ${amb.cantitateNecesara} ${amb.unitate}, Disponibile ${amb.cantitateDisponibila} ${amb.unitate}`).join('\n')
+    const { ambalareNecesare, insuficiente } = verificaStocAmbalare(
+      cantitateDeAmbalatNum, 
+      packagingType, 
+      bottleSize, 
+      boxType, 
+      kegSize
     );
-    return;
-  }
+    setAmbalareInsuficiente(insuficiente);
 
-  try {
-    // Update materials stock
-    for (const amb of ambalareNecesare) {
-      const stoc = materiale.find(m => 
-        normalizeString(m.denumire) === normalizeString(amb.denumire) && 
-        normalizeString(m.unitate) === normalizeString(amb.unitate)
+    if (insuficiente.length > 0) {
+      setError(`⚠️ Materiale insuficiente pentru ${cantitateDeAmbalatNum}L:\n` +
+        insuficiente.map(amb => `${amb.denumire}: Necesare ${amb.cantitateNecesara} ${amb.unitate}, Disponibile ${amb.cantitateDisponibila} ${amb.unitate}`).join('\n')
       );
-      if (stoc) {
-        const newCantitate = stoc.cantitate - amb.cantitate;
-        await fetch(`${API_URL}/materiale-ambalare/${stoc.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...stoc, cantitate: newCantitate }),
-        });
+      return;
+    }
+
+    try {
+      // Update materials stock
+      for (const amb of ambalareNecesare) {
+        const stoc = materiale.find(m => 
+          normalizeString(m.denumire) === normalizeString(amb.denumire) && 
+          normalizeString(m.unitate) === normalizeString(amb.unitate)
+        );
+        if (stoc) {
+          const newCantitate = stoc.cantitate - amb.cantitate;
+          await fetch(`${API_URL}/materiale-ambalare/${stoc.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...stoc, cantitate: newCantitate }),
+          });
+        }
       }
-    }
 
-      // Update fermentator status
-    const updatedFermentator = {
-      ...selectedFermentator,
-      ocupat: false,
-      reteta: null,
-      cantitate: 0,
-      dataInceput: null,
-    };
-    await fetch(`${API_URL}/fermentatoare/${selectedFermentator.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedFermentator),
-    });
+      // Calculate remaining quantity in fermenter
+      const remainingQuantity = selectedFermentator.cantitate - cantitateDeAmbalatNum;
+      
+      // Update fermentator status - only mark as empty if all beer is packaged
+      const updatedFermentator = {
+        ...selectedFermentator,
+        ocupat: remainingQuantity > 0,
+        cantitate: remainingQuantity,
+      };
+      
+      await fetch(`${API_URL}/fermentatoare/${selectedFermentator.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedFermentator),
+      });
 
-
-        // Create packaging lot record
-    const lotData = {
-      fermentatorId: selectedFermentator.id,
-      reteta: selectedFermentator.reteta,
-      cantitate: selectedFermentator.cantitate,
-      unitate: "litri",
-      dataInceput: selectedFermentator.dataInceput,
-      dataAmbalare: new Date().toISOString(),
-      packagingType,
-      bottleSize: packagingType === "sticle" ? bottleSize : null,
-      boxType: packagingType === "sticle" ? boxType : null,
-      kegSize: packagingType === "keguri" ? kegSize : null,
-      materialsUsed: ambalareNecesare.map(m => ({ 
-        denumire: m.denumire, 
-        cantitate: m.cantitate, 
-        unitate: m.unitate 
-      })),
-    };
+      // Create packaging lot record
+      const lotData = {
+        fermentatorId: selectedFermentator.id,
+        reteta: selectedFermentator.reteta,
+        cantitate: cantitateDeAmbalatNum,
+        unitate: "litri",
+        dataInceput: selectedFermentator.dataInceput,
+        dataAmbalare: new Date().toISOString(),
+        packagingType,
+        bottleSize: packagingType === "sticle" ? bottleSize : null,
+        boxType: packagingType === "sticle" ? boxType : null,
+        kegSize: packagingType === "keguri" ? kegSize : null,
+        materialsUsed: ambalareNecesare.map(m => ({ 
+          denumire: m.denumire, 
+          cantitate: m.cantitate, 
+          unitate: m.unitate 
+        })),
+      };
+      
       const lotResponse = await fetch(`${API_URL}/loturi-ambalate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(lotData),
-    });
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(lotData),
+      });
 
-    if (!lotResponse.ok) {
-      throw new Error('Eroare la salvarea lotului');
+      if (!lotResponse.ok) {
+        throw new Error('Eroare la salvarea lotului');
+      }
+
+      // Update state
+      setMateriale(prev => prev.map(m => {
+        const consum = ambalareNecesare.find(a => 
+          normalizeString(a.denumire) === normalizeString(m.denumire) && 
+          normalizeString(a.unitate) === normalizeString(m.unitate)
+        );
+        return consum ? { ...m, cantitate: m.cantitate - consum.cantitate } : m;
+      }));
+      
+      // Update fermentatoare list - remove if empty, update if partial
+      setFermentatoare(prev => {
+        if (remainingQuantity <= 0) {
+          return prev.filter(f => f.id !== selectedFermentator.id);
+        } else {
+          return prev.map(f => 
+            f.id === selectedFermentator.id 
+              ? { ...f, cantitate: remainingQuantity } 
+              : f
+          );
+        }
+      });
+      
+      setSelectedFermentator(remainingQuantity > 0 ? updatedFermentator : null);
+      setCantitateDeAmbalat('');
+      setPackagingType('');
+      setBottleSize('');
+      setBoxType('');
+      setKegSize('');
+      setAmbalareInsuficiente([]);
+      setError(`✅ Ambalare realizată cu succes! ${cantitateDeAmbalatNum}L au fost ambalate.${remainingQuantity > 0 ? ` Au rămas ${remainingQuantity}L în fermentator.` : ''}`);
+
+    } catch (error) {
+      setError(`Eroare la ambalare: ${error.message}`);
     }
+  };
 
-   
-
-
-   // Update state
-    setMateriale(prev => prev.map(m => {
-      const consum = ambalareNecesare.find(a => 
-        normalizeString(a.denumire) === normalizeString(m.denumire) && 
-        normalizeString(a.unitate) === normalizeString(m.unitate)
-      );
-      return consum ? { ...m, cantitate: m.cantitate - consum.cantitate } : m;
-    }));
-    setFermentatoare(prev => prev.filter(f => f.id !== selectedFermentator.id));
-    setSelectedFermentator(null);
-    setPackagingType('');
-    setBottleSize('');
-    setBoxType('');
-    setKegSize('');
-    setAmbalareInsuficiente([]);
-    setError('✅ Ambalare realizată cu succes! Lotul a fost salvat în depozit.');
-
-  } catch (error) {
-    setError(`Eroare la ambalare: ${error.message}`);
-  }
-};
   useEffect(() => {
     Promise.all([loadMateriale(), loadFermentatoare()]).then(() => setLoading(false));
   }, [loadMateriale, loadFermentatoare]);
@@ -409,7 +445,10 @@ const handleAmbalare = async () => {
                 <div
                   key={fermentator.id}
                   className={`${styles.fermentatorCard} ${fermentator.ocupat ? styles.ocupat : ''}`}
-                  onClick={() => setSelectedFermentator(fermentator)}
+                  onClick={() => {
+                    setSelectedFermentator(fermentator);
+                    setCantitateDeAmbalat(fermentator.cantitate); // Setează cantitatea maximă implicit
+                  }}
                 >
                   <div className={styles.fermentatorCardOverlay}>
                     <h3>{fermentator.nume}</h3>
@@ -418,6 +457,18 @@ const handleAmbalare = async () => {
                     <p>Data: {new Date(fermentator.dataInceput).toLocaleDateString()}</p>
                     {selectedFermentator?.id === fermentator.id && (
                       <>
+                        <div className={styles.cantitateInput}>
+                          <label>Cantitate de ambalat (L):</label>
+                          <input
+                            type="number"
+                            className={styles.input}
+                            value={cantitateDeAmbalat}
+                            onChange={(e) => setCantitateDeAmbalat(e.target.value)}
+                            min="0"
+                            max={fermentator.cantitate}
+                            step="0.1"
+                          />
+                        </div>
                         <select
                           className={styles.input}
                           value={packagingType}
@@ -496,6 +547,7 @@ const handleAmbalare = async () => {
           )}
         </div>
 
+        {/* Restul codului rămâne neschimbat */}
         <div className={styles.toolbar}>
           <div>
             <button className={styles.buttonRefresh} onClick={() => Promise.all([loadMateriale(), loadFermentatoare()])}>

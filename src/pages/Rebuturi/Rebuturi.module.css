@@ -1,128 +1,167 @@
 .container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 20px 30px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f8f9fa;
-  min-height: calc(100vh - 60px); /* Adjust for NavBar height */
+  padding: 2rem;
+  min-height: 100vh;
+  background: linear-gradient(15deg, #2892D7, #002442);
+  background-size: 300% 300%;
+  animation: gradientMove 15s ease infinite;
+  color: #ffffff;
+  font-family: "Segoe UI", sans-serif;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .title {
   text-align: center;
-  color: #1a3c5e;
+  color: #ffffff;
   font-size: 2.5rem;
-  margin-bottom: 30px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  border-bottom: 3px solid #1a73e8;
-  padding-bottom: 10px;
+  padding: 30px;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .retetaSection {
   margin-bottom: 40px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   padding: 20px;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow-x: auto;
 }
 
 .retetaSection:hover {
   transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
 }
 
 .retetaSection h2 {
-  color: #1a73e8;
+  color: #ffffff;
   font-size: 1.8rem;
   margin-bottom: 20px;
   font-weight: 500;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 10px;
 }
 
 .rebutTable {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
   overflow: hidden;
+  min-width: 1000px; /* Forzați lățimea minimă pentru a evita comprimarea excesivă */
 }
 
 .rebutTable th,
 .rebutTable td {
   padding: 12px 15px;
   text-align: left;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
 .rebutTable th {
-  background-color: #1a73e8;
+  background-color: rgba(26, 115, 232, 0.7);
   color: #ffffff;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  position: sticky;
+  top: 0;
 }
 
 .rebutTable tr:nth-child(even) {
-  background-color: #f5f7fa;
+  background-color: rgba(255, 255, 255, 0.03);
 }
 
 .rebutTable tr:hover {
-  background-color: #e3f2fd;
+  background-color: rgba(227, 242, 253, 0.15);
   transition: background-color 0.2s ease;
 }
 
 .rebutTable tfoot {
-  background-color: #d1e7ff;
+  background-color: rgba(26, 115, 232, 0.2);
   font-weight: 600;
 }
 
 .rebutTable tfoot td {
-  border-top: 2px solid #1a73e8;
+  border-top: 2px solid rgba(26, 115, 232, 0.5);
+  color: #ffffff;
 }
 
 .totalSection {
   margin-top: 40px;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 25px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .totalSection h3 {
-  color: #1a3c5e;
+  color: #ffffff;
   font-size: 1.6rem;
-  margin-bottom: 15px;
-  font-weight: 500;
+  margin-bottom: 20px;
+  font-weight: 700;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 10px;
 }
 
 .totalSection p {
-  margin: 10px 0;
+  margin: 12px 0;
   font-size: 1.1rem;
-  color: #333;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .totalSection strong {
-  color: #d32f2f;
+  color: #ff6b6b;
   font-weight: 700;
 }
 
 .noData {
   text-align: center;
-  color: #757575;
+  color: rgba(255, 255, 255, 0.7);
   font-size: 1.2rem;
-  margin-top: 20px;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 40px;
+  padding: 30px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+  .container {
+    padding: 1.5rem;
+  }
+  
+  .title {
+    font-size: 2.2rem;
+    padding: 20px;
+  }
+}
+
 @media (max-width: 1024px) {
   .container {
-    padding: 15px;
+    padding: 1.2rem;
   }
 
   .title {
@@ -131,51 +170,173 @@
 
   .rebutTable th,
   .rebutTable td {
-    padding: 10px;
+    padding: 10px 12px;
     font-size: 0.9rem;
   }
 
   .retetaSection h2 {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
+  }
+  
+  .retetaSection {
+    margin-bottom: 30px;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 900px) {
+  .rebutTable {
+    font-size: 0.85rem;
+  }
+  
+  .rebutTable th,
+  .rebutTable td {
+    padding: 8px 10px;
+  }
+  
+  .totalSection {
+    padding: 20px;
+  }
+  
+  .totalSection h3 {
+    font-size: 1.4rem;
+  }
+  
+  .totalSection p {
+    font-size: 1rem;
+    flex-direction: column;
+    text-align: center;
   }
 }
 
 @media (max-width: 768px) {
-  .rebutTable {
-    display: block;
-    overflow-x: auto;
+  .container {
+    padding: 1rem;
   }
-
-  .rebutTable th,
-  .rebutTable td {
-    min-width: 120px;
-  }
-
-  .totalSection {
-    margin-top: 20px;
+  
+  .title {
+    font-size: 1.8rem;
     padding: 15px;
   }
-
-  .totalSection h3 {
+  
+  .retetaSection {
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 25px;
+  }
+  
+  .retetaSection h2 {
     font-size: 1.4rem;
   }
-
-  .totalSection p {
-    font-size: 1rem;
+  
+  .rebutTable {
+    min-width: 900px; /* Menține lățimea minimă pentru tabele mari */
+  }
+  
+  .totalSection {
+    margin-top: 30px;
+    padding: 15px;
+  }
+  
+  .totalSection h3 {
+    font-size: 1.3rem;
+  }
+  
+  .noData {
+    padding: 20px;
+    font-size: 1.1rem;
+    margin-top: 30px;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   .title {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
+    letter-spacing: 1px;
   }
-
-  .retetaSection {
-    padding: 15px;
+  
+  .retetaSection h2 {
+    font-size: 1.3rem;
   }
-
+  
+  .rebutTable th,
+  .rebutTable td {
+    padding: 6px 8px;
+    font-size: 0.8rem;
+  }
+  
+  .totalSection p {
+    font-size: 0.95rem;
+  }
+  
   .noData {
     font-size: 1rem;
     padding: 15px;
   }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.8rem;
+  }
+  
+  .title {
+    font-size: 1.4rem;
+    padding: 10px;
+  }
+  
+  .retetaSection {
+    padding: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .retetaSection h2 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+  }
+  
+  .rebutTable th,
+  .rebutTable td {
+    padding: 5px 6px;
+    font-size: 0.75rem;
+  }
+  
+  .totalSection {
+    padding: 12px;
+  }
+  
+  .totalSection h3 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+  }
+  
+  .totalSection p {
+    font-size: 0.9rem;
+    margin: 8px 0;
+  }
+  
+  .noData {
+    font-size: 0.9rem;
+    padding: 12px;
+    margin-top: 20px;
+  }
+}
+
+/* Stiluri pentru scrollbar personalizat (opțional) */
+.retetaSection::-webkit-scrollbar {
+  height: 8px;
+}
+
+.retetaSection::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.retetaSection::-webkit-scrollbar-thumb {
+  background: rgba(26, 115, 232, 0.5);
+  border-radius: 4px;
+}
+
+.retetaSection::-webkit-scrollbar-thumb:hover {
+  background: rgba(26, 115, 232, 0.7);
 }

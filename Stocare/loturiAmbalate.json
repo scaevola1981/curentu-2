@@ -93,6 +93,84 @@
         }
       ],
       "dataCreare": "2025-08-21T08:22:46.624Z"
+    },
+    {
+      "id": 5,
+      "fermentatorId": 1,
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": 20,
+      "unitate": "litri",
+      "dataInceput": "2025-08-21T10:03:37.009Z",
+      "dataAmbalare": "2025-08-21T10:04:54.317Z",
+      "packagingType": "keguri",
+      "bottleSize": null,
+      "boxType": null,
+      "kegSize": "Keg 40l",
+      "materialsUsed": [
+        {
+          "denumire": "Keg 40l",
+          "cantitate": 1,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2025-08-21T10:04:54.321Z"
+    },
+    {
+      "id": 6,
+      "fermentatorId": 6,
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": 197,
+      "unitate": "litri",
+      "dataInceput": "2025-08-22T08:19:38.815Z",
+      "dataAmbalare": "2025-08-23T16:03:07.770Z",
+      "packagingType": "keguri",
+      "bottleSize": null,
+      "boxType": null,
+      "kegSize": "Keg 40l",
+      "materialsUsed": [
+        {
+          "denumire": "Keg 40l",
+          "cantitate": 5,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2025-08-23T16:03:07.773Z"
+    },
+    {
+      "id": 7,
+      "fermentatorId": 2,
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": 100,
+      "unitate": "litri",
+      "dataInceput": "2025-08-23T16:06:31.877Z",
+      "dataAmbalare": "2025-08-23T16:07:32.409Z",
+      "packagingType": "sticle",
+      "bottleSize": "0.33l",
+      "boxType": "24 sticle",
+      "kegSize": null,
+      "materialsUsed": [
+        {
+          "denumire": "Sticle 0.33l",
+          "cantitate": 304,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Capace",
+          "cantitate": 304,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Etichete",
+          "cantitate": 304,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Cutii 24 sticle",
+          "cantitate": 13,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2025-08-23T16:07:32.412Z"
     }
   ]
 }

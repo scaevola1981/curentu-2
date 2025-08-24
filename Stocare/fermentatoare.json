@@ -14,20 +14,20 @@
       "id": 2,
       "nume": "Fermentator 2",
       "capacitate": 1000,
-      "ocupat": false,
-      "reteta": null,
-      "cantitate": 0,
-      "dataInceput": null,
+      "ocupat": true,
+      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
+      "cantitate": 123,
+      "dataInceput": "2025-08-23T16:14:44.174Z",
       "imagine": "/Imagini/fermentator.png"
     },
     {
       "id": 3,
       "nume": "Fermentator 3",
       "capacitate": 1000,
-      "ocupat": false,
-      "reteta": null,
-      "cantitate": 0,
-      "dataInceput": null,
+      "ocupat": true,
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": 444,
+      "dataInceput": "2025-08-23T16:18:16.152Z",
       "imagine": "/Imagini/fermentator.png"
     },
     {
@@ -55,9 +55,9 @@
       "nume": "Fermentator 6",
       "capacitate": 2000,
       "ocupat": false,
-      "reteta": null,
+      "reteta": "USB AMPER ALE - CB 03",
       "cantitate": 0,
-      "dataInceput": null,
+      "dataInceput": "2025-08-22T08:19:38.815Z",
       "imagine": "/Imagini/fermentator.png"
     }
   ]

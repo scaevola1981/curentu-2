@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import NavBar from '../../Componente/NavBar/NavBar';
 import styles from './productie.module.css';
 
@@ -16,6 +16,13 @@ const Productie = () => {
   const [materialeInsuficiente, setMaterialeInsuficiente] = useState([]);
   const [canProduce, setCanProduce] = useState(false);
   const [error, setError] = useState("");
+
+  // Refs pentru fiecare secțiune
+  const step1Ref = useRef(null);
+  const step2Ref = useRef(null);
+  const step3Ref = useRef(null);
+  const step4Ref = useRef(null);
+  const step5Ref = useRef(null);
 
   const loadRetete = useCallback(async () => {
     try {
@@ -188,34 +195,7 @@ const Productie = () => {
     }
   }, [canProduce, consumMateriale, stocMateriale, selectedFermentator, selectedReteta, cantitateProdusa]);
 
-  const elibereazaFermentator = async (fermentatorId) => {
-    try {
-      const fermentator = fermentatoare.find(f => f.id === fermentatorId);
-      const updatedFermentator = {
-        ...fermentator,
-        ocupat: false,
-        reteta: null,
-        cantitate: 0,
-        dataInceput: null
-      };
-
-      const response = await fetch(`${API_URL}/fermentatoare/${fermentatorId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedFermentator),
-      });
-
-      if (!response.ok) throw new Error(`Failed to release fermentator ${fermentatorId}`);
-
-      setFermentatoare(prev =>
-        prev.map(f =>
-          f.id === fermentatorId ? updatedFermentator : f
-        )
-      );
-    } catch (error) {
-      setError("Eroare la eliberarea fermentatorului: " + error.message);
-    }
-  };
+  // Funcția de eliberare a fost eliminată de aici
 
   const resetVerificare = () => {
     setConsumMateriale([]);
@@ -230,6 +210,31 @@ const Productie = () => {
     setStocVerificat(false);
     resetVerificare();
   };
+
+  // Efect pentru a face scroll automat la secțiunea următoare
+  useEffect(() => {
+    if (selectedReteta && !selectedFermentator) {
+      // Dacă s-a selectat o rețetă dar nu și un fermentator, scroll la pasul 2
+      setTimeout(() => {
+        step2Ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    } else if (selectedReteta && selectedFermentator && !cantitateProdusa) {
+      // Dacă s-a selectat și fermentatorul dar nu cantitatea, scroll la pasul 3
+      setTimeout(() => {
+        step3Ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    } else if (selectedReteta && selectedFermentator && cantitateProdusa && !stocVerificat) {
+      // Dacă s-a introdus cantitatea dar nu s-a verificat stocul, scroll la pasul 4
+      setTimeout(() => {
+        step4Ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    } else if (stocVerificat && canProduce) {
+      // Dacă stocul este verificat și se poate produce, scroll la pasul 5
+      setTimeout(() => {
+        step5Ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [selectedReteta, selectedFermentator, cantitateProdusa, stocVerificat, canProduce]);
 
   useEffect(() => {
     console.log("useEffect triggered, calling load functions"); // Debug log
@@ -272,12 +277,7 @@ const Productie = () => {
                       <p><strong>Rețeta:</strong> {fermentator.reteta}</p>
                       <p><strong>Cantitate:</strong> {fermentator.cantitate}L</p>
                       <p><strong>Data început:</strong> {new Date(fermentator.dataInceput).toLocaleDateString('ro-RO')}</p>
-                      <button
-                        onClick={() => elibereazaFermentator(fermentator.id)}
-                        className={styles.buttonElibereaza}
-                      >
-                        Eliberează
-                      </button>
+                      {/* Butonul de eliberare a fost eliminat de aici */}
                     </>
                   ) : (
                     <p className={styles.statusLiber}>Disponibil</p>
@@ -288,7 +288,7 @@ const Productie = () => {
           </div>
         </div>
 
-        <div className={styles.stepSection}>
+        <div className={styles.stepSection} ref={step1Ref}>
           <h2>Pas 1: Selectați Rețeta</h2>
           <div className={styles.reteteContainer}>
             {retete.length > 0 ? (
@@ -320,7 +320,7 @@ const Productie = () => {
         </div>
 
         {selectedReteta && (
-          <div className={styles.stepSection}>
+          <div className={styles.stepSection} ref={step2Ref}>
             <h2>Pas 2: Selectați Fermentatorul</h2>
             <div className={styles.fermentatoareGrid}>
               {fermentatoare
@@ -350,7 +350,7 @@ const Productie = () => {
         )}
 
         {selectedReteta && selectedFermentator && (
-          <div className={styles.stepSection}>
+          <div className={styles.stepSection} ref={step3Ref}>
             <h2>Pas 3: Introduceți Cantitatea</h2>
             <div className={styles.cantitateForm}>
               <label>Cantitate dorită (litri):</label>
@@ -370,7 +370,7 @@ const Productie = () => {
         )}
 
         {selectedReteta && selectedFermentator && cantitateProdusa && (
-          <div className={styles.stepSection}>
+          <div className={styles.stepSection} ref={step4Ref}>
             <h2>Pas 4: Verificați Stocul</h2>
             <button onClick={verificaStoc} className={styles.button}>
               Verifică Disponibilitatea Ingredientelor
@@ -410,7 +410,7 @@ const Productie = () => {
         )}
 
         {stocVerificat && canProduce && (
-          <div className={styles.stepSection}>
+          <div className={styles.stepSection} ref={step5Ref}>
             <h2>Pas 5: Confirmați Producția</h2>
             <div className={styles.sumarProduction}>
               <p><strong>Rețeta:</strong> {selectedReteta.denumire}</p>

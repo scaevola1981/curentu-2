@@ -1,599 +1,180 @@
-/* Container principal */
 .container {
+  padding: 2rem;
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
-  padding: 2rem;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(15deg, #2892D7, #002442);
+  background-size: 300% 300%;
+  animation: gradientMove 15s ease infinite;
   color: #ffffff;
+  font-family: "Segoe UI", sans-serif;
 }
 
-/* Secțiuni pentru pași */
-.stepSection {
-  margin-bottom: 3rem;
-  padding: 2rem;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 8px 32px rgba(0, 0, 0, 0.3);
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-.stepSection h2 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #667eea;
-  margin-bottom: 1.5rem;
+h1,
+h2 {
   text-align: center;
-}
-
-/* Formularul pentru cantitate */
-.cantitateForm {
-  max-width: 400px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.cantitateForm label {
-  display: block;
+  margin: 2rem;
+  color: #ffffff;
   font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 1.1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Adjusted from original shadow */
 }
 
-.info {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
+.fermentatoareGrid,
+.reteteContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 1.5rem;
+  margin: 1rem;
 }
 
-/* Rezultatul verificării */
-.rezultatVerificare {
-  margin-top: 2rem;
-  padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
+.fermentatorCard,
+.retetaCard,
+.fermentatorSelectCard {
+  border-radius: 12px; /* Adjusted for consistency */
+  overflow: hidden;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.rezultatVerificare h4 {
-  color: #667eea;
-  font-size: 1.3rem;
-  margin-bottom: 1rem;
-  font-weight: 600;
-}
-
-.rezultatVerificare ul {
-  list-style: none;
-  padding: 0;
-}
-
-.rezultatVerificare li {
-  padding: 0.8rem;
-  margin: 0.5rem 0;
-  border-radius: 8px;
-  font-weight: 500;
-}
-
-.ingredientOk {
-  background: rgba(78, 205, 196, 0.2);
-  color: #4ecdc4;
-  border-left: 4px solid #4ecdc4;
-}
-
-.ingredientInsuficient {
-  background: rgba(255, 107, 107, 0.2);
-  color: #ff6b6b;
-  border-left: 4px solid #ff6b6b;
-}
-
-/* Sumarul producției */
-.sumarProduction {
-  max-width: 500px;
-  margin: 0 auto;
-  text-align: center;
-  padding: 2rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  border: 1px solid rgba(102, 126, 234, 0.3);
-}
-
-.sumarProduction p {
-  font-size: 1.1rem;
-  margin: 0.8rem 0;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.buttonConfirm {
-  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
-  border: none;
-  border-radius: 12px;
-  padding: 1.2rem 2.5rem;
-  color: white;
-  font-weight: 700;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 6px 20px rgba(78, 205, 196, 0.3);
-  margin-top: 1.5rem;
-}
-
-.buttonConfirm:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 30px rgba(78, 205, 196, 0.4);
-  background: linear-gradient(135deg, #5ef4ea 0%, #4fb3a3 100%);
-}
-
-/* Titlu principal */
-.container h1 {
-  font-size: 3rem;
-  font-weight: 800;
-  text-align: center;
-  margin-bottom: 3rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
-}
-
-/* Container rețete */
-.reteteContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2rem;
-  margin-bottom: 3rem;
-}
-
-/* Card rețetă */
-.retetaCard {
-  position: relative;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 20px;
-  padding: 0;
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  overflow: hidden;
-  min-height: 280px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-/* Overlay pentru cardurile de rețete */
-.retetaCardOverlay {
-  position: relative;
-  z-index: 2;
-  height: 100%;
-  min-height: 280px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 100%);
-  padding: 2rem;
-  border-radius: 20px;
-}
-
-.retetaCard::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.7) 100%);
-  opacity: 0.8;
-  transition: opacity 0.3s ease;
-  border-radius: 20px;
-}
-
-.retetaCard:hover {
-  transform: translateY(-10px) scale(1.02);
-  border-color: rgba(102, 126, 234, 0.5);
-  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2), 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-.retetaCard:hover::before {
-  opacity: 0.6;
-}
-
-.retetaCard.selected {
-  border-color: #667eea;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.18) 0%, rgba(102, 126, 234, 0.12) 100%);
+.fermentatorCard:hover,
+.retetaCard:hover,
+.fermentatorSelectCard:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+  background-color: rgba(255, 255, 255, 0.2); /* Lighter on hover */
 }
 
-.retetaCard.selected::before {
-  opacity: 0.5;
-}
-
-.retetaCard h3 {
-  font-size: 1.4rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: #ffffff;
-}
-
-.retetaCard p {
-  margin: 0.5rem 0;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9rem;
-  line-height: 1.4;
-}
-
-/* Formularul de producție */
-.productionForm {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 24px;
-  padding: 2.5rem;
-  margin-top: 2rem;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.productionForm h2 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  color: #667eea;
-  text-align: center;
-}
-
-.productionForm label {
-  display: block;
+.fermentatorCardOverlay,
+.retetaCardOverlay,
+.fermentatorSelectOverlay {
+  padding: 1rem;
+  color: #242424; /* Changed from #003989 to match palette */
+  font-size: 1rem;
   font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 1.1rem;
 }
 
-/* Input styling */
+.selected,
+.selectedFermentator {
+  outline: 3px solid #4299e1; /* Light blue outline */
+  box-shadow: 0 0 20px rgba(66, 153, 225, 0.5); /* Matching shadow */
+}
+
+.statusLiber,
+.disponibil {
+  color: #0cf300; /* Kept green for availability, adjust if needed */
+  font-weight: 900;
+  font-size: 1.5rem;
+}
+
+.stepSection {
+  margin-top: 2.5rem;
+  padding: 2rem;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stepSection:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+}
+
 .input {
   width: 100%;
-  padding: 1rem 1.5rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
-  border: 2px solid rgba(255, 255, 255, 0.15);
+  padding: 0.8rem;
   border-radius: 12px;
-  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 0.5rem;
   font-size: 1rem;
-  margin-bottom: 1.5rem;
-  transition: all 0.3s ease;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff; /* White background as requested */
+  color: #002442; /* Dark blue text for contrast */
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .input:focus {
+  border-color: #4299e1; /* Light blue focus border */
+  box-shadow: 0 0 8px rgba(66, 153, 225, 0.5); /* Matching focus shadow */
   outline: none;
-  border-color: #667eea;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-/* Butoane */
-.button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.button,
+.buttonConfirm {
+  margin-top: 1rem;
+  padding: 0.9rem 1.8rem;
   border: none;
-  border-radius: 12px;
-  padding: 1rem 2rem;
-  color: white;
+  border-radius: 30px;
+  background-color: rgba(26, 115, 232, 0.7); /* Solid color from palette */
+  color: #ffffff;
   font-weight: 600;
-  font-size: 1rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-  min-width: 150px;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-.button:hover {
+.button:hover,
+.buttonConfirm:hover {
+  background-color: #4299e1; /* Light blue hover */
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-  background: linear-gradient(135deg, #7c8ef0 0%, #8558b8 100%);
-}
-
-.button:active {
-  transform: translateY(0);
-}
-
-/* Listele de ingrediente */
-.productionForm ul {
-  background: rgba(0, 0, 0, 0.15);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin: 1rem 0;
-  list-style: none;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.productionForm li {
-  padding: 0.8rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.95rem;
-}
-
-.productionForm li:last-child {
-  border-bottom: none;
-}
-
-.productionForm h4 {
-  color: #667eea;
-  font-size: 1.3rem;
-  margin: 1.5rem 0 1rem 0;
-  font-weight: 600;
-}
-
-/* Mesaje de stare */
-.success {
-  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
-  color: white;
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
-  margin: 1rem 0;
-  font-weight: 600;
-  text-align: center;
-  box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+  box-shadow: 0 0 20px rgba(66, 153, 225, 0.7);
 }
 
 .error {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-  color: white;
-  padding: 1rem 1.5rem;
+  margin-top: 1rem;
+  padding: 1rem;
   border-radius: 12px;
-  margin: 1rem 0;
+  background-color: #ff6b6b; /* Red from palette */
+  color: #ffffff;
   font-weight: 600;
-  text-align: center;
-  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Modal pentru erori */
+.success {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  background-color: rgba(26, 115, 232, 0.7); /* Matches header color */
+  color: #ffffff;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .modal {
   position: fixed;
-  top: 50%;
+  top: 20%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: linear-gradient(135deg, rgba(30, 30, 50, 0.98) 0%, rgba(20, 20, 40, 0.95) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
+  background-color: rgba(255, 255, 255, 0.1);
   padding: 2rem;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  z-index: 1000;
-  min-width: 300px;
-  text-align: center;
-}
-
-.modal p {
-  margin-bottom: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
   color: #ffffff;
-  font-size: 1.1rem;
-  line-height: 1.5;
+  z-index: 999;
+  max-width: 450px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .modal button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  margin-top: 1rem;
+  padding: 0.7rem 1.4rem;
+  border-radius: 30px;
   border: none;
-  border-radius: 8px;
-  padding: 0.8rem 1.5rem;
-  color: white;
-  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  background-color: #ff6b6b; /* Red for delete/cancel */
+  color: #ffffff;
+  font-weight: 600;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .modal button:hover {
+  background-color: #e53e3e; /* Darker red on hover */
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-}
-
-/* Starea fermentatoarelor */
-.fermentatorStatus {
-  margin-bottom: 3rem;
-}
-
-.fermentatorStatus h2 {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #667eea;
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.fermentatoareGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-/* Cardurile fermentatoarelor cu overlay pentru imagini */
-.fermentatorCard {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
-  border-radius: 16px;
-  padding: 0;
-  transition: all 0.3s ease;
-  border: 2px solid;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  position: relative;
-  overflow: hidden;
-  min-height: 200px;
-}
-
-.fermentatorCardOverlay {
-  position: relative;
-  z-index: 2;
-  padding: 1.5rem;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 100%);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.fermentatorCard.liber {
-  border-color: rgba(78, 205, 196, 0.5);
-  background: linear-gradient(135deg, rgba(78, 205, 196, 0.12) 0%, rgba(78, 205, 196, 0.06) 100%);
-}
-
-.fermentatorCard.ocupat {
-  border-color: rgba(255, 107, 107, 0.5);
-  background: linear-gradient(135deg, rgba(255, 107, 107, 0.12) 0%, rgba(255, 107, 107, 0.06) 100%);
-}
-
-.fermentatorCard h3 {
-  font-size: 1.3rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: #ffffff;
-}
-
-.fermentatorCard p {
-  margin: 0.5rem 0;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9rem;
-}
-
-.statusLiber {
-  color: #4ecdc4 !important;
-  font-weight: 600;
-  font-size: 1rem !important;
-}
-
-.buttonElibereaza {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-  border: none;
-  border-radius: 8px;
-  padding: 0.8rem 1.2rem;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 1rem;
-  width: 100%;
-}
-
-.buttonElibereaza:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-}
-
-/* Selectarea fermentatorului */
-.fermentatorSelection {
-  margin-top: 2rem;
-  padding: 2rem;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-
-/* Selectarea fermentatorului cu overlay */
-.fermentatorSelectCard {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
-  border: 2px solid rgba(78, 205, 196, 0.3);
-  border-radius: 12px;
-  padding: 0;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: center;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  position: relative;
-  overflow: hidden;
-  min-height: 150px;
-}
-
-.fermentatorSelectOverlay {
-  position: relative;
-  z-index: 2;
-  padding: 1.2rem;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 100%);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.fermentatorSelectCard:hover {
-  border-color: rgba(78, 205, 196, 0.6);
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(78, 205, 196, 0.2);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
-}
-
-.fermentatorSelectCard.selectedFermentator {
-  border-color: #4ecdc4;
-  background: linear-gradient(135deg, rgba(78, 205, 196, 0.18) 0%, rgba(78, 205, 196, 0.12) 100%);
-  transform: translateY(-3px);
-}
-
-.fermentatorSelectCard h5 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: #ffffff;
-}
-
-.fermentatorSelectCard p {
-  margin: 0.3rem 0;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.85rem;
-}
-
-.disponibil {
-  color: #4ecdc4 !important;
-  font-weight: 600;
-}
-
-.confirmProduction {
-  margin-top: 2rem;
-  text-align: center;
-}
-
-.confirmProduction .success {
-  margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .container {
-    padding: 1rem;
-  }
-  
-  .container h1 {
-    font-size: 2rem;
-    margin-bottom: 2rem;
-  }
-  
-  .reteteContainer {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-  
-  .retetaCard {
-    padding: 1.5rem;
-    min-height: 240px;
-  }
-  
-  .productionForm {
-    padding: 1.5rem;
-    margin-top: 1.5rem;
-  }
-  
-  .productionForm h2 {
-    font-size: 1.5rem;
-  }
-  
-  .fermentatoareGrid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  
-  .fermentatorSelection {
-    padding: 1.5rem;
-  }
 }

@@ -143,6 +143,8 @@ const Rebuturi = () => {
               <p>Cutii: <strong>{totalCutii}</strong></p>
               <p>Sticle: <strong>{totalSticle}</strong></p>
               <p>Keguri: <strong>{totalKeguri}</strong></p>
+              <p>Total înregistrări: {rebuturi.length}</p>
+
             </div>
           </>
         )}

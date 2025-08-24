@@ -11,6 +11,7 @@ const Dashboard = () => {
     productions: { fullFermentors: [] },
     ambalare: { readyLots: [] },
     depozitare: { lots: [], totalStock: 0 },
+    rebuturi: { items: [], totalQuantity: 0, totalCapace: 0, totalEtichete: 0, totalCutii: 0, totalSticle: 0, totalKeguri: 0 },
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -27,7 +28,7 @@ const Dashboard = () => {
         const totalQuantity = materiiData.reduce((sum, m) => sum + parseFloat(m.cantitate || 0), 0);
 
         // Productions (Full Fermentors)
-        const fermentatoareRes = await fetch(`${API_URL}/api/fermentatoare`); // Adjusted to /api/fermentatoare
+        const fermentatoareRes = await fetch(`${API_URL}/api/fermentatoare`);
         if (!fermentatoareRes.ok) throw new Error(`Eroare HTTP: ${fermentatoareRes.status}`);
         const fermentatoareData = await fermentatoareRes.json();
         const fullFermentors = fermentatoareData.filter(f => f.ocupat);
@@ -41,15 +42,36 @@ const Dashboard = () => {
         const depozitareData = await depozitareRes.json();
         const totalStock = depozitareData.reduce((sum, l) => sum + parseFloat(l.cantitate || 0), 0);
 
+        // Rebuturi - Folosim datele reale
+        const rebuturiRes = await fetch(`${API_URL}/api/rebuturi`);
+        if (!rebuturiRes.ok) throw new Error(`Eroare HTTP: ${rebuturiRes.status}`);
+        const rebuturiData = await rebuturiRes.json();
+        
+        const totalRebuturi = rebuturiData.reduce((sum, r) => sum + parseFloat(r.cantitate || 0), 0);
+        const totalCapace = rebuturiData.reduce((sum, r) => sum + (r.materiale?.capace || 0), 0);
+        const totalEtichete = rebuturiData.reduce((sum, r) => sum + (r.materiale?.etichete || 0), 0);
+        const totalCutii = rebuturiData.reduce((sum, r) => sum + (r.materiale?.cutii || 0), 0);
+        const totalSticle = rebuturiData.reduce((sum, r) => sum + (r.materiale?.sticle || 0), 0);
+        const totalKeguri = rebuturiData.reduce((sum, r) => sum + (r.materiale?.keguri || 0), 0);
+
         setSummary({
           materiiPrime: { items: materiiData, totalQuantity },
           productions: { fullFermentors },
           ambalare: { readyLots: ambalareData },
           depozitare: { lots: depozitareData, totalStock },
+          rebuturi: { 
+            items: rebuturiData, 
+            totalQuantity: totalRebuturi,
+            totalCapace,
+            totalEtichete,
+            totalCutii,
+            totalSticle,
+            totalKeguri
+          },
         });
       } catch (error) {
         console.error('Eroare la încărcarea sumarului:', error);
-        setError(error.message); // Store error for UI display
+        setError(error.message);
       } finally {
         setIsLoading(false);
       }
@@ -145,6 +167,22 @@ const Dashboard = () => {
               {summary.depozitare.lots.length > 5 && <li>...și altele</li>}
             </ul>
             <a href="/depozitare" className={styles.viewMore}>Vezi Toată Depozitarea</a>
+          </div>
+
+          {/* Rebuturi Card - Actualizat cu date reale */}
+          <div className={styles.card}>
+            <h2>Rebuturi</h2>
+            <p>Total Cantitate: <strong>{summary.rebuturi.totalQuantity.toFixed(2)} L</strong></p>
+            <p>Total înregistrări: <strong>{summary.rebuturi.items.length}</strong></p>
+            <ul className={styles.previewList}>
+              {summary.rebuturi.items.slice(0, 5).map((rebut) => (
+                <li key={rebut.id}>
+                  {rebut.reteta || 'Necunoscut'}: {parseFloat(rebut.cantitate).toFixed(2)}L
+                </li>
+              ))}
+              {summary.rebuturi.items.length > 5 && <li>...și altele</li>}
+            </ul>
+            <a href="/rebuturi" className={styles.viewMore}>Vezi Toate Rebuturile</a>
           </div>
         </div>
       </div>

@@ -48,7 +48,7 @@ const Depozitare = () => {
           if (!isNaN(litriPerKeg)) {
             const numarKeguri = Math.floor(lot.cantitate / litriPerKeg);
             numarUnitati = numarKeguri;
-            detalii = `${litriPerKeg}L / keg`;
+            detalii = `${numarKeguri} keguri × ${litriPerKeg}L`;
             maxUnits = numarKeguri;
           }
         } else {
@@ -376,6 +376,100 @@ Total litri ieșiți: ${iesiri.reduce((total, iesire) => total + parseFloat(iesi
 
   const totalIesiri = iesiri.reduce((total, iesire) => total + parseFloat(iesire.cantitate), 0);
 
+  const resetStoc = async () => {
+    if (!window.confirm('Sigur doriți să resetați întregul stoc? Această acțiune va șterge toate loturile!')) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/api/loturi-ambalate`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!res.ok) {
+        const contentType = res.headers.get('content-type');
+        let errorMessage = 'Eroare la resetarea stocului';
+        if (contentType && contentType.includes('application/json')) {
+          const errorData = await res.json();
+          errorMessage = errorData.error || `HTTP error ${res.status}`;
+        } else {
+          errorMessage = `Server returned non-JSON response (status ${res.status})`;
+        }
+        throw new Error(errorMessage);
+      }
+
+      await loadData();
+      alert('Stocul a fost resetat cu succes!');
+    } catch (error) {
+      console.error('Eroare la resetarea stocului:', error.message);
+      alert(`Eroare la resetarea stocului: ${error.message}`);
+    }
+  };
+
+  const resetIesiri = async () => {
+    if (!window.confirm('Sigur doriți să resetați istoricul ieșirilor? Această acțiune va șterge toate înregistrările!')) {
+      return;
+    }
+
+    try {
+      const resetEndpoint = `${API_URL}/api/iesiri-bere/reset`;
+      const res = await fetch(resetEndpoint, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!res.ok) {
+        const contentType = res.headers.get('content-type');
+        let errorMessage = 'Eroare la resetarea istoricul ieșirilor';
+        if (contentType && contentType.includes('application/json')) {
+          const errorData = await res.json();
+          errorMessage = errorData.error || `HTTP error ${res.status}`;
+        } else {
+          errorMessage = `Server returned non-JSON response (status ${res.status})`;
+        }
+        throw new Error(errorMessage);
+      }
+
+      await loadIesiri();
+      alert('Istoricul ieșirilor a fost resetat cu succes!');
+    } catch (error) {
+      console.error('Eroare la resetarea istoricul ieșirilor:', error.message);
+      alert(`Eroare la resetarea istoricul ieșirilor: ${error.message}`);
+    }
+  };
+
+  const deleteIesire = async (iesireId) => {
+    if (!window.confirm(`Sigur doriți să ștergeți ieșirea cu ID ${iesireId}?`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/api/iesiri-bere/${iesireId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!res.ok) {
+        const contentType = res.headers.get('content-type');
+        let errorMessage = 'Eroare la ștergerea ieșirii';
+        if (contentType && contentType.includes('application/json')) {
+          const errorData = await res.json();
+          errorMessage = errorData.error || `HTTP error ${res.status}`;
+        } else {
+          errorMessage = `Server returned non-JSON response (status ${res.status})`;
+        }
+        throw new Error(errorMessage);
+      }
+
+      await loadIesiri();
+      alert(`Ieșirea cu ID ${iesireId} a fost ștearsă cu succes!`);
+    } catch (error) {
+      console.error('Eroare la ștergerea ieșirii:', error.message);
+      alert(`Eroare la ștergerea ieșirii: ${error.message}`);
+    }
+  };
+
   return (
     <>
       <NavBar />
@@ -400,9 +494,14 @@ Total litri ieșiți: ${iesiri.reduce((total, iesire) => total + parseFloat(iesi
           {activeTab === 'stoc' && (
             <div className={styles.section}>
               <h2>Stoc Curent</h2>
-              <button onClick={downloadStocPDF} className={styles.button}>
-                Descarcă Stoc ca PDF
-              </button>
+              <div className={styles.buttonContainer}>
+                <button onClick={downloadStocPDF} className={styles.button}>
+                  Descarcă Stoc ca PDF
+                </button>
+                <button onClick={resetStoc} className={styles.button} style={{ backgroundColor: '#e74c3c' }}>
+                  Resetează Stocul
+                </button>
+              </div>
               <table className={styles.consumTable}>
                 <thead>
                   <tr>
@@ -424,6 +523,7 @@ Total litri ieșiți: ${iesiri.reduce((total, iesire) => total + parseFloat(iesi
                       <td>{lot.numarUnitati}</td>
                       <td>{lot.detalii}</td>
                       <td>{new Date(lot.dataAmbalare).toLocaleDateString()}</td>
+                      <td>{lot.ambalaj === 'keguri' ? `${lot.numarUnitati} keguri` : lot.numarUnitati}</td>
                       <td>
                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                           {lot.packagingType === 'sticle' && lot.bottleSize && lot.boxType ? (
@@ -538,6 +638,9 @@ Total litri ieșiți: ${iesiri.reduce((total, iesire) => total + parseFloat(iesi
                 <button onClick={downloadIesiriPDF} className={styles.button}>
                   Descarcă Ieșiri ca PDF
                 </button>
+                <button onClick={resetIesiri} className={styles.button} style={{ backgroundColor: '#e74c3c' }}>
+                  Resetează Istoricul
+                </button>
                 <div className={styles.totalIesiri}>
                   <strong>Total ieșit: {totalIesiri.toFixed(2)}L</strong>
                 </div>
@@ -563,6 +666,7 @@ Total litri ieșiți: ${iesiri.reduce((total, iesire) => total + parseFloat(iesi
                     <th>Motiv</th>
                     <th>Detalii Ieșire</th>
                     <th>Lot ID</th>
+                    <th>Acțiuni</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -578,6 +682,16 @@ Total litri ieșiți: ${iesiri.reduce((total, iesire) => total + parseFloat(iesi
                       <td>{iesire.motiv}</td>
                       <td>{iesire.detaliiIesire || ''}</td>
                       <td>{iesire.lotId}</td>
+                      <td>
+                        <button
+                          onClick={() => deleteIesire(iesire.id)}
+                          className={styles.buttonSmall}
+                          style={{ backgroundColor: '#e74c3c' }}
+                          title="Șterge ieșirea"
+                        >
+                          Șterge
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

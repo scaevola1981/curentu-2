@@ -1,337 +1,238 @@
-/* Container principal */
 .container {
+  padding: 2rem;
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
-  padding: 2rem;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(15deg, #2892D7, #002442);
+  background-size: 300% 300%;
+  animation: gradientMove 15s ease infinite;
   color: #ffffff;
+  font-family: "Segoe UI", sans-serif;
 }
 
-/* Titlu principal */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 .titlu {
-  font-size: 3rem;
-  font-weight: 800;
   text-align: center;
-  margin-bottom: 3rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
-}
-
-/* Secțiuni pentru fermentatoare și loturi */
-.fermentatorStatus, .loturiSection, .formular {
-  margin-bottom: 3rem;
-  padding: 2rem;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-.fermentatorStatus h2, .loturiSection h2, .formular h2 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #667eea;
+  font-size: 2.5rem;
   margin-bottom: 1.5rem;
-  text-align: center;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* Grid pentru fermentatoare */
-.fermentatoareGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
+.fermentatorStatus {
   margin-bottom: 2rem;
 }
 
-/* Fallback message */
-.fermentatoareGrid p, .loading, .noResults {
-  color: #ff6b6b;
-  font-size: 1.2rem;
-  font-weight: 600;
-  text-align: center;
-  padding: 1rem;
-  background: rgba(255, 107, 107, 0.2);
-  border-radius: 12px;
+.fermentatoareGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
 }
 
-/* Carduri pentru fermentatoare */
 .fermentatorCard {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
-  border-radius: 16px;
-  padding: 0;
-  transition: all 0.3s ease;
-  border: 2px solid rgba(255, 107, 107, 0.5); /* Red border for ocupat */
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  position: relative;
-  overflow: hidden;
-  min-height: 220px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  padding: 1rem;
   cursor: pointer;
-}
-
-.fermentatorCardOverlay {
-  position: relative;
-  z-index: 2;
-  padding: 1.5rem;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 100%);
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.fermentatorCard.ocupat {
-  background: linear-gradient(135deg, rgba(255, 107, 107, 0.12) 0%, rgba(255, 107, 107, 0.06) 100%);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .fermentatorCard:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 40px rgba(255, 107, 107, 0.2);
-  border-color: rgba(255, 107, 107, 0.7);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
-.fermentatorCard h3 {
-  font-size: 1.3rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
+.ocupat {
+  outline: 3px solid #4299e1; /* Light blue outline for occupied state */
+  box-shadow: 0 0 20px rgba(66, 153, 225, 0.5); /* Matching shadow */
+}
+
+.fermentatorCardOverlay {
   color: #ffffff;
 }
 
-.fermentatorCard p {
-  margin: 0.5rem 0;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9rem;
+.cantitateInput {
+  margin: 1rem 0;
 }
 
-/* Butoane generale */
-.buttonDescarcare, .buttonRefresh, .buttonDelete, .buttonExport, .button, .buttonUpdate, .buttonCancel, .buttonAdauga {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-  border: none;
-  border-radius: 8px;
-  padding: 0.6rem 1rem; /* Redus padding pentru consistență */
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 0.5rem; /* Redus marginea superioară */
-  width: 65%;
-  text-align: center;
-}
-
-.buttonDescarcare:hover, .buttonRefresh:hover, .buttonDelete:hover, .buttonExport:hover, .button:hover, .buttonUpdate:hover, .buttonCancel:hover, .buttonAdauga:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-  background: linear-gradient(135deg, #ff8787 0%, #f76c38 100%);
-}
-
-.buttonCancel {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.buttonCancel:hover {
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-}
-
-/* Buton Edit specific */
-.buttonEdit {
-  background: linear-gradient(135deg, #4ecdc4 0%, #45b7cd 100%); /* Tonuri de turcoaz */
-  border: none;
-  border-radius: 8px;
-  padding: 0.6rem 1rem;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 0.5rem;
+.input {
   width: 100%;
-  text-align: center;
+  padding: 0.8rem;
+  margin: 0.3rem 0;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #4299e1; 
+  color: rgb(255, 255, 255); /* Dark blue text for contrast against white background */
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.buttonEdit:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
-  background: linear-gradient(135deg, #6be4da 0%, #58c5d7 100%);
+.input:focus {
+  border-color: #024b87; /* Light blue focus border */
+  box-shadow: 0 0 8px rgba(66, 153, 225, 0.5); /* Matching focus shadow */
+  outline: none;
+  
 }
 
-/* Carduri pentru loturi */
-.lotCard {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 16px;
-  padding: 1.5rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-.lotCard:hover {
-  transform: translateY(-5px);
-  border-color: rgba(102, 126, 234, 0.5);
-  box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
-}
-
-.lotCard h3 {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: #ffffff;
-}
-
-.lotCard p {
-  margin: 0.5rem 0;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9rem;
-}
-
-/* Modal pentru mesaje de eroare/succes */
-.modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: linear-gradient(135deg, rgba(30, 30, 50, 0.98) 0%, rgba(20, 20, 40, 0.95) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  padding: 2rem;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  z-index: 1000;
-  min-width: 300px;
-  text-align: center;
-}
-
-.modal p {
-  margin-bottom: 1.5rem;
-  color: #ffffff;
-  font-size: 1.1rem;
-  line-height: 1.5;
-}
-
-.modal button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.button,
+.buttonRefresh,
+.buttonExport,
+.buttonAdauga,
+.buttonEdit,
+.buttonDelete,
+.buttonUpdate,
+.buttonCancel {
+  margin-top: 0.5rem;
+  padding: 0.7rem 1.4rem;
   border: none;
-  border-radius: 8px;
-  padding: 0.8rem 1.5rem;
-  color: white;
+  border-radius: 25px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  color: #ffffff;
 }
 
-.modal button:hover {
+.button,
+.buttonRefresh,
+.buttonExport,
+.buttonAdauga,
+.buttonUpdate {
+  background-color: rgba(26, 115, 232, 0.7); /* Matches header background from Rebuturi */
+}
+
+.button:hover,
+.buttonRefresh:hover,
+.buttonExport:hover,
+.buttonAdauga:hover,
+.buttonUpdate:hover {
+  background-color: #4299e1; /* Light blue hover */
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 0 15px rgba(66, 153, 225, 0.6);
 }
 
-/* Toolbar and form-related styles */
+.buttonDelete,
+.buttonCancel {
+  background-color: #ff6b6b; /* Red for delete/cancel */
+}
+
+.buttonDelete:hover,
+.buttonCancel:hover {
+  background-color: #e53e3e; /* Darker red on hover */
+  transform: translateY(-2px);
+}
+
 .toolbar {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 2rem;
-  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.searchInput {
-  flex: 1;
-  padding: 0.8rem;
+.formular {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  color: #ffffff;
 }
 
 .formRow {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
   flex-wrap: wrap;
-}
-
-.input {
-  flex: 1;
-  padding: 0.8rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  color: #ffffff;
-  min-width: 120px;
+  gap: 1rem;
 }
 
 .formButtons {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
+  margin-top: 1rem;
 }
 
 .tabelContainer {
-  margin-top: 2rem;
+  overflow-x: auto;
 }
 
 .tabel {
   width: 100%;
   border-collapse: collapse;
-  background: rgba(255, 255, 255, 0.03);
+  background-color: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   overflow: hidden;
 }
 
 .headerCell {
-  padding: 0.8rem; /* Redus padding pentru consistență */
-  background: rgba(255, 255, 255, 0.1);
-  font-weight: 700;
+  background-color: rgba(26, 115, 232, 0.7); /* Matches Rebuturi header */
+  padding: 0.8rem;
   text-align: left;
+  color: #ffffff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: sticky;
+  top: 0;
 }
 
-.row {
-  height: 40px; /* Înălțime redusă pentru rânduri */
-  transition: background 0.3s ease;
+.row:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.03);
 }
 
-.row:hover {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.cell, .cellActions {
-  padding: 0.4rem 0.8rem; /* Redus padding pentru a se potrivi cu înălțimea */
+.cell {
+  padding: 0.7rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
-.cellActions {
-  display: flex;
-  gap: 0.5rem;
+.cellActions button {
+  margin-right: 0.4rem;
 }
 
+.noResults,
+.loading {
+  text-align: center;
+  padding: 1.5rem;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
 
+.modal {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+  z-index: 999;
+  max-width: 450px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-/* Responsive design */
-@media (max-width: 768px) {
-  .container {
-    padding: 1rem;
-  }
-  
-  .titlu {
-    font-size: 2rem;
-    margin-bottom: 2rem;
-  }
-  
-  .fermentatoareGrid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  
-  .fermentatorStatus, .loturiSection, .formular {
-    padding: 1.5rem;
-  }
-  
-  .fermentatorCard {
-    min-height: 180px;
-  }
-  
-  .formRow {
-    flex-direction: column;
-  }
-  
-  .input {
-    min-width: 100%;
-  }
+.modal button {
+  background-color: #ff6b6b;
+  border: none;
+  padding: 0.7rem 1.4rem;
+  border-radius: 25px;
+  margin-top: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.modal button:hover {
+  background-color: #e53e3e;
+  transform: translateY(-2px);
 }
