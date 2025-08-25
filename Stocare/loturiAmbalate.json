@@ -171,6 +171,42 @@
         }
       ],
       "dataCreare": "2025-08-23T16:07:32.412Z"
+    },
+    {
+      "id": 8,
+      "fermentatorId": 2,
+      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
+      "cantitate": 23,
+      "unitate": "litri",
+      "dataInceput": "2025-08-23T16:14:44.174Z",
+      "dataAmbalare": "2025-08-25T17:50:40.596Z",
+      "packagingType": "sticle",
+      "bottleSize": "0.33l",
+      "boxType": "6 sticle",
+      "kegSize": null,
+      "materialsUsed": [
+        {
+          "denumire": "Sticle 0.33l",
+          "cantitate": 70,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Capace",
+          "cantitate": 70,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Etichete",
+          "cantitate": 70,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Cutii 6 sticle",
+          "cantitate": 12,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2025-08-25T17:50:40.615Z"
     }
   ]
 }

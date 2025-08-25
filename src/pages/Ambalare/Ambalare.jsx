@@ -28,8 +28,8 @@ const Ambalare = () => {
   const [kegSize, setKegSize] = useState('');
   const [ambalareInsuficiente, setAmbalareInsuficiente] = useState([]);
   const [supplementCantitati, setSupplementCantitati] = useState({});
-  const [cantitateDeAmbalat, setCantitateDeAmbalat] = useState(''); // Cantitatea de ambalat (parțială)
-  
+  const [cantitateDeAmbalat, setCantitateDeAmbalat] = useState(''); // Start empty
+
   // Data loading functions
   const loadMateriale = useCallback(async () => {
     try {
@@ -203,7 +203,6 @@ const Ambalare = () => {
     }
   };
 
-  // Stock verification logic
   const denumireMap = {
     'cutii 6 sticle': 'cutii 6 sticle',
     'cutii 12 sticle': 'cutii 12 sticle',
@@ -248,7 +247,6 @@ const Ambalare = () => {
         { denumire: "Keg 50l", capacitate: 50 },
       ];
       
-      // Calculăm numărul de keg-uri necesare pentru cantitatea specificată
       const selectedKeg = kegSizes.find(k => k.denumire === kegSize) || kegSizes[kegSizes.length - 1];
       const numKegs = Math.ceil(cantitateBere / selectedKeg.capacitate);
       
@@ -293,7 +291,6 @@ const Ambalare = () => {
       return;
     }
 
-    // Validare cantitate de ambalat
     const cantitateDeAmbalatNum = parseFloat(cantitateDeAmbalat);
     if (isNaN(cantitateDeAmbalatNum) || cantitateDeAmbalatNum <= 0) {
       setError('Introduceți o cantitate validă de ambalat!');
@@ -301,7 +298,7 @@ const Ambalare = () => {
     }
     
     if (cantitateDeAmbalatNum > selectedFermentator.cantitate) {
-      setError('Cantitatea de ambalat nu poate depăși cantitatea disponibilă în fermentator!');
+      setError(`Cantitatea de ambalat (${cantitateDeAmbalatNum}L) nu poate depăși cantitatea disponibilă în fermentator (${selectedFermentator.cantitate}L)!`);
       return;
     }
 
@@ -322,7 +319,6 @@ const Ambalare = () => {
     }
 
     try {
-      // Update materials stock
       for (const amb of ambalareNecesare) {
         const stoc = materiale.find(m => 
           normalizeString(m.denumire) === normalizeString(amb.denumire) && 
@@ -338,10 +334,8 @@ const Ambalare = () => {
         }
       }
 
-      // Calculate remaining quantity in fermenter
       const remainingQuantity = selectedFermentator.cantitate - cantitateDeAmbalatNum;
       
-      // Update fermentator status - only mark as empty if all beer is packaged
       const updatedFermentator = {
         ...selectedFermentator,
         ocupat: remainingQuantity > 0,
@@ -354,7 +348,6 @@ const Ambalare = () => {
         body: JSON.stringify(updatedFermentator),
       });
 
-      // Create packaging lot record
       const lotData = {
         fermentatorId: selectedFermentator.id,
         reteta: selectedFermentator.reteta,
@@ -383,7 +376,6 @@ const Ambalare = () => {
         throw new Error('Eroare la salvarea lotului');
       }
 
-      // Update state
       setMateriale(prev => prev.map(m => {
         const consum = ambalareNecesare.find(a => 
           normalizeString(a.denumire) === normalizeString(m.denumire) && 
@@ -392,7 +384,6 @@ const Ambalare = () => {
         return consum ? { ...m, cantitate: m.cantitate - consum.cantitate } : m;
       }));
       
-      // Update fermentatoare list - remove if empty, update if partial
       setFermentatoare(prev => {
         if (remainingQuantity <= 0) {
           return prev.filter(f => f.id !== selectedFermentator.id);
@@ -413,7 +404,6 @@ const Ambalare = () => {
       setKegSize('');
       setAmbalareInsuficiente([]);
       setError(`✅ Ambalare realizată cu succes! ${cantitateDeAmbalatNum}L au fost ambalate.${remainingQuantity > 0 ? ` Au rămas ${remainingQuantity}L în fermentator.` : ''}`);
-
     } catch (error) {
       setError(`Eroare la ambalare: ${error.message}`);
     }
@@ -447,7 +437,7 @@ const Ambalare = () => {
                   className={`${styles.fermentatorCard} ${fermentator.ocupat ? styles.ocupat : ''}`}
                   onClick={() => {
                     setSelectedFermentator(fermentator);
-                    setCantitateDeAmbalat(fermentator.cantitate); // Setează cantitatea maximă implicit
+                    // Do not set cantitateDeAmbalat here; leave it empty for manual input
                   }}
                 >
                   <div className={styles.fermentatorCardOverlay}>
@@ -465,8 +455,8 @@ const Ambalare = () => {
                             value={cantitateDeAmbalat}
                             onChange={(e) => setCantitateDeAmbalat(e.target.value)}
                             min="0"
-                            max={fermentator.cantitate}
                             step="0.1"
+                            placeholder="Introdu cantitatea"
                           />
                         </div>
                         <select
@@ -547,7 +537,6 @@ const Ambalare = () => {
           )}
         </div>
 
-        {/* Restul codului rămâne neschimbat */}
         <div className={styles.toolbar}>
           <div>
             <button className={styles.buttonRefresh} onClick={() => Promise.all([loadMateriale(), loadFermentatoare()])}>
