@@ -376,69 +376,6 @@ Total litri ieșiți: ${iesiri.reduce((total, iesire) => total + parseFloat(iesi
 
   const totalIesiri = iesiri.reduce((total, iesire) => total + parseFloat(iesire.cantitate), 0);
 
-  const resetStoc = async () => {
-    if (!window.confirm('Sigur doriți să resetați întregul stoc? Această acțiune va șterge toate loturile!')) {
-      return;
-    }
-
-    try {
-      const res = await fetch(`${API_URL}/api/loturi-ambalate`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      if (!res.ok) {
-        const contentType = res.headers.get('content-type');
-        let errorMessage = 'Eroare la resetarea stocului';
-        if (contentType && contentType.includes('application/json')) {
-          const errorData = await res.json();
-          errorMessage = errorData.error || `HTTP error ${res.status}`;
-        } else {
-          errorMessage = `Server returned non-JSON response (status ${res.status})`;
-        }
-        throw new Error(errorMessage);
-      }
-
-      await loadData();
-      alert('Stocul a fost resetat cu succes!');
-    } catch (error) {
-      console.error('Eroare la resetarea stocului:', error.message);
-      alert(`Eroare la resetarea stocului: ${error.message}`);
-    }
-  };
-
-  const resetIesiri = async () => {
-    if (!window.confirm('Sigur doriți să resetați istoricul ieșirilor? Această acțiune va șterge toate înregistrările!')) {
-      return;
-    }
-
-    try {
-      const resetEndpoint = `${API_URL}/api/iesiri-bere/reset`;
-      const res = await fetch(resetEndpoint, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      if (!res.ok) {
-        const contentType = res.headers.get('content-type');
-        let errorMessage = 'Eroare la resetarea istoricul ieșirilor';
-        if (contentType && contentType.includes('application/json')) {
-          const errorData = await res.json();
-          errorMessage = errorData.error || `HTTP error ${res.status}`;
-        } else {
-          errorMessage = `Server returned non-JSON response (status ${res.status})`;
-        }
-        throw new Error(errorMessage);
-      }
-
-      await loadIesiri();
-      alert('Istoricul ieșirilor a fost resetat cu succes!');
-    } catch (error) {
-      console.error('Eroare la resetarea istoricul ieșirilor:', error.message);
-      alert(`Eroare la resetarea istoricul ieșirilor: ${error.message}`);
-    }
-  };
-
   const deleteIesire = async (iesireId) => {
     if (!window.confirm(`Sigur doriți să ștergeți ieșirea cu ID ${iesireId}?`)) {
       return;
@@ -498,9 +435,7 @@ Total litri ieșiți: ${iesiri.reduce((total, iesire) => total + parseFloat(iesi
                 <button onClick={downloadStocPDF} className={styles.button}>
                   Descarcă Stoc ca PDF
                 </button>
-                <button onClick={resetStoc} className={styles.button} style={{ backgroundColor: '#e74c3c' }}>
-                  Resetează Stocul
-                </button>
+                {/* Removed the resetStoc button */}
               </div>
               <table className={styles.consumTable}>
                 <thead>
@@ -637,9 +572,6 @@ Total litri ieșiți: ${iesiri.reduce((total, iesire) => total + parseFloat(iesi
               <div className={styles.iesiriControls}>
                 <button onClick={downloadIesiriPDF} className={styles.button}>
                   Descarcă Ieșiri ca PDF
-                </button>
-                <button onClick={resetIesiri} className={styles.button} style={{ backgroundColor: '#e74c3c' }}>
-                  Resetează Istoricul
                 </button>
                 <div className={styles.totalIesiri}>
                   <strong>Total ieșit: {totalIesiri.toFixed(2)}L</strong>
