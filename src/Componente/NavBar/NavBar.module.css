@@ -1,7 +1,7 @@
 .navbar {
-  background: linear-gradient(45deg,  #5c85f6,#3047f8, #011e6f );
+  background: linear-gradient(45deg,  #5c85f6,#0520ec, #6801a3 );
   background-size: 400% 400%; /* Increased for a bigger gradient sweep */
-  animation: gradientPulse 15s ease infinite; /* Longer duration for a slower, bigger effect */
+  animation: gradientPulse 10s ease infinite; /* Longer duration for a slower, bigger effect */
   padding: 1rem 2rem;
   box-shadow: 0 4px 30px rgb(156, 156, 157);
   color: #F7FAFC;

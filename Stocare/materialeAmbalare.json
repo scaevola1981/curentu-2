@@ -112,12 +112,12 @@
     },
     {
       "id": 12,
-      "denumire": "keg",
-      "cantitate": 150,
-      "unitate": "l",
-      "producator": "",
-      "codProdus": "",
-      "lot": "",
+      "denumire": "Keg 50L",
+      "cantitate": 99,
+      "unitate": "buc",
+      "producator": "1",
+      "codProdus": "123",
+      "lot": "1234",
       "tip": "keg",
       "subcategorie": ""
     }

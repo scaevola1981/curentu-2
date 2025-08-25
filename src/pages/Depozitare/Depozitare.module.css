@@ -44,22 +44,25 @@
   background: none;
   border: none;
   border-bottom: 3px solid transparent;
+  border-radius: 12px;
   font-size: 1.1rem;
-  font-weight: 500;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  color: #5ff471;
+  color: #ffffff;
 }
 
 .tabButton:hover {
-  color: #1a73e8;
-  background-color: rgba(26, 115, 232, 0.1);
+  color: #034cab;
+  background-color: rgba(27, 254, 114, 0.818);
+    font-weight: 700;
 }
 
 .activeTab {
-  color: #1a73e8;
+  color: #ffffff;
   border-bottom-color: #1a73e8;
-  background-color: rgba(26, 115, 232, 0.2);
+  background-color: #fd3d3d;
+  font-weight: 700;
 }
 
 .sectionsContainer {

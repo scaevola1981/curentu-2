@@ -207,6 +207,27 @@
         }
       ],
       "dataCreare": "2025-08-25T17:50:40.615Z"
+    },
+    {
+      "id": 9,
+      "fermentatorId": 2,
+      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
+      "cantitate": 50,
+      "unitate": "litri",
+      "dataInceput": "2025-08-23T16:14:44.174Z",
+      "dataAmbalare": "2025-08-25T19:24:32.760Z",
+      "packagingType": "keguri",
+      "bottleSize": null,
+      "boxType": null,
+      "kegSize": "Keg 50l",
+      "materialsUsed": [
+        {
+          "denumire": "Keg 50l",
+          "cantitate": 1,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2025-08-25T19:24:32.784Z"
     }
   ]
 }
