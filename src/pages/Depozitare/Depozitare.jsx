@@ -297,32 +297,9 @@ const Depozitare = () => {
 
   const downloadStocPDF = () => {
     const latexContent = `
-\\documentclass[a4paper,12pt]{article}
-\\usepackage[utf8]{inputenc}
-\\usepackage{geometry}
-\\geometry{a4paper, margin=1in}
-\\usepackage{array}
-\\usepackage{booktabs}
-\\usepackage{longtable}
-\\usepackage{fontspec}
-\\setmainfont{DejaVu Sans}
-\\begin{document}
-\\title{Stocul de Bere - ${new Date().toLocaleDateString('ro-RO')}}
-\\author{Gestionare Depozitare}
-\\date{}
-\\maketitle
-\\section*{Stocul Curent}
-\\begin{longtable}{p{3cm} p{2.5cm} p{2.5cm} p{3cm} p{3cm} p{3cm}}
-\\toprule
-\\textbf{Rețetă} & \\textbf{Cantitate (L)} & \\textbf{Ambalaj} & \\textbf{Număr Unități} & \\textbf{Detalii} & \\textbf{Data Ambalării} \\\\
-\\midrule
-\\endhead
 ${loturi.map(lot => `
-  ${lot.reteta} & ${lot.cantitate} & ${lot.ambalaj} & ${lot.numarUnitati} & ${lot.detalii} & ${new Date(lot.dataAmbalare).toLocaleDateString('ro-RO')} \\\\
+${lot.reteta} & ${lot.cantitate} & ${lot.ambalaj} & ${lot.numarUnitati} & ${lot.detalii} & ${new Date(lot.dataAmbalare).toLocaleDateString('ro-RO')} \\\\
 `).join('')}
-\\bottomrule
-\\end{longtable}
-\\end{document}
     `;
     downloadFile(latexContent, `stoc_bere_${new Date().toISOString().split('T')[0]}.tex`, 'text/x-tex');
     alert('Fișierul .tex pentru stoc a fost descărcat.');
@@ -435,7 +412,6 @@ Total litri ieșiți: ${iesiri.reduce((total, iesire) => total + parseFloat(iesi
                 <button onClick={downloadStocPDF} className={styles.button}>
                   Descarcă Stoc ca PDF
                 </button>
-                {/* Removed the resetStoc button */}
               </div>
               <table className={styles.consumTable}>
                 <thead>
