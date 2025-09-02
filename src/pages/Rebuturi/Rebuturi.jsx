@@ -75,76 +75,146 @@ const Rebuturi = () => {
       <NavBar />
       <div className={styles.container}>
         <h1 className={styles.title}>Rebuturi și Pierderi</h1>
+        
         {Object.keys(grupatePeReteta).length === 0 ? (
           <p className={styles.noData}>Nu există rebuturi sau pierderi înregistrate.</p>
         ) : (
           <>
-            {Object.entries(grupatePeReteta).map(([reteta, date]) => (
-              <div key={reteta} className={styles.retetaSection}>
-                <h2>{reteta}</h2>
-                <table className={styles.rebutTable}>
-                  <thead>
-                    <tr>
-                      <th>Lot ID</th>
-                      <th>Cantitate (L)</th>
-                      <th>Unități</th>
-                      <th>Ambalaj</th>
-                      <th>Tip Ambalaj</th>
-                      <th>Capace</th>
-                      <th>Etichete</th>
-                      <th>Cutii</th>
-                      <th>Sticle</th>
-                      <th>Keguri</th>
-                      <th>Data Ieșire</th>
-                      <th>Detalii</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {date.loturi.map((rebut) => (
-                      <tr key={rebut.id}>
-                        <td>{rebut.lotId}</td>
-                        <td>{parseFloat(rebut.cantitate).toFixed(2)}</td>
-                        <td>{rebut.numarUnitatiScoase || '-'}</td>
-                        <td>{rebut.ambalaj}</td>
-                        <td>{rebut.boxType || '-'}</td>
-                        <td>{rebut.materiale?.capace || 0}</td>
-                        <td>{rebut.materiale?.etichete || 0}</td>
-                        <td>{rebut.materiale?.cutii || 0}</td>
-                        <td>{rebut.materiale?.sticle || 0}</td>
-                        <td>{rebut.materiale?.keguri || 0}</td>
-                        <td>{new Date(rebut.dataIesire).toLocaleDateString('ro-RO')}</td>
-                        <td>{rebut.detaliiIesire || '-'}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td colSpan="1"><strong>Total {reteta}</strong></td>
-                      <td><strong>{date.totalLitri.toFixed(2)} L</strong></td>
-                      <td>-</td>
-                      <td>-</td>
-                      <td>-</td>
-                      <td><strong>{date.totalCapace}</strong></td>
-                      <td><strong>{date.totalEtichete}</strong></td>
-                      <td><strong>{date.totalCutii}</strong></td>
-                      <td><strong>{date.totalSticle}</strong></td>
-                      <td><strong>{date.totalKeguri}</strong></td>
-                      <td colSpan="2"></td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            ))}
+            <div className={styles.gridContainer}>
+              {Object.entries(grupatePeReteta).map(([reteta, date]) => (
+                <div key={reteta} className={styles.recipeCard}>
+                  <div className={styles.cardHeader}>
+                    <h2>{reteta}</h2>
+                  </div>
+                  
+                  <div className={styles.cardSummary}>
+                    <div className={styles.summaryItem}>
+                      <span className={styles.summaryLabel}>Total Litri:</span>
+                      <span className={styles.summaryValue}>{date.totalLitri.toFixed(2)} L</span>
+                    </div>
+                    <div className={styles.summaryItem}>
+                      <span className={styles.summaryLabel}>Capace:</span>
+                      <span className={styles.summaryValue}>{date.totalCapace}</span>
+                    </div>
+                    <div className={styles.summaryItem}>
+                      <span className={styles.summaryLabel}>Etichete:</span>
+                      <span className={styles.summaryValue}>{date.totalEtichete}</span>
+                    </div>
+                    <div className={styles.summaryItem}>
+                      <span className={styles.summaryLabel}>Sticle:</span>
+                      <span className={styles.summaryValue}>{date.totalSticle}</span>
+                    </div>
+                    <div className={styles.summaryItem}>
+                      <span className={styles.summaryLabel}>Keguri:</span>
+                      <span className={styles.summaryValue}>{date.totalKeguri}</span>
+                    </div>
+                    <div className={styles.summaryItem}>
+                      <span className={styles.summaryLabel}>Loturi:</span>
+                      <span className={styles.summaryValue}>{date.loturi.length}</span>
+                    </div>
+                  </div>
+                  
+                  <div className={styles.loturiSection}>
+                    <h3>Loturi</h3>
+                    <div className={styles.loturiGrid}>
+                      {date.loturi.map((rebut) => (
+                        <div key={rebut.id} className={styles.lotCard}>
+                          <div className={styles.lotHeader}>
+                            <span className={styles.lotId}>Lot ID: {rebut.lotId}</span>
+                            <span className={styles.lotDate}>
+                              {new Date(rebut.dataIesire).toLocaleDateString('ro-RO')}
+                            </span>
+                          </div>
+                          
+                          <div className={styles.lotDetails}>
+                            <div className={styles.detailRow}>
+                              <span className={styles.detailLabel}>Cantitate:</span>
+                              <span className={styles.detailValue}>{parseFloat(rebut.cantitate).toFixed(2)} L</span>
+                            </div>
+                            <div className={styles.detailRow}>
+                              <span className={styles.detailLabel}>Ambalaj:</span>
+                              <span className={styles.detailValue}>{rebut.ambalaj}</span>
+                            </div>
+                            {rebut.boxType && (
+                              <div className={styles.detailRow}>
+                                <span className={styles.detailLabel}>Tip ambalaj:</span>
+                                <span className={styles.detailValue}>{rebut.boxType}</span>
+                              </div>
+                            )}
+                            <div className={styles.detailRow}>
+                              <span className={styles.detailLabel}>Unități:</span>
+                              <span className={styles.detailValue}>{rebut.numarUnitatiScoase || '-'}</span>
+                            </div>
+                            {rebut.detaliiIesire && (
+                              <div className={styles.detailRow}>
+                                <span className={styles.detailLabel}>Detalii:</span>
+                                <span className={styles.detailValue}>{rebut.detaliiIesire}</span>
+                              </div>
+                            )}
+                          </div>
+                          
+                          <div className={styles.materialsGrid}>
+                            <div className={styles.materialItem}>
+                              <span className={styles.materialLabel}>Capace</span>
+                              <span className={styles.materialValue}>{rebut.materiale?.capace || 0}</span>
+                            </div>
+                            <div className={styles.materialItem}>
+                              <span className={styles.materialLabel}>Etichete</span>
+                              <span className={styles.materialValue}>{rebut.materiale?.etichete || 0}</span>
+                            </div>
+                            <div className={styles.materialItem}>
+                              <span className={styles.materialLabel}>Cutii</span>
+                              <span className={styles.materialValue}>{rebut.materiale?.cutii || 0}</span>
+                            </div>
+                            <div className={styles.materialItem}>
+                              <span className={styles.materialLabel}>Sticle</span>
+                              <span className={styles.materialValue}>{rebut.materiale?.sticle || 0}</span>
+                            </div>
+                            <div className={styles.materialItem}>
+                              <span className={styles.materialLabel}>Keguri</span>
+                              <span className={styles.materialValue}>{rebut.materiale?.keguri || 0}</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
             <div className={styles.totalSection}>
               <h3>Total General</h3>
-              <p>Litri: <strong>{totalLitri.toFixed(2)} L</strong></p>
-              <p>Capace: <strong>{totalCapace}</strong></p>
-              <p>Etichete: <strong>{totalEtichete}</strong></p>
-              <p>Cutii: <strong>{totalCutii}</strong></p>
-              <p>Sticle: <strong>{totalSticle}</strong></p>
-              <p>Keguri: <strong>{totalKeguri}</strong></p>
-              <p>Total înregistrări: {rebuturi.length}</p>
-
+              <div className={styles.totalGrid}>
+                <div className={styles.totalItem}>
+                  <span className={styles.totalLabel}>Litri:</span>
+                  <span className={styles.totalValue}>{totalLitri.toFixed(2)} L</span>
+                </div>
+                <div className={styles.totalItem}>
+                  <span className={styles.totalLabel}>Capace:</span>
+                  <span className={styles.totalValue}>{totalCapace}</span>
+                </div>
+                <div className={styles.totalItem}>
+                  <span className={styles.totalLabel}>Etichete:</span>
+                  <span className={styles.totalValue}>{totalEtichete}</span>
+                </div>
+                <div className={styles.totalItem}>
+                  <span className={styles.totalLabel}>Cutii:</span>
+                  <span className={styles.totalValue}>{totalCutii}</span>
+                </div>
+                <div className={styles.totalItem}>
+                  <span className={styles.totalLabel}>Sticle:</span>
+                  <span className={styles.totalValue}>{totalSticle}</span>
+                </div>
+                <div className={styles.totalItem}>
+                  <span className={styles.totalLabel}>Keguri:</span>
+                  <span className={styles.totalValue}>{totalKeguri}</span>
+                </div>
+                <div className={styles.totalItem}>
+                  <span className={styles.totalLabel}>Total înregistrări:</span>
+                  <span className={styles.totalValue}>{rebuturi.length}</span>
+                </div>
+              </div>
             </div>
           </>
         )}

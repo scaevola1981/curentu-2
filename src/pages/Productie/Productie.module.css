@@ -20,7 +20,70 @@ h2 {
   margin: 2rem;
   color: #ffffff;
   font-weight: 600;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Adjusted from original shadow */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Stiluri pentru Alert */
+.alertError,
+.alertSuccess {
+  position: fixed;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 300px;
+  max-width: 80%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease-out;
+}
+
+.alertError {
+  background-color: #ff6b6b;
+  border: 1px solid #e53e3e;
+  color: white;
+}
+
+.alertSuccess {
+  background-color: #48bb78;
+  border: 1px solid #38a169;
+  color: white;
+}
+
+.alertClose {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-left: 1rem;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.alertClose:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translate(-50%, -20px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
 }
 
 .fermentatoareGrid,
@@ -34,10 +97,10 @@ h2 {
 .fermentatorCard,
 .retetaCard,
 .fermentatorSelectCard {
-  border-radius: 12px; /* Adjusted for consistency */
+  border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
+  background-color: rgba(255, 255, 255, 0.1);
   cursor: pointer;
   transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -48,27 +111,27 @@ h2 {
 .fermentatorSelectCard:hover {
   transform: translateY(-5px);
   box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
-  background-color: rgba(255, 255, 255, 0.2); /* Lighter on hover */
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .fermentatorCardOverlay,
 .retetaCardOverlay,
 .fermentatorSelectOverlay {
   padding: 1rem;
-  color: #242424; /* Changed from #003989 to match palette */
+  color: #242424;
   font-size: 1rem;
   font-weight: 600;
 }
 
 .selected,
 .selectedFermentator {
-  outline: 3px solid #4299e1; /* Light blue outline */
-  box-shadow: 0 0 20px rgba(66, 153, 225, 0.5); /* Matching shadow */
+  outline: 3px solid #4299e1;
+  box-shadow: 0 0 20px rgba(66, 153, 225, 0.5);
 }
 
 .statusLiber,
 .disponibil {
-  color: #0cf300; /* Kept green for availability, adjust if needed */
+  color: #0cf300;
   font-weight: 900;
   font-size: 1.5rem;
 }
@@ -95,14 +158,14 @@ h2 {
   border: 1px solid rgba(255, 255, 255, 0.1);
   margin-top: 0.5rem;
   font-size: 1rem;
-  background-color: #ffffff; /* White background as requested */
-  color: #002442; /* Dark blue text for contrast */
+  background-color: #ffffff;
+  color: #002442;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .input:focus {
-  border-color: #4299e1; /* Light blue focus border */
-  box-shadow: 0 0 8px rgba(66, 153, 225, 0.5); /* Matching focus shadow */
+  border-color: #4299e1;
+  box-shadow: 0 0 8px rgba(66, 153, 225, 0.5);
   outline: none;
 }
 
@@ -112,7 +175,7 @@ h2 {
   padding: 0.9rem 1.8rem;
   border: none;
   border-radius: 30px;
-  background-color: rgba(26, 115, 232, 0.7); /* Solid color from palette */
+  background-color: rgba(26, 115, 232, 0.7);
   color: #ffffff;
   font-weight: 600;
   cursor: pointer;
@@ -121,7 +184,7 @@ h2 {
 
 .button:hover,
 .buttonConfirm:hover {
-  background-color: #4299e1; /* Light blue hover */
+  background-color: #4299e1;
   transform: translateY(-2px);
   box-shadow: 0 0 20px rgba(66, 153, 225, 0.7);
 }
@@ -130,7 +193,7 @@ h2 {
   margin-top: 1rem;
   padding: 1rem;
   border-radius: 12px;
-  background-color: #ff6b6b; /* Red from palette */
+  background-color: #ff6b6b;
   color: #ffffff;
   font-weight: 600;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -140,41 +203,8 @@ h2 {
   margin-top: 1rem;
   padding: 1rem;
   border-radius: 12px;
-  background-color: rgba(26, 115, 232, 0.7); /* Matches header color */
+  background-color: rgba(26, 115, 232, 0.7);
   color: #ffffff;
   font-weight: 600;
   border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.modal {
-  position: fixed;
-  top: 20%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
-  color: #ffffff;
-  z-index: 999;
-  max-width: 450px;
-  text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.modal button {
-  margin-top: 1rem;
-  padding: 0.7rem 1.4rem;
-  border-radius: 30px;
-  border: none;
-  cursor: pointer;
-  background-color: #ff6b6b; /* Red for delete/cancel */
-  color: #ffffff;
-  font-weight: 600;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.modal button:hover {
-  background-color: #e53e3e; /* Darker red on hover */
-  transform: translateY(-2px);
 }

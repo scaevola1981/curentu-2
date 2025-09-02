@@ -25,6 +25,84 @@
       "utilizator": "Administrator",
       "observatii": "",
       "createdAt": "2025-08-21T08:46:17.384Z"
+    },
+    {
+      "id": 15,
+      "lotId": "2",
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": "19.80",
+      "numarUnitatiScoase": 60,
+      "ambalaj": "sticle",
+      "motiv": "rebut",
+      "dataIesire": "2025-09-01T14:24:19.020Z",
+      "utilizator": "Administrator",
+      "observatii": "",
+      "createdAt": "2025-09-01T14:24:19.030Z"
+    },
+    {
+      "id": 16,
+      "lotId": "2",
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": "7.92",
+      "numarUnitatiScoase": 24,
+      "ambalaj": "sticle",
+      "motiv": "vanzare",
+      "dataIesire": "2025-09-01T14:26:31.081Z",
+      "utilizator": "Administrator",
+      "observatii": "",
+      "createdAt": "2025-09-01T14:26:31.092Z"
+    },
+    {
+      "id": 17,
+      "lotId": "2",
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": "138.60",
+      "numarUnitatiScoase": 420,
+      "ambalaj": "sticle",
+      "motiv": "vanzare",
+      "dataIesire": "2025-09-02T17:40:24.056Z",
+      "utilizator": "Administrator",
+      "observatii": "",
+      "createdAt": "2025-09-02T17:40:24.108Z"
+    },
+    {
+      "id": 18,
+      "lotId": "2",
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": "11.88",
+      "numarUnitatiScoase": 36,
+      "ambalaj": "sticle",
+      "motiv": "rebut",
+      "dataIesire": "2025-09-02T18:12:47.676Z",
+      "utilizator": "Administrator",
+      "observatii": "",
+      "createdAt": "2025-09-02T18:12:47.712Z"
+    },
+    {
+      "id": 19,
+      "lotId": "4",
+      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
+      "cantitate": "40.00",
+      "numarUnitatiScoase": 1,
+      "ambalaj": "keguri",
+      "motiv": "rebut",
+      "dataIesire": "2025-09-02T18:15:18.558Z",
+      "utilizator": "Administrator",
+      "observatii": "",
+      "createdAt": "2025-09-02T18:15:18.581Z"
+    },
+    {
+      "id": 20,
+      "lotId": "7",
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": "50.82",
+      "numarUnitatiScoase": 154,
+      "ambalaj": "sticle",
+      "motiv": "rebut",
+      "dataIesire": "2025-09-02T18:49:22.490Z",
+      "utilizator": "Administrator",
+      "observatii": "",
+      "createdAt": "2025-09-02T18:49:22.518Z"
     }
   ]
 }

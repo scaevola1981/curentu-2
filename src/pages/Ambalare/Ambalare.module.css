@@ -152,7 +152,28 @@
 }
 
 .formButtons {
+  display: flex;
+  justify-content: center; /* Centrează butoanele */
   margin-top: 1rem;
+  width: 100%; /* Asigură că butoanele ocupă lățimea disponibilă */
+}
+
+.buttonAdauga {
+  margin-top: 0.5rem;
+  padding: 0.7rem 1.4rem;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  color: #ffffff;
+  background-color: rgba(26, 115, 232, 0.7);
+}
+
+.buttonAdauga:hover {
+  background-color: #4299e1;
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(66, 153, 225, 0.6);
 }
 
 .tabelContainer {

@@ -23,8 +23,7 @@ const Depozitare = () => {
       const res = await fetch(`${API_URL}/api/loturi-ambalate`);
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const loturiAmbalate = await res.json();
-      console.log('Date primite de la /api/loturi-ambalate:', loturiAmbalate);
-
+      
       const loturiTransformate = loturiAmbalate.map(lot => {
         let numarUnitati = 0;
         let detalii = '';
@@ -74,7 +73,6 @@ const Depozitare = () => {
         };
       });
 
-      console.log('Loturi transformate:', loturiTransformate);
       setLoturi(loturiTransformate);
       const newInputValues = {};
       const newSticleLibereValues = {};
@@ -115,7 +113,6 @@ const Depozitare = () => {
 
     try {
       const parsedLotId = parseInt(lotId);
-      console.log(`Încerc să șterg lotul cu ID: ${parsedLotId}`);
       const res = await fetch(`${API_URL}${LOT_UPDATE_ENDPOINT}/${parsedLotId}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
@@ -224,8 +221,6 @@ const Depozitare = () => {
       detaliiIesire: unitatiMesaj,
     };
 
-    console.log('Sending payload to /api/iesiri-bere:', payload);
-
     try {
       const iesireRes = await fetch(`${API_URL}/api/iesiri-bere`, {
         method: 'POST',
@@ -266,7 +261,6 @@ const Depozitare = () => {
       }
 
       if (parseFloat(cantitateNoua) <= 0) {
-        console.log(`Cantitate nouă <= 0, șterg lotul ${parsedLotId}`);
         await deleteLot(parsedLotId);
         alert(`Ieșire înregistrată: ${unitatiMesaj} - ${motivIesire}. Lotul a fost șters deoarece cantitatea a ajuns la 0.`);
       } else {
@@ -413,76 +407,38 @@ Total litri ieșiți: ${iesiri.reduce((total, iesire) => total + parseFloat(iesi
                   Descarcă Stoc ca PDF
                 </button>
               </div>
-              <table className={styles.consumTable}>
-                <thead>
-                  <tr>
-                    <th>Rețetă</th>
-                    <th>Cantitate (L)</th>
-                    <th>Ambalaj</th>
-                    <th>Număr Unități</th>
-                    <th>Detalii</th>
-                    <th>Data Ambalării</th>
-                    <th>Acțiuni</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {loturi.map((lot) => (
-                    <tr key={lot.id}>
-                      <td>{lot.reteta}</td>
-                      <td>{lot.cantitate}</td>
-                      <td>{lot.ambalaj}</td>
-                      <td>{lot.numarUnitati}</td>
-                      <td>{lot.detalii}</td>
-                      <td>{new Date(lot.dataAmbalare).toLocaleDateString()}</td>
-                      <td>{lot.ambalaj === 'keguri' ? `${lot.numarUnitati} keguri` : lot.numarUnitati}</td>
-                      <td>
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                          {lot.packagingType === 'sticle' && lot.bottleSize && lot.boxType ? (
-                            <>
-                              <input
-                                type="number"
-                                min="0"
-                                max={lot.maxUnits}
-                                value={inputValues[lot.id] || ''}
-                                onChange={(e) =>
-                                  setInputValues({ ...inputValues, [lot.id]: e.target.value })
-                                }
-                                className={styles.input}
-                                placeholder={`Max ${lot.maxUnits} cutii`}
-                                style={{ width: '120px' }}
-                              />
-                              {lot.maxSticleLibere > 0 && (
-                                <input
-                                  type="number"
-                                  min="0"
-                                  max={lot.maxSticleLibere}
-                                  value={sticleLibereValues[lot.id] || ''}
-                                  onChange={(e) =>
-                                    setSticleLibereValues({ ...sticleLibereValues, [lot.id]: e.target.value })
-                                  }
-                                  className={styles.input}
-                                  placeholder={`Max ${lot.maxSticleLibere} sticle libere`}
-                                  style={{ width: '140px' }}
-                                />
-                              )}
-                            </>
-                          ) : lot.packagingType === 'keguri' && lot.kegSize ? (
-                            <select
-                              value={inputValues[lot.id] || ''}
-                              onChange={(e) =>
-                                setInputValues({ ...inputValues, [lot.id]: e.target.value })
-                              }
-                              className={styles.select}
-                              style={{ width: '120px' }}
-                            >
-                              <option value="">Alege nr. keguri</option>
-                              {[...Array(lot.maxUnits + 1).keys()].slice(1).map((num) => (
-                                <option key={num} value={num}>
-                                  {num} keg{num === 1 ? '' : 'uri'}
-                                </option>
-                              ))}
-                            </select>
-                          ) : (
+              <div className={styles.cardsContainer}>
+                {loturi.map((lot) => ( 
+                  <div key={lot.id} className={styles.card}>
+                    <div className={styles.cardHeader}>
+                      <h3 className={styles.cardTitle}>{lot.reteta}</h3>
+                    </div>
+                    <div className={styles.cardContent}>
+                      <div className={styles.cardRow}>
+                        <span className={styles.cardLabel}>Cantitate:</span>
+                        <span className={styles.cardValue}>{lot.cantitate}L</span>
+                      </div>
+                      <div className={styles.cardRow}>
+                        <span className={styles.cardLabel}>Ambalaj:</span>
+                        <span className={styles.cardValue}>{lot.ambalaj}</span>
+                      </div>
+                      <div className={styles.cardRow}>
+                        <span className={styles.cardLabel}>Unități:</span>
+                        <span className={styles.cardValue}>{lot.numarUnitati}</span>
+                      </div>
+                      <div className={styles.cardRow}>
+                        <span className={styles.cardLabel}>Detalii:</span>
+                        <span className={styles.cardValue}>{lot.detalii}</span>
+                      </div>
+                      <div className={styles.cardRow}>
+                        <span className={styles.cardLabel}>Data ambalării:</span>
+                        <span className={styles.cardValue}>{new Date(lot.dataAmbalare).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                    <div className={styles.cardActions}>
+                      <div className={styles.inputsGroup}>
+                        {lot.packagingType === 'sticle' && lot.bottleSize && lot.boxType ? (
+                          <>
                             <input
                               type="number"
                               min="0"
@@ -492,53 +448,91 @@ Total litri ieșiți: ${iesiri.reduce((total, iesire) => total + parseFloat(iesi
                                 setInputValues({ ...inputValues, [lot.id]: e.target.value })
                               }
                               className={styles.input}
-                              placeholder={`Max ${lot.maxUnits} litri`}
-                              style={{ width: '120px' }}
+                              placeholder={`Max ${lot.maxUnits} cutii`}
                             />
-                          )}
+                            {lot.maxSticleLibere > 0 && (
+                              <input
+                                type="number"
+                                min="0"
+                                max={lot.maxSticleLibere}
+                                value={sticleLibereValues[lot.id] || ''}
+                                onChange={(e) =>
+                                  setSticleLibereValues({ ...sticleLibereValues, [lot.id]: e.target.value })
+                                }
+                                className={styles.input}
+                                placeholder={`Max ${lot.maxSticleLibere} sticle`}
+                              />
+                            )}
+                          </>
+                        ) : lot.packagingType === 'keguri' && lot.kegSize ? (
                           <select
-                            value={motivValues[lot.id] || 'vanzare'}
+                            value={inputValues[lot.id] || ''}
                             onChange={(e) =>
-                              setMotivValues({ ...motivValues, [lot.id]: e.target.value })
+                              setInputValues({ ...inputValues, [lot.id]: e.target.value })
                             }
                             className={styles.select}
-                            style={{ width: '120px' }}
                           >
-                            <option value="vanzare">Vânzare</option>
-                            <option value="degustare">Degustare</option>
-                            <option value="pierdere">Pierdere</option>
-                            <option value="rebut">Rebut</option>
-                            <option value="donatie">Donație</option>
-                            <option value="consum_intern">Consum intern</option>
-                            <option value="altul">Altul</option>
-                            <option value="alta_vanzare">Altă vânzare</option>
+                            <option value="">Alege keguri</option>
+                            {[...Array(lot.maxUnits + 1).keys()].slice(1).map((num) => (
+                              <option key={num} value={num}>
+                                {num} keg{num === 1 ? '' : 'uri'}
+                              </option>
+                            ))}
                           </select>
-                          <button
-                            onClick={() =>
-                              scoateDinStoc(lot.id, inputValues[lot.id], sticleLibereValues[lot.id], motivValues[lot.id])
+                        ) : (
+                          <input
+                            type="number"
+                            min="0"
+                            max={lot.maxUnits}
+                            value={inputValues[lot.id] || ''}
+                            onChange={(e) =>
+                              setInputValues({ ...inputValues, [lot.id]: e.target.value })
                             }
-                            className={styles.buttonSmall}
-                            disabled={
-                              (!inputValues[lot.id] || inputValues[lot.id] === '0') &&
-                              (!sticleLibereValues[lot.id] || sticleLibereValues[lot.id] === '0')
-                            }
-                          >
-                            Confirmă
-                          </button>
-                          <button
-                            onClick={() => deleteLot(lot.id)}
-                            className={styles.buttonSmall}
-                            style={{ backgroundColor: '#e74c3c' }}
-                            title="Șterge lotul"
-                          >
-                            Șterge
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                            className={styles.input}
+                            placeholder={`Max ${lot.maxUnits}`}
+                          />
+                        )}
+                        <select
+                          value={motivValues[lot.id] || 'vanzare'}
+                          onChange={(e) =>
+                            setMotivValues({ ...motivValues, [lot.id]: e.target.value })
+                          }
+                          className={styles.select}
+                        >
+                          <option value="vanzare">Vânzare</option>
+                          <option value="degustare">Degustare</option>
+                          <option value="pierdere">Pierdere</option>
+                          <option value="rebut">Rebut</option>
+                          <option value="donatie">Donație</option>
+                          <option value="consum_intern">Consum intern</option>
+                          <option value="altul">Altul</option>
+                        </select>
+                      </div>
+                      <div className={styles.buttonsGroup}>
+                        <button
+                          onClick={() =>
+                            scoateDinStoc(lot.id, inputValues[lot.id], sticleLibereValues[lot.id], motivValues[lot.id])
+                          }
+                          className={styles.buttonSmall}
+                          disabled={
+                            (!inputValues[lot.id] || inputValues[lot.id] === '0') &&
+                            (!sticleLibereValues[lot.id] || sticleLibereValues[lot.id] === '0')
+                          }
+                        >
+                          Confirmă
+                        </button>
+                        <button
+                          onClick={() => deleteLot(lot.id)}
+                          className={`${styles.buttonSmall} ${styles.deleteButton}`}
+                          title="Șterge lotul"
+                        >
+                          Șterge
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
@@ -563,47 +557,56 @@ Total litri ieșiți: ${iesiri.reduce((total, iesire) => total + parseFloat(iesi
                   ))}
                 </div>
               </div>
-              <table className={styles.consumTable}>
-                <thead>
-                  <tr>
-                    <th>Data Ieșire</th>
-                    <th>Rețetă</th>
-                    <th>Cantitate (L)</th>
-                    <th>Număr Unități</th>
-                    <th>Ambalaj</th>
-                    <th>Motiv</th>
-                    <th>Detalii Ieșire</th>
-                    <th>Lot ID</th>
-                    <th>Acțiuni</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {iesiri.map((iesire, index) => (
-                    <tr key={index}>
-                      <td>{new Date(iesire.dataIesire).toLocaleDateString()}</td>
-                      <td>{iesire.reteta}</td>
-                      <td>{iesire.cantitate}</td>
-                      <td>
-                        {iesire.numarUnitatiScoase || ''} {iesire.ambalaj === 'sticle' ? 'sticle' : iesire.ambalaj === 'keguri' ? 'keguri' : 'litri'}
-                      </td>
-                      <td>{iesire.ambalaj}</td>
-                      <td>{iesire.motiv}</td>
-                      <td>{iesire.detaliiIesire || ''}</td>
-                      <td>{iesire.lotId}</td>
-                      <td>
-                        <button
-                          onClick={() => deleteIesire(iesire.id)}
-                          className={styles.buttonSmall}
-                          style={{ backgroundColor: '#e74c3c' }}
-                          title="Șterge ieșirea"
-                        >
-                          Șterge
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div className={styles.cardsContainer}>
+                {iesiri.map((iesire, index) => (
+                  <div key={index} className={styles.card}>
+                    <div className={styles.cardHeader}>
+                      <h3 className={styles.cardTitle}>{iesire.reteta}</h3>
+                    </div>
+                    <div className={styles.cardContent}>
+                      <div className={styles.cardRow}>
+                        <span className={styles.cardLabel}>Data ieșirii:</span>
+                        <span className={styles.cardValue}>{new Date(iesire.dataIesire).toLocaleDateString()}</span>
+                      </div>
+                      <div className={styles.cardRow}>
+                        <span className={styles.cardLabel}>Cantitate:</span>
+                        <span className={styles.cardValue}>{iesire.cantitate}L</span>
+                      </div>
+                      <div className={styles.cardRow}>
+                        <span className={styles.cardLabel}>Unități:</span>
+                        <span className={styles.cardValue}>
+                          {iesire.numarUnitatiScoase || ''} {iesire.ambalaj === 'sticle' ? 'sticle' : iesire.ambalaj === 'keguri' ? 'keguri' : 'litri'}
+                        </span>
+                      </div>
+                      <div className={styles.cardRow}>
+                        <span className={styles.cardLabel}>Ambalaj:</span>
+                        <span className={styles.cardValue}>{iesire.ambalaj}</span>
+                      </div>
+                      <div className={styles.cardRow}>
+                        <span className={styles.cardLabel}>Motiv:</span>
+                        <span className={styles.cardValue}>{iesire.motiv}</span>
+                      </div>
+                      <div className={styles.cardRow}>
+                        <span className={styles.cardLabel}>Detalii:</span>
+                        <span className={styles.cardValue}>{iesire.detaliiIesire || ''}</span>
+                      </div>
+                      <div className={styles.cardRow}>
+                        <span className={styles.cardLabel}>Lot ID:</span>
+                        <span className={styles.cardValue}>{iesire.lotId}</span>
+                      </div>
+                    </div>
+                    <div className={styles.cardActions}>
+                      <button
+                        onClick={() => deleteIesire(iesire.id)}
+                        className={`${styles.buttonSmall} ${styles.deleteButton}`}
+                        title="Șterge ieșirea"
+                      >
+                        Șterge
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

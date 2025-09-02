@@ -26,77 +26,186 @@
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.retetaSection {
-  margin-bottom: 40px;
+.gridContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.recipeCard {
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  padding: 20px;
+  overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  overflow-x: auto;
+  display: flex;
+  flex-direction: column;
 }
 
-.retetaSection:hover {
+.recipeCard:hover {
   transform: translateY(-5px);
   box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
 }
 
-.retetaSection h2 {
+.cardHeader {
+  padding: 20px;
+  background-color: rgba(26, 115, 232, 0.3);
+}
+
+.cardHeader h2 {
   color: #ffffff;
-  font-size: 1.8rem;
-  margin-bottom: 20px;
+  font-size: 1.5rem;
+  margin: 0;
   font-weight: 500;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-  padding-bottom: 10px;
+  text-align: center;
 }
 
-.rebutTable {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
+.cardSummary {
+  padding: 15px 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.summaryItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.summaryLabel {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.summaryValue {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.loturiSection {
+  padding: 15px 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.loturiSection h3 {
+  color: #ffffff;
+  font-size: 1.2rem;
+  margin: 0 0 15px 0;
+  font-weight: 500;
+  text-align: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.loturiGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.loturiGrid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.loturiGrid::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.loturiGrid::-webkit-scrollbar-thumb {
+  background: rgba(26, 115, 232, 0.5);
+  border-radius: 3px;
+}
+
+.loturiGrid::-webkit-scrollbar-thumb:hover {
+  background: rgba(26, 115, 232, 0.7);
+}
+
+.lotCard {
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
-  overflow: hidden;
-  min-width: 1000px; /* Forzați lățimea minimă pentru a evita comprimarea excesivă */
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.rebutTable th,
-.rebutTable td {
-  padding: 12px 15px;
-  text-align: left;
+.lotHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  color: #ffffff;
 }
 
-.rebutTable th {
-  background-color: rgba(26, 115, 232, 0.7);
-  color: #ffffff;
+.lotId {
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  position: sticky;
-  top: 0;
-}
-
-.rebutTable tr:nth-child(even) {
-  background-color: rgba(255, 255, 255, 0.03);
-}
-
-.rebutTable tr:hover {
-  background-color: rgba(227, 242, 253, 0.15);
-  transition: background-color 0.2s ease;
-}
-
-.rebutTable tfoot {
-  background-color: rgba(26, 115, 232, 0.2);
-  font-weight: 600;
-}
-
-.rebutTable tfoot td {
-  border-top: 2px solid rgba(26, 115, 232, 0.5);
   color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.lotDate {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.lotDetails {
+  margin-bottom: 10px;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.detailLabel {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.detailValue {
+  font-weight: 500;
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.materialsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  background-color: rgba(26, 115, 232, 0.1);
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.materialItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3px;
+}
+
+.materialLabel {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 2px;
+}
+
+.materialValue {
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 0.9rem;
 }
 
 .totalSection {
@@ -105,7 +214,6 @@
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  text-align: center;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -115,24 +223,36 @@
   margin-bottom: 20px;
   font-weight: 700;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  text-align: center;
   border-bottom: 2px solid rgba(255, 255, 255, 0.2);
   padding-bottom: 10px;
 }
 
-.totalSection p {
-  margin: 12px 0;
-  font-size: 1.1rem;
-  color: #ffffff;
-  display: flex;
-  justify-content: space-between;
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
+.totalGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
 }
 
-.totalSection strong {
-  color: #ff6b6b;
+.totalItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.totalLabel {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.totalValue {
   font-weight: 700;
+  color: #ff6b6b;
+  font-size: 1.1rem;
 }
 
 .noData {
@@ -157,55 +277,9 @@
     font-size: 2.2rem;
     padding: 20px;
   }
-}
-
-@media (max-width: 1024px) {
-  .container {
-    padding: 1.2rem;
-  }
-
-  .title {
-    font-size: 2rem;
-  }
-
-  .rebutTable th,
-  .rebutTable td {
-    padding: 10px 12px;
-    font-size: 0.9rem;
-  }
-
-  .retetaSection h2 {
-    font-size: 1.6rem;
-  }
   
-  .retetaSection {
-    margin-bottom: 30px;
-    padding: 15px;
-  }
-}
-
-@media (max-width: 900px) {
-  .rebutTable {
-    font-size: 0.85rem;
-  }
-  
-  .rebutTable th,
-  .rebutTable td {
-    padding: 8px 10px;
-  }
-  
-  .totalSection {
-    padding: 20px;
-  }
-  
-  .totalSection h3 {
-    font-size: 1.4rem;
-  }
-  
-  .totalSection p {
-    font-size: 1rem;
-    flex-direction: column;
-    text-align: center;
+  .gridContainer {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   }
 }
 
@@ -219,59 +293,20 @@
     padding: 15px;
   }
   
-  .retetaSection {
-    border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 25px;
+  .gridContainer {
+    grid-template-columns: 1fr;
   }
   
-  .retetaSection h2 {
-    font-size: 1.4rem;
+  .cardSummary {
+    grid-template-columns: 1fr;
   }
   
-  .rebutTable {
-    min-width: 900px; /* Menține lățimea minimă pentru tabele mari */
+  .materialsGrid {
+    grid-template-columns: repeat(2, 1fr);
   }
   
-  .totalSection {
-    margin-top: 30px;
-    padding: 15px;
-  }
-  
-  .totalSection h3 {
-    font-size: 1.3rem;
-  }
-  
-  .noData {
-    padding: 20px;
-    font-size: 1.1rem;
-    margin-top: 30px;
-  }
-}
-
-@media (max-width: 600px) {
-  .title {
-    font-size: 1.6rem;
-    letter-spacing: 1px;
-  }
-  
-  .retetaSection h2 {
-    font-size: 1.3rem;
-  }
-  
-  .rebutTable th,
-  .rebutTable td {
-    padding: 6px 8px;
-    font-size: 0.8rem;
-  }
-  
-  .totalSection p {
-    font-size: 0.95rem;
-  }
-  
-  .noData {
-    font-size: 1rem;
-    padding: 15px;
+  .totalGrid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -281,62 +316,31 @@
   }
   
   .title {
-    font-size: 1.4rem;
-    padding: 10px;
+    font-size: 1.5rem;
   }
   
-  .retetaSection {
-    padding: 10px;
-    margin-bottom: 20px;
+  .cardHeader {
+    padding: 15px;
   }
   
-  .retetaSection h2 {
-    font-size: 1.2rem;
-    margin-bottom: 15px;
+  .cardHeader h2 {
+    font-size: 1.3rem;
   }
   
-  .rebutTable th,
-  .rebutTable td {
-    padding: 5px 6px;
-    font-size: 0.75rem;
+  .cardSummary, .loturiSection {
+    padding: 15px;
   }
   
-  .totalSection {
-    padding: 12px;
+  .lotHeader {
+    flex-direction: column;
+    align-items: flex-start;
   }
   
-  .totalSection h3 {
-    font-size: 1.2rem;
-    margin-bottom: 15px;
+  .lotDate {
+    margin-top: 5px;
   }
   
-  .totalSection p {
-    font-size: 0.9rem;
-    margin: 8px 0;
+  .materialsGrid {
+    grid-template-columns: repeat(3, 1fr);
   }
-  
-  .noData {
-    font-size: 0.9rem;
-    padding: 12px;
-    margin-top: 20px;
-  }
-}
-
-/* Stiluri pentru scrollbar personalizat (opțional) */
-.retetaSection::-webkit-scrollbar {
-  height: 8px;
-}
-
-.retetaSection::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-}
-
-.retetaSection::-webkit-scrollbar-thumb {
-  background: rgba(26, 115, 232, 0.5);
-  border-radius: 4px;
-}
-
-.retetaSection::-webkit-scrollbar-thumb:hover {
-  background: rgba(26, 115, 232, 0.7);
 }
