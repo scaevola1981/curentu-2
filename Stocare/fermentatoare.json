@@ -54,9 +54,9 @@
       "id": 6,
       "nume": "Fermentator 6",
       "capacitate": 2000,
-      "ocupat": true,
+      "ocupat": false,
       "reteta": "ADAPTOR LA SITUATIE - CB 01",
-      "cantitate": 123,
+      "cantitate": 0,
       "dataInceput": "2025-09-07T08:24:12.139Z",
       "imagine": "/Imagini/fermentator.png"
     }

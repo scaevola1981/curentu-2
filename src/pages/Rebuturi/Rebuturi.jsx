@@ -13,6 +13,7 @@ const Rebuturi = () => {
   const [totalCutii, setTotalCutii] = useState(0);
   const [totalSticle, setTotalSticle] = useState(0);
   const [totalKeguri, setTotalKeguri] = useState(0);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     loadRebuturi();
@@ -64,9 +65,33 @@ const Rebuturi = () => {
       setTotalCutii(cutii);
       setTotalSticle(sticle);
       setTotalKeguri(keguri);
+      setError('');
     } catch (error) {
-      console.error('Eroare la încărcarea rebuturilor:', error);
-      alert(`Eroare la încărcarea rebuturilor: ${error.message}`);
+      setError(`Eroare la încărcarea rebuturilor: ${error.message}`);
+    }
+  };
+
+  const handleDeleteAllRebuturi = async () => {
+    if (!window.confirm('Sigur doriți să ștergeți toate rebuturile? Această acțiune nu poate fi anulată!')) return;
+
+    try {
+      const res = await fetch(`${API_URL}/api/iesiri-bere`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+      
+      // Reset all state
+      setRebuturi([]);
+      setGrupatePeReteta({});
+      setTotalLitri(0);
+      setTotalCapace(0);
+      setTotalEtichete(0);
+      setTotalCutii(0);
+      setTotalSticle(0);
+      setTotalKeguri(0);
+      setError('Toate rebuturile au fost șterse cu succes!');
+    } catch (error) {
+      setError(`Eroare la ștergerea rebuturilor: ${error.message}`);
     }
   };
 
@@ -74,8 +99,26 @@ const Rebuturi = () => {
     <>
       <NavBar />
       <div className={styles.container}>
+        {error && (
+          <div className={styles.modal}>
+            <div className={styles.modalContent}>
+              <p>{error}</p>
+              <button className={styles.modalButton} onClick={() => setError('')}>
+                Închide
+              </button>
+            </div>
+          </div>
+        )}
         <h1 className={styles.title}>Rebuturi și Pierderi</h1>
         
+        <div className={styles.toolbar}>
+          {import.meta.env.MODE === 'production' && (
+            <button className={styles.buttonDeleteAll} onClick={handleDeleteAllRebuturi}>
+              Șterge Toate Rebuturile
+            </button>
+          )}
+        </div>
+
         {Object.keys(grupatePeReteta).length === 0 ? (
           <p className={styles.noData}>Nu există rebuturi sau pierderi înregistrate.</p>
         ) : (
