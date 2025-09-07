@@ -18,6 +18,7 @@ h1,
 h2 {
   text-align: center;
   margin: 2rem;
+  margin-top: 5rem;
   color: #ffffff;
   font-weight: 600;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
@@ -95,8 +96,69 @@ h2 {
 }
 
 .fermentatorCard,
-.retetaCard,
 .fermentatorSelectCard {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+  background-color: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  height: 300px; /* Fixed height for consistency */
+}
+
+.fermentatorCard:hover,
+.fermentatorSelectCard:hover {
+  transform: scale(1.05);
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.4);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.fermentatorCard.ocupat {
+  background-color: rgba(255, 100, 100, 0.2);
+  border: 2px solid rgba(255, 100, 100, 0.5);
+}
+
+.fermentatorCard.liber {
+  background-color: rgba(72, 187, 120, 0.2);
+  border: 2px solid rgba(72, 187, 120, 0.5);
+}
+
+.fermentatorCardOverlay,
+.fermentatorSelectOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  padding: 1.5rem;
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+  transition: background 0.3s ease;
+}
+
+.fermentatorCardOverlay h3,
+.fermentatorSelectOverlay h5 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.fermentatorCardOverlay p,
+.fermentatorSelectOverlay p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.retetaCard {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
@@ -106,17 +168,13 @@ h2 {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.fermentatorCard:hover,
-.retetaCard:hover,
-.fermentatorSelectCard:hover {
+.retetaCard:hover {
   transform: translateY(-5px);
   box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-.fermentatorCardOverlay,
-.retetaCardOverlay,
-.fermentatorSelectOverlay {
+.retetaCardOverlay {
   padding: 1rem;
   color: #242424;
   font-size: 1rem;

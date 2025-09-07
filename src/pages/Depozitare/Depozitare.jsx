@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import NavBar from '../../Componente/NavBar/NavBar.jsx';
-import styles from './depozitare.module.css';
+import styles from './Depozitare.module.css';
 
 const API_URL = 'http://localhost:3001';
 const LOT_UPDATE_ENDPOINT = '/api/ambalare';

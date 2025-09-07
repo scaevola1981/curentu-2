@@ -28,7 +28,7 @@ const Ambalare = () => {
   const [kegSize, setKegSize] = useState('');
   const [ambalareInsuficiente, setAmbalareInsuficiente] = useState([]);
   const [supplementCantitati, setSupplementCantitati] = useState({});
-  const [cantitateDeAmbalat, setCantitateDeAmbalat] = useState(''); // Start empty
+  const [cantitateDeAmbalat, setCantitateDeAmbalat] = useState('');
 
   // Data loading functions
   const loadMateriale = useCallback(async () => {
@@ -36,7 +36,6 @@ const Ambalare = () => {
       const res = await fetch(`${API_URL}/materiale-ambalare`);
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const data = await res.json();
-      console.log('Materiale încărcate:', data);
       setMateriale(data);
     } catch (error) {
       setError(`Eroare la încărcarea materialelor: ${error.message}`);
@@ -87,10 +86,12 @@ const Ambalare = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...material, cantitate: newCantitate }),
       });
+      
       if (!res.ok) {
         const errorText = await res.text();
         throw new Error(`Eroare la actualizare: ${res.status} - ${errorText || 'Resursa nu a fost găsită'}`);
       }
+      
       const updatedMaterial = await res.json();
       setMateriale(prev => prev.map(m => m.id === parseInt(id) ? { ...m, ...updatedMaterial } : m));
       setSupplementCantitati(prev => ({ ...prev, [id]: '' }));
@@ -118,15 +119,18 @@ const Ambalare = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(materialToSend),
       });
+      
       if (!res.ok) {
         const errorText = await res.text();
         throw new Error(`Eroare la ${isEditing ? 'actualizare' : 'adăugare'} material: ${res.status} - ${errorText || 'Resursa nu a fost găsită'}`);
       }
+      
       const updatedMaterial = await res.json();
       setMateriale(prev => isEditing
         ? prev.map(m => m.id === parseInt(editId) ? { ...m, ...updatedMaterial } : m)
         : [...prev, updatedMaterial]
       );
+      
       setIsEditing(false);
       setEditId(null);
       setNewMaterial({
@@ -141,7 +145,6 @@ const Ambalare = () => {
       });
       setError('');
     } catch (error) {
-      console.error('Detalii eroare:', error);
       setError(`Eroare la salvarea materialului: ${error.message}`);
     }
   };
@@ -177,6 +180,8 @@ const Ambalare = () => {
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm('Sigur doriți să ștergeți acest material?')) return;
+    
     try {
       const res = await fetch(`${API_URL}/materiale-ambalare/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Eroare la ștergerea materialului');
@@ -203,35 +208,15 @@ const Ambalare = () => {
     }
   };
 
-  const denumireMap = {
-    'cutii 6 sticle': 'cutii 6 sticle',
-    'cutii 12 sticle': 'cutii 12 sticle',
-    'cutii 24 sticle': 'cutii 24 sticle',
-    'sticle 0.33l': 'sticle 0.33l',
-    'keg 10l': 'keg 10l',
-    'keg 20l': 'keg 20l',
-    'keg 30l': 'keg 30l',
-    'keg 40l': 'keg 40l',
-    'keg 50l': 'keg 50l',
-    'capace': 'capace',
-    'etichete': 'etichete',
-  };
-
-  const normalizeString = (str) => {
-    const normalized = str.trim().toLowerCase();
-    return denumireMap[normalized] || normalized;
-  };
-
   const verificaStocAmbalare = (cantitateBere, packagingType, bottleSize, boxType, kegSize) => {
     let ambalareNecesare = [];
-    console.log('Verificare stoc pentru:', { cantitateBere, packagingType, bottleSize, boxType, kegSize });
-    console.log('Materiale disponibile:', materiale);
 
     if (packagingType === "sticle") {
       const bottleCapacity = bottleSize === "0.33l" ? 0.33 : 0.5;
       const bottlesPerBox = boxType === "6 sticle" ? 6 : boxType === "12 sticle" ? 12 : 24;
       const numBottles = Math.ceil(cantitateBere / bottleCapacity);
       const numBoxes = Math.ceil(numBottles / bottlesPerBox);
+      
       ambalareNecesare = [
         { denumire: `Sticle ${bottleSize}`, cantitate: numBottles, unitate: "buc", tip: "sticle" },
         { denumire: "Capace", cantitate: numBottles, unitate: "buc", tip: "capace" },
@@ -263,10 +248,10 @@ const Ambalare = () => {
     const insuficiente = ambalareNecesare
       .map(amb => {
         const stoc = materiale.find(m => 
-          normalizeString(m.denumire) === normalizeString(amb.denumire) && 
-          normalizeString(m.unitate) === normalizeString(amb.unitate)
+          m.denumire.toLowerCase() === amb.denumire.toLowerCase() && 
+          m.unitate.toLowerCase() === amb.unitate.toLowerCase()
         );
-        console.log(`Verificare ${amb.denumire} (${amb.unitate}):`, { stoc, cantitateNecesara: amb.cantitate });
+        
         if (!stoc || stoc.cantitate < amb.cantitate) {
           return {
             denumire: amb.denumire,
@@ -279,11 +264,48 @@ const Ambalare = () => {
       })
       .filter(Boolean);
 
-    console.log('Materiale insuficiente:', insuficiente);
     return { ambalareNecesare, insuficiente };
   };
 
-  const handleAmbalare = async () => {
+  const handleVerificaStoc = () => {
+    if (!selectedFermentator || !packagingType || 
+        (packagingType === "sticle" && (!bottleSize || !boxType)) || 
+        (packagingType === "keguri" && !kegSize)) {
+      setError('Selectați un fermentator, tipul de ambalare și toate detaliile necesare!');
+      return;
+    }
+
+    const cantitateDeAmbalatNum = parseFloat(cantitateDeAmbalat);
+    if (isNaN(cantitateDeAmbalatNum) || cantitateDeAmbalatNum <= 0) {
+      setError('Introduceți o cantitate validă de ambalat!');
+      return;
+    }
+    
+    if (cantitateDeAmbalatNum > selectedFermentator.cantitate) {
+      setError(`Cantitatea de ambalat (${cantitateDeAmbalatNum}L) nu poate depăși cantitatea disponibilă în fermentator (${selectedFermentator.cantitate}L)!`);
+      return;
+    }
+
+    const { insuficiente } = verificaStocAmbalare(
+      cantitateDeAmbalatNum, 
+      packagingType, 
+      bottleSize, 
+      boxType, 
+      kegSize
+    );
+    
+    setAmbalareInsuficiente(insuficiente);
+
+    if (insuficiente.length > 0) {
+      setError(`Materiale insuficiente pentru ${cantitateDeAmbalatNum}L:\n` +
+        insuficiente.map(amb => `${amb.denumire}: Necesare ${amb.cantitateNecesara} ${amb.unitate}, Disponibile ${amb.cantitateDisponibila} ${amb.unitate}`).join('\n')
+      );
+    } else {
+      setError('Toate materialele necesare sunt disponibile în stoc!');
+    }
+  };
+
+  const handleAmbalare = async (force = false) => {
     if (!selectedFermentator || !packagingType || 
         (packagingType === "sticle" && (!bottleSize || !boxType)) || 
         (packagingType === "keguri" && !kegSize)) {
@@ -309,33 +331,36 @@ const Ambalare = () => {
       boxType, 
       kegSize
     );
+    
     setAmbalareInsuficiente(insuficiente);
 
-    if (insuficiente.length > 0) {
-      setError(`⚠️ Materiale insuficiente pentru ${cantitateDeAmbalatNum}L:\n` +
+    if (insuficiente.length > 0 && !force) {
+      setError(`Materiale insuficiente pentru ${cantitateDeAmbalatNum}L:\n` +
         insuficiente.map(amb => `${amb.denumire}: Necesare ${amb.cantitateNecesara} ${amb.unitate}, Disponibile ${amb.cantitateDisponibila} ${amb.unitate}`).join('\n')
       );
       return;
     }
 
     try {
+      // Actualizare materiale
       for (const amb of ambalareNecesare) {
         const stoc = materiale.find(m => 
-          normalizeString(m.denumire) === normalizeString(amb.denumire) && 
-          normalizeString(m.unitate) === normalizeString(amb.unitate)
+          m.denumire.toLowerCase() === amb.denumire.toLowerCase() && 
+          m.unitate.toLowerCase() === amb.unitate.toLowerCase()
         );
+        
         if (stoc) {
           const newCantitate = stoc.cantitate - amb.cantitate;
           await fetch(`${API_URL}/materiale-ambalare/${stoc.id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...stoc, cantitate: newCantitate }),
+            body: JSON.stringify({ ...stoc, cantitate: newCantitate >= 0 ? newCantitate : 0 }),
           });
         }
       }
 
+      // Actualizare fermentator
       const remainingQuantity = selectedFermentator.cantitate - cantitateDeAmbalatNum;
-      
       const updatedFermentator = {
         ...selectedFermentator,
         ocupat: remainingQuantity > 0,
@@ -348,6 +373,7 @@ const Ambalare = () => {
         body: JSON.stringify(updatedFermentator),
       });
 
+      // Creare lot ambalat
       const lotData = {
         fermentatorId: selectedFermentator.id,
         reteta: selectedFermentator.reteta,
@@ -376,25 +402,9 @@ const Ambalare = () => {
         throw new Error('Eroare la salvarea lotului');
       }
 
-      setMateriale(prev => prev.map(m => {
-        const consum = ambalareNecesare.find(a => 
-          normalizeString(a.denumire) === normalizeString(m.denumire) && 
-          normalizeString(a.unitate) === normalizeString(m.unitate)
-        );
-        return consum ? { ...m, cantitate: m.cantitate - consum.cantitate } : m;
-      }));
-      
-      setFermentatoare(prev => {
-        if (remainingQuantity <= 0) {
-          return prev.filter(f => f.id !== selectedFermentator.id);
-        } else {
-          return prev.map(f => 
-            f.id === selectedFermentator.id 
-              ? { ...f, cantitate: remainingQuantity } 
-              : f
-          );
-        }
-      });
+      // Reîmprospătare date
+      await loadMateriale();
+      await loadFermentatoare();
       
       setSelectedFermentator(remainingQuantity > 0 ? updatedFermentator : null);
       setCantitateDeAmbalat('');
@@ -403,14 +413,19 @@ const Ambalare = () => {
       setBoxType('');
       setKegSize('');
       setAmbalareInsuficiente([]);
-      setError(`✅ Ambalare realizată cu succes! ${cantitateDeAmbalatNum}L au fost ambalate.${remainingQuantity > 0 ? ` Au rămas ${remainingQuantity}L în fermentator.` : ''}`);
+      setError(`Ambalare realizată cu succes! ${cantitateDeAmbalatNum}L au fost ambalate.${remainingQuantity > 0 ? ` Au rămas ${remainingQuantity}L în fermentator.` : ''}`);
     } catch (error) {
       setError(`Eroare la ambalare: ${error.message}`);
     }
   };
 
   useEffect(() => {
-    Promise.all([loadMateriale(), loadFermentatoare()]).then(() => setLoading(false));
+    const loadData = async () => {
+      await Promise.all([loadMateriale(), loadFermentatoare()]);
+      setLoading(false);
+    };
+    
+    loadData();
   }, [loadMateriale, loadFermentatoare]);
 
   return (
@@ -419,287 +434,367 @@ const Ambalare = () => {
       <div className={styles.container}>
         {error && (
           <div className={styles.modal}>
-            <p style={{ whiteSpace: 'pre-line' }}>{error}</p>
-            <button onClick={() => setError('')}>Închide</button>
+            <div className={styles.modalContent}>
+              <p style={{ whiteSpace: 'pre-line' }}>{error}</p>
+              <button className={styles.modalButton} onClick={() => setError('')}>Închide</button>
+            </div>
           </div>
         )}
 
-        <h1 className={styles.titlu}>Materiale de Ambalare</h1>
-        <div className={styles.fermentatorStatus}>
-          <h2>Selecție Fermentator pentru Ambalare</h2>
-          <div className={styles.fermentatoareGrid}>
-            {fermentatoare.length === 0 ? (
-              <p>Nu există fermentatoare ocupate</p>
-            ) : (
-              fermentatoare.map((fermentator) => (
-                <div
-                  key={fermentator.id}
-                  className={`${styles.fermentatorCard} ${fermentator.ocupat ? styles.ocupat : ''}`}
-                  onClick={() => {
-                    setSelectedFermentator(fermentator);
-                    // Do not set cantitateDeAmbalat here; leave it empty for manual input
-                  }}
-                >
-                  <div className={styles.fermentatorCardOverlay}>
-                    <h3>{fermentator.nume}</h3>
-                    <p>Reteta: {fermentator.reteta}</p>
-                    <p>Cantitate: {fermentator.cantitate}L</p>
-                    <p>Data: {new Date(fermentator.dataInceput).toLocaleDateString()}</p>
-                    {selectedFermentator?.id === fermentator.id && (
-                      <>
-                        <div className={styles.cantitateInput}>
-                          <label>Cantitate de ambalat (L):</label>
-                          <input
-                            type="number"
-                            className={styles.input}
-                            value={cantitateDeAmbalat}
-                            onChange={(e) => setCantitateDeAmbalat(e.target.value)}
-                            min="0"
-                            step="0.1"
-                            placeholder="Introdu cantitatea"
-                          />
-                        </div>
-                        <select
-                          className={styles.input}
-                          value={packagingType}
-                          onChange={(e) => {
-                            setPackagingType(e.target.value);
-                            setBottleSize('');
-                            setBoxType('');
-                            setKegSize('');
-                          }}
-                        >
-                          <option value="">Selectați tipul de ambalare</option>
-                          <option value="sticle">Sticle</option>
-                          <option value="keguri">Keguri</option>
-                        </select>
-                        {packagingType === "sticle" && (
-                          <>
-                            <select
-                              className={styles.input}
-                              value={bottleSize}
-                              onChange={(e) => setBottleSize(e.target.value)}
-                            >
-                              <option value="">Selectați dimensiune sticlă</option>
-                              <option value="0.33l">0.33l</option>
-                              <option value="0.5l">0.5l</option>
-                            </select>
-                            <select
-                              className={styles.input}
-                              value={boxType}
-                              onChange={(e) => setBoxType(e.target.value)}
-                            >
-                              <option value="">Selectați tip cutie</option>
-                              <option value="6 sticle">Cutii 6 sticle</option>
-                              <option value="12 sticle">Cutii 12 sticle</option>
-                              <option value="24 sticle">Cutii 24 sticle</option>
-                            </select>
-                          </>
-                        )}
-                        {packagingType === "keguri" && (
-                          <select
-                            className={styles.input}
-                            value={kegSize}
-                            onChange={(e) => setKegSize(e.target.value)}
-                          >
-                            <option value="">Selectați dimensiune keg</option>
-                            <option value="Keg 10l">Keg 10l</option>
-                            <option value="Keg 20l">Keg 20l</option>
-                            <option value="Keg 30l">Keg 30l</option>
-                            <option value="Keg 40l">Keg 40l</option>
-                            <option value="Keg 50l">Keg 50l</option>
-                          </select>
-                        )}
-                        {packagingType && 
-                          ((packagingType === "sticle" && bottleSize && boxType) || 
-                           (packagingType === "keguri" && kegSize)) && (
-                          <button className={styles.button} onClick={handleAmbalare}>
-                            Ambalare
-                          </button>
-                        )}
-                      </>
-                    )}
+        <h1 className={styles.titlu}>Materiale și Ambalare</h1>
+
+        <div className={styles.sectionsContainer}>
+          {/* Ambalare Section */}
+          <div className={styles.ambalareSection}>
+            <h2>Ambalare Bere</h2>
+            
+            <div className={styles.fermentatoareGrid}>
+              {fermentatoare.length === 0 ? (
+                <div className={styles.noFermentatoare}>Nu există fermentatoare ocupate</div>
+              ) : (
+                fermentatoare.map((fermentator) => (
+                  <div
+                    key={fermentator.id}
+                    className={`${styles.fermentatorCard} ${selectedFermentator?.id === fermentator.id ? styles.selected : ''}`}
+                    onClick={() => setSelectedFermentator(fermentator)}
+                    style={{ 
+                      backgroundImage: fermentator.imagine ? `url(${fermentator.imagine})` : 'none',
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center'
+                    }}
+                  >
+                    <div className={styles.fermentatorCardOverlay}>
+                      <h3>{fermentator.nume}</h3>
+                      <p>Rețetă: {fermentator.reteta}</p>
+                      <p>Cantitate: {fermentator.cantitate}L</p>
+                      <p>Data: {new Date(fermentator.dataInceput).toLocaleDateString()}</p>
+                    </div>
                   </div>
-                </div>
-              ))
-            )}
-          </div>
-          {ambalareInsuficiente.length > 0 && (
-            <div className={styles.formRow}>
-              <ul>
-                {ambalareInsuficiente.map((amb, index) => (
-                  <li key={index} className={styles.cell}>
-                    {amb.denumire}: Necesare {amb.cantitateNecesara} {amb.unitate}, Disponibile {amb.cantitateDisponibila} {amb.unitate}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-
-        <div className={styles.toolbar}>
-          <div>
-            <button className={styles.buttonRefresh} onClick={() => Promise.all([loadMateriale(), loadFermentatoare()])}>
-              Reîmprospătează
-            </button>
-            <button className={styles.buttonExport} onClick={handleExport}>
-              Exportă CSV
-            </button>
-          </div>
-        </div>
-
-        <div className={styles.formular}>
-          <h2>{isEditing ? 'Editează Material' : 'Adaugă Material'}</h2>
-          <form onSubmit={handleAddMaterial}>
-            <div className={styles.formRow}>
-              <input
-                type="text"
-                name="denumire"
-                className={styles.input}
-                placeholder="Denumire"
-                value={newMaterial.denumire}
-                onChange={handleInputChange}
-              />
-              <input
-                type="number"
-                name="cantitate"
-                className={styles.input}
-                placeholder="Cantitate"
-                value={newMaterial.cantitate}
-                onChange={handleInputChange}
-                step="0.01"
-              />
-              <input
-                type="text"
-                name="unitate"
-                className={styles.input}
-                placeholder="Unitate"
-                value={newMaterial.unitate}
-                onChange={handleInputChange}
-              />
-              <input
-                type="text"
-                name="producator"
-                className={styles.input}
-                placeholder="Producător"
-                value={newMaterial.producator}
-                onChange={handleInputChange}
-              />
-              <input
-                type="text"
-                name="codProdus"
-                className={styles.input}
-                placeholder="Cod Produs"
-                value={newMaterial.codProdus}
-                onChange={handleInputChange}
-              />
-              <input
-                type="text"
-                name="lot"
-                className={styles.input}
-                placeholder="Lot"
-                value={newMaterial.lot}
-                onChange={handleInputChange}
-              />
-              <input
-                type="text"
-                name="tip"
-                className={styles.input}
-                placeholder="Tip"
-                value={newMaterial.tip}
-                onChange={handleInputChange}
-              />
-              <input
-                type="text"
-                name="subcategorie"
-                className={styles.input}
-                placeholder="Subcategorie"
-                value={newMaterial.subcategorie}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className={styles.formButtons}>
-              <button type="submit" className={isEditing ? styles.buttonUpdate : styles.button}>
-                {isEditing ? 'Actualizează' : 'Adaugă'}
-              </button>
-              {isEditing && (
-                <button type="button" className={styles.buttonCancel} onClick={handleCancelEdit}>
-                  Anulează
-                </button>
+                ))
               )}
             </div>
-          </form>
-        </div>
 
-        <div className={styles.tabelContainer}>
-          {loading ? (
-            <div className={styles.loading}>Se încarcă...</div>
-          ) : materiale.length === 0 ? (
-            <div className={styles.noResults}>Niciun material găsit</div>
-          ) : (
-            <table className={styles.tabel}>
-              <thead>
-                <tr>
-                  <th className={styles.headerCell}>ID</th>
-                  <th className={styles.headerCell}>Denumire</th>
-                  <th className={styles.headerCell}>Cantitate</th>
-                  <th className={styles.headerCell}>Unitate</th>
-                  <th className={styles.headerCell}>Producător</th>
-                  <th className={styles.headerCell}>Cod Produs</th>
-                  <th className={styles.headerCell}>Lot</th>
-                  <th className={styles.headerCell}>Tip</th>
-                  <th className={styles.headerCell}>Subcategorie</th>
-                  <th className={styles.headerCell}>Supliment</th>
-                  <th className={styles.headerCell}>Acțiuni</th>
-                </tr>
-              </thead>
-              <tbody>
-                {materiale.map(material => (
-                  <tr key={material.id} className={styles.row}>
-                    <td className={styles.cell}>{material.id}</td>
-                    <td className={styles.cell}>{material.denumire}</td>
-                    <td className={styles.cell}>{material.cantitate}</td>
-                    <td className={styles.cell}>{material.unitate}</td>
-                    <td className={styles.cell}>{material.producator || '-'}</td>
-                    <td className={styles.cell}>{material.codProdus || '-'}</td>
-                    <td className={styles.cell}>{material.lot || '-'}</td>
-                    <td className={styles.cell}>{material.tip || '-'}</td>
-                    <td className={styles.cell}>{material.subcategorie || '-'}</td>
-                    <td className={styles.cell}>
-                      <input
-                        type="number"
+            {selectedFermentator && (
+              <div className={styles.ambalareForm}>
+                <h3>Ambalare pentru {selectedFermentator.nume}</h3>
+                
+                <div className={styles.formRow}>
+                  <label>Cantitate de ambalat (L):</label>
+                  <input
+                    type="number"
+                    className={styles.input}
+                    value={cantitateDeAmbalat}
+                    onChange={(e) => setCantitateDeAmbalat(e.target.value)}
+                    min="0"
+                    max={selectedFermentator.cantitate}
+                    step="0.1"
+                    placeholder={`Max: ${selectedFermentator.cantitate}L`}
+                  />
+                </div>
+                
+                <div className={styles.formRow}>
+                  <label>Tip ambalare:</label>
+                  <select
+                    className={styles.input}
+                    value={packagingType}
+                    onChange={(e) => {
+                      setPackagingType(e.target.value);
+                      setBottleSize('');
+                      setBoxType('');
+                      setKegSize('');
+                      setAmbalareInsuficiente([]);
+                    }}
+                  >
+                    <option value="">Selectați tipul de ambalare</option>
+                    <option value="sticle">Sticle</option>
+                    <option value="keguri">Keguri</option>
+                  </select>
+                </div>
+                
+                {packagingType === "sticle" && (
+                  <>
+                    <div className={styles.formRow}>
+                      <label>Dimensiune sticlă:</label>
+                      <select
                         className={styles.input}
-                        placeholder="Cantitate"
-                        value={supplementCantitati[material.id] || ''}
-                        onChange={(e) => handleSupplementChange(material.id, e.target.value)}
-                        step="0.01"
-                      />
-                      <button
-                        className={styles.buttonAdauga}
-                        onClick={() => handleSupplementMaterial(material.id)}
+                        value={bottleSize}
+                        onChange={(e) => setBottleSize(e.target.value)}
                       >
-                        + Adaugă
-                      </button>
-                    </td>
-                    <td className={styles.cellActions}>
-                      <button
-                        className={styles.buttonEdit}
-                        onClick={() => handleEdit(material)}
+                        <option value="">Selectați dimensiune sticlă</option>
+                        <option value="0.33l">0.33l</option>
+                        <option value="0.5l">0.5l</option>
+                      </select>
+                    </div>
+                    
+                    <div className={styles.formRow}>
+                      <label>Tip cutie:</label>
+                      <select
+                        className={styles.input}
+                        value={boxType}
+                        onChange={(e) => setBoxType(e.target.value)}
                       >
-                        Editează
-                      </button>
-                      <button
-                        className={styles.buttonDelete}
-                        onClick={() => handleDelete(material.id)}
-                      >
-                        - Șterge
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                        <option value="">Selectați tip cutie</option>
+                        <option value="6 sticle">Cutii 6 sticle</option>
+                        <option value="12 sticle">Cutii 12 sticle</option>
+                        <option value="24 sticle">Cutii 24 sticle</option>
+                      </select>
+                    </div>
+                  </>
+                )}
+                
+                {packagingType === "keguri" && (
+                  <div className={styles.formRow}>
+                    <label>Dimensiune keg:</label>
+                    <select
+                      className={styles.input}
+                      value={kegSize}
+                      onChange={(e) => setKegSize(e.target.value)}
+                    >
+                      <option value="">Selectați dimensiune keg</option>
+                      <option value="Keg 10l">Keg 10l</option>
+                      <option value="Keg 20l">Keg 20l</option>
+                      <option value="Keg 30l">Keg 30l</option>
+                      <option value="Keg 40l">Keg 40l</option>
+                      <option value="Keg 50l">Keg 50l</option>
+                    </select>
+                  </div>
+                )}
+                
+                {packagingType && 
+                  ((packagingType === "sticle" && bottleSize && boxType) || 
+                  (packagingType === "keguri" && kegSize)) && (
+                  <div className={styles.formButtons}>
+                    <button 
+                      className={styles.buttonVerifica} 
+                      onClick={handleVerificaStoc}
+                    >
+                      Verifică Stocul
+                    </button>
+                    <button 
+                      className={styles.buttonAmbalare} 
+                      onClick={() => handleAmbalare(false)}
+                    >
+                      Efectuează Ambalarea
+                    </button>
+                  </div>
+                )}
+                
+                {ambalareInsuficiente.length > 0 && (
+                  <div className={styles.insuficienteWarning}>
+                    <h4>Materiale insuficiente:</h4>
+                    <ul>
+                      {ambalareInsuficiente.map((amb, index) => (
+                        <li key={index}>
+                          {amb.denumire}: Necesare {amb.cantitateNecesara} {amb.unitate}, Disponibile {amb.cantitateDisponibila} {amb.unitate}
+                        </li>
+                      ))}
+                    </ul>
+                    <button 
+                      className={styles.buttonContinua} 
+                      onClick={() => handleAmbalare(true)}
+                    >
+                      Continuă Oricum
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Materiale Section */}
+          <div className={styles.materialeSection}>
+            <h2>Gestionează Materiale de Ambalare</h2>
+            <div className={styles.toolbar}>
+              <button className={styles.buttonRefresh} onClick={() => { loadMateriale(); loadFermentatoare(); }}>
+                Reîmprospătează
+              </button>
+              <button className={styles.buttonExport} onClick={handleExport}>
+                Exportă CSV
+              </button>
+            </div>
+
+            <div className={styles.formular}>
+              <h3>{isEditing ? 'Editează Material' : 'Adaugă Material'}</h3>
+              <form onSubmit={handleAddMaterial}>
+                <div className={styles.formGrid}>
+                  <input
+                    type="text"
+                    name="denumire"
+                    className={styles.input}
+                    placeholder="Denumire"
+                    value={newMaterial.denumire}
+                    onChange={handleInputChange}
+                    required
+                  />
+                  <input
+                    type="number"
+                    name="cantitate"
+                    className={styles.input}
+                    placeholder="Cantitate"
+                    value={newMaterial.cantitate}
+                    onChange={handleInputChange}
+                    step="0.01"
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="unitate"
+                    className={styles.input}
+                    placeholder="Unitate"
+                    value={newMaterial.unitate}
+                    onChange={handleInputChange}
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="tip"
+                    className={styles.input}
+                    placeholder="Tip"
+                    value={newMaterial.tip}
+                    onChange={handleInputChange}
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="producator"
+                    className={styles.input}
+                    placeholder="Producător"
+                    value={newMaterial.producator}
+                    onChange={handleInputChange}
+                  />
+                  <input
+                    type="text"
+                    name="codProdus"
+                    className={styles.input}
+                    placeholder="Cod Produs"
+                    value={newMaterial.codProdus}
+                    onChange={handleInputChange}
+                  />
+                  <input
+                    type="text"
+                    name="lot"
+                    className={styles.input}
+                    placeholder="Lot"
+                    value={newMaterial.lot}
+                    onChange={handleInputChange}
+                  />
+                  <input
+                    type="text"
+                    name="subcategorie"
+                    className={styles.input}
+                    placeholder="Subcategorie"
+                    value={newMaterial.subcategorie}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className={styles.formButtons}>
+                  <button type="submit" className={isEditing ? styles.buttonUpdate : styles.buttonAdd}>
+                    {isEditing ? 'Actualizează' : 'Adaugă'}
+                  </button>
+                  {isEditing && (
+                    <button type="button" className={styles.buttonCancel} onClick={handleCancelEdit}>
+                      Anulează
+                    </button>
+                  )}
+                </div>
+              </form>
+            </div>
+
+            <div className={styles.cardsContainer}>
+              {loading ? (
+                <div className={styles.loading}>Se încarcă...</div>
+              ) : materiale.length === 0 ? (
+                <div className={styles.noResults}>Niciun material găsit</div>
+              ) : (
+                <div className={styles.materialCards}>
+                  {materiale.map(material => (
+                    <div key={material.id} className={styles.materialCard}>
+                      <div className={styles.cardHeader}>
+                        <h3 className={styles.cardTitle}>{material.denumire}</h3>
+                        <span className={styles.cardId}>ID: {material.id}</span>
+                      </div>
+                      
+                      <div className={styles.cardContent}>
+                        <div className={styles.cardRow}>
+                          <span className={styles.cardLabel}>Cantitate:</span>
+                          <span className={styles.cardValue}>{material.cantitate} {material.unitate}</span>
+                        </div>
+                        
+                        {material.producator && (
+                          <div className={styles.cardRow}>
+                            <span className={styles.cardLabel}>Producător:</span>
+                            <span className={styles.cardValue}>{material.producator}</span>
+                          </div>
+                        )}
+                        
+                        {material.codProdus && (
+                          <div className={styles.cardRow}>
+                            <span className={styles.cardLabel}>Cod Produs:</span>
+                            <span className={styles.cardValue}>{material.codProdus}</span>
+                          </div>
+                        )}
+                        
+                        {material.lot && (
+                          <div className={styles.cardRow}>
+                            <span className={styles.cardLabel}>Lot:</span>
+                            <span className={styles.cardValue}>{material.lot}</span>
+                          </div>
+                        )}
+                        
+                        {material.tip && (
+                          <div className={styles.cardRow}>
+                            <span className={styles.cardLabel}>Tip:</span>
+                            <span className={styles.cardValue}>{material.tip}</span>
+                          </div>
+                        )}
+                        
+                        {material.subcategorie && (
+                          <div className={styles.cardRow}>
+                            <span className={styles.cardLabel}>Subcategorie:</span>
+                            <span className={styles.cardValue}>{material.subcategorie}</span>
+                          </div>
+                        )}
+                        
+                        <div className={styles.supplementSection}>
+                          <div className={styles.supplementInput}>
+                            <input
+                              type="number"
+                              className={styles.inputSmall}
+                              placeholder="Cantitate supliment"
+                              value={supplementCantitati[material.id] || ''}
+                              onChange={(e) => handleSupplementChange(material.id, e.target.value)}
+                              step="0.01"
+                            />
+                            <button
+                              className={styles.buttonAdauga}
+                              onClick={() => handleSupplementMaterial(material.id)}
+                            >
+                              + Adaugă
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className={styles.cardActions}>
+                        <button
+                          className={styles.buttonEdit}
+                          onClick={() => handleEdit(material)}
+                        >
+                          Editează
+                        </button>
+                        <button
+                          className={styles.buttonDelete}
+                          onClick={() => handleDelete(material.id)}
+                        >
+                          Șterge
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </>

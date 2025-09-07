@@ -17,17 +17,18 @@
 .titlu {
   text-align: center;
   font-size: 2.5rem;
-  margin-bottom: 1.5rem;
+  margin-top: 5rem;
   color: #ffffff;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Adjusted for consistency */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .toolbar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
+  gap: 1rem;
   margin-bottom: 1.5rem;
 }
 
@@ -40,163 +41,237 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.formRow {
-  display: flex;
-  flex-wrap: wrap;
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .input {
-  flex: 1;
+  width: 100%;
   padding: 0.8rem;
-  min-width: 180px;
-  border-radius: 12px;
+  border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  background-color: #ffffff; /* White background as requested */
-  color: #002442; /* Dark blue text for contrast */
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
   font-size: 0.95rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .input:focus {
-  border-color: #4299e1; /* Light blue focus border */
-  box-shadow: 0 0 8px rgba(66, 153, 225, 0.5); /* Matching focus shadow */
+  border-color: rgba(26, 115, 232, 0.7);
+  box-shadow: 0 0 8px rgba(26, 115, 232, 0.5);
   outline: none;
 }
 
-.formButtons {
-  margin-top: 1rem;
+.input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
 }
 
-/* Butoane */
+.formButtons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+/* Butoane generale */
 .button,
 .buttonRefresh,
 .buttonAdd,
 .buttonRemove,
-.buttonUpdate {
-  padding: 0.7rem 1.4rem;
-  margin-right: 0.5rem;
-  border: none;
-  border-radius: 25px;
-  background-color: rgba(26, 115, 232, 0.7); /* Matches Rebuturi header */
-  color: #ffffff;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.button:hover,
-.buttonRefresh:hover,
-.buttonAdd:hover,
-.buttonRemove:hover,
-.buttonUpdate:hover {
-  background-color: #4299e1; /* Light blue hover */
-  transform: translateY(-2px);
-  box-shadow: 0 0 10px rgba(66, 153, 225, 0.6);
-}
-
+.buttonUpdate,
 .buttonDelete,
 .buttonCancel {
   padding: 0.7rem 1.4rem;
   border: none;
   border-radius: 25px;
-  background-color: #ff6b6b; /* Red from palette */
-  color: #ffffff;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  transition: all 0.2s ease;
+  color: #ffffff;
+}
+
+.button,
+.buttonRefresh,
+.buttonAdd,
+.buttonUpdate {
+  background-color: rgba(26, 115, 232, 0.7);
+}
+
+.button:hover,
+.buttonRefresh:hover,
+.buttonAdd:hover,
+.buttonUpdate:hover {
+  background-color: rgba(26, 115, 232, 0.9);
+  transform: translateY(-2px);
+}
+
+.buttonRemove {
+  background-color: rgba(39, 174, 96, 0.7);
+}
+
+.buttonRemove:hover {
+  background-color: rgba(39, 174, 96, 0.9);
+}
+
+.buttonDelete,
+.buttonCancel {
+  background-color: rgba(231, 76, 60, 0.7);
 }
 
 .buttonDelete:hover,
 .buttonCancel:hover {
-  background-color: #e53e3e; /* Darker red on hover */
-  transform: translateY(-2px);
+  background-color: rgba(231, 76, 60, 0.9);
 }
 
-/* Tabel */
-.tabelContainer {
-  overflow-x: auto;
+/* Container pentru carduri */
+.cardsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
 }
 
-.tabel {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: rgba(255, 255, 255, 0.05); /* Semi-transparent */
+/* Stiluri pentru carduri */
+.materialCard {
+  background-color: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  overflow: hidden;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
 }
 
-.headerCell {
-  background-color: rgba(26, 115, 232, 0.7); /* Matches Rebuturi header */
-  padding: 0.8rem;
-  text-align: left;
-  color: #ffffff;
+.materialCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cardTitle {
+  font-size: 1.3rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  position: sticky;
-  top: 0;
-}
-
-.row:nth-child(even) {
-  background-color: rgba(255, 255, 255, 0.03); /* Subtle even row shading */
-}
-
-/* ... (previous styles remain unchanged) ... */
-
-/* Tabel */
-.tabelContainer {
-  overflow-x: auto;
-}
-
-.tabel {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.headerCell {
-  background-color: rgba(26, 115, 232, 0.7);
-  padding: 0.8rem;
-  text-align: left;
+  margin: 0;
   color: #ffffff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.materialId {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(26, 115, 232, 0.3);
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+}
+
+.cardContent {
+  flex: 1;
+  margin-bottom: 1.2rem;
+}
+
+.cardRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cardLabel {
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  position: sticky;
-  top: 0;
+  color: rgba(255, 255, 255, 0.8);
 }
 
-.row:nth-child(even) {
-  background-color: rgba(255, 255, 255, 0.03);
-}
-
-.row:hover {
-  background-color: rgba(227, 242, 253, 0.15); /* Light hover background from palette */
-  transform: translateY(-2px); /* Slight lift effect */
-  transition: background-color 0.2s ease, transform 0.2s ease; /* Smooth transition */
-}
-
-.cell {
-  padding: 0.7rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+.cardValue {
   color: #ffffff;
+  text-align: right;
 }
 
-.cellActions button {
-  margin-right: 0.4rem;
+.cardActions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.cardActions button {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
 }
 
 .noResults {
   text-align: center;
-  padding: 1.5rem;
+  padding: 2rem;
   font-weight: 600;
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  grid-column: 1 / -1;
 }
 
-/* ... (remaining styles remain unchanged) ... */
+/* Responsive design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .titlu {
+    font-size: 2rem;
+  }
+  
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .cardsContainer {
+    grid-template-columns: 1fr;
+  }
+  
+  .cardHeader {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .cardActions {
+    flex-direction: column;
+  }
+  
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 480px) {
+  .titlu {
+    font-size: 1.5rem;
+  }
+  
+  .formular {
+    padding: 1rem;
+  }
+  
+  .materialCard {
+    padding: 1rem;
+  }
+  
+  .cardRow {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  
+  .cardLabel, .cardValue {
+    text-align: left;
+  }
+}

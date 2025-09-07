@@ -88,7 +88,10 @@ const Dashboard = () => {
       <>
         <NavBar />
         <div className={styles.dashboard}>
-          <p style={{ textAlign: 'center', padding: '20px' }}>Se încarcă datele...</p>
+          <div className={styles.loadingContainer}>
+            <div className={styles.loadingSpinner}></div>
+            <p>Se încarcă datele...</p>
+          </div>
         </div>
       </>
     );
@@ -99,12 +102,17 @@ const Dashboard = () => {
       <>
         <NavBar />
         <div className={styles.dashboard}>
-          <p style={{ textAlign: 'center', padding: '20px', color: '#d32f2f' }}>
-            Eroare: {error}. Verificați serverul sau contactați suportul.
-          </p>
-          <button onClick={() => window.location.reload()} style={{ display: 'block', margin: '0 auto' }}>
-            Reîncarcă
-          </button>
+          <div className={styles.errorContainer}>
+            <div className={styles.errorIcon}>⚠️</div>
+            <h3>Eroare la încărcarea datelor</h3>
+            <p>{error}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className={styles.reloadButton}
+            >
+              Reîncarcă
+            </button>
+          </div>
         </div>
       </>
     );
@@ -114,75 +122,181 @@ const Dashboard = () => {
     <ErrorBoundary>
       <NavBar />
       <div className={styles.dashboard}>
-        <h1 className={styles.title}>Panou de Control</h1>
-        <p className={styles.dateTime}>Data: {currentDate} | Ora: {currentTime} EEST</p>
+        <div className={styles.header}>
+          <h1 className={styles.title}>Panou de Control</h1>
+          <div className={styles.dateTime}>
+            <span className={styles.date}>{currentDate}</span>
+            <span className={styles.time}>{currentTime} EEST</span>
+          </div>
+        </div>
+        
         <div className={styles.cardContainer}>
           {/* Materii Prime Card */}
           <div className={styles.card}>
-            <h2>Materii Prime</h2>
-            <p>Total Cantitate: <strong>{summary.materiiPrime.totalQuantity.toFixed(2)}</strong></p>
+            <div className={styles.cardHeader}>
+              <h2>Materii Prime</h2>
+              <div className={styles.cardIcon}>🌾</div>
+            </div>
+            <div className={styles.cardContent}>
+              <div className={styles.statValue}>
+                {summary.materiiPrime.totalQuantity.toFixed(2)}
+                <span className={styles.statLabel}>Total Cantitate</span>
+              </div>
+              <div className={styles.statValue}>
+                {summary.materiiPrime.items.length}
+                <span className={styles.statLabel}>Tipuri Materiale</span>
+              </div>
+            </div>
             <ul className={styles.previewList}>
-              {summary.materiiPrime.items.slice(0, 5).map((material) => (
-                <li key={material.id}>{material.denumire}: {material.cantitate} {material.unitate}</li>
+              {summary.materiiPrime.items.slice(0, 3).map((material) => (
+                <li key={material.id}>
+                  <span className={styles.itemName}>{material.denumire}</span>
+                  <span className={styles.itemValue}>{material.cantitate} {material.unitate}</span>
+                </li>
               ))}
-              {summary.materiiPrime.items.length > 5 && <li>...și altele</li>}
             </ul>
-            <a href="/materii-prime" className={styles.viewMore}>Vezi Toate</a>
+            <a href="/materii-prime" className={styles.viewMore}>
+              Vezi Toate Materialele
+              <span className={styles.arrow}>→</span>
+            </a>
           </div>
 
           {/* Productions Card */}
           <div className={styles.card}>
-            <h2>Producție</h2>
-            <p>Fermentatoare Pline: <strong>{summary.productions.fullFermentors.length}</strong></p>
+            <div className={styles.cardHeader}>
+              <h2>Producție</h2>
+              <div className={styles.cardIcon}>🏭</div>
+            </div>
+            <div className={styles.cardContent}>
+              <div className={styles.statValue}>
+                {summary.productions.fullFermentors.length}
+                <span className={styles.statLabel}>Fermentatoare Active</span>
+              </div>
+            </div>
             <ul className={styles.previewList}>
-              {summary.productions.fullFermentors.slice(0, 5).map((fermentator) => (
-                <li key={fermentator.id}>{fermentator.nume}: {fermentator.cantitate}L ({fermentator.reteta || 'Necunoscut'})</li>
+              {summary.productions.fullFermentors.slice(0, 3).map((fermentator) => (
+                <li key={fermentator.id}>
+                  <span className={styles.itemName}>{fermentator.nume}</span>
+                  <span className={styles.itemValue}>{fermentator.cantitate}L</span>
+                </li>
               ))}
-              {summary.productions.fullFermentors.length > 5 && <li>...și altele</li>}
             </ul>
-            <a href="/productie" className={styles.viewMore}>Vezi Toată Producția</a>
+            <a href="/productie" className={styles.viewMore}>
+              Vezi Toată Producția
+              <span className={styles.arrow}>→</span>
+            </a>
           </div>
 
           {/* Ambalare Card */}
           <div className={styles.card}>
-            <h2>Ambalare</h2>
-            <p>Loturi Gata: <strong>{summary.ambalare.readyLots.length}</strong></p>
+            <div className={styles.cardHeader}>
+              <h2>Ambalare</h2>
+              <div className={styles.cardIcon}>📦</div>
+            </div>
+            <div className={styles.cardContent}>
+              <div className={styles.statValue}>
+                {summary.ambalare.readyLots.length}
+                <span className={styles.statLabel}>Loturi Gata</span>
+              </div>
+            </div>
             <ul className={styles.previewList}>
-              {summary.ambalare.readyLots.slice(0, 5).map((fermentator) => (
-                <li key={fermentator.id}>{fermentator.nume}: {fermentator.cantitate}L ({fermentator.reteta || 'Necunoscut'})</li>
+              {summary.ambalare.readyLots.slice(0, 3).map((fermentator) => (
+                <li key={fermentator.id}>
+                  <span className={styles.itemName}>{fermentator.nume}</span>
+                  <span className={styles.itemValue}>{fermentator.cantitate}L</span>
+                </li>
               ))}
-              {summary.ambalare.readyLots.length > 5 && <li>...și altele</li>}
             </ul>
-            <a href="/ambalare" className={styles.viewMore}>Vezi Toată Ambalarea</a>
+            <a href="/ambalare" className={styles.viewMore}>
+              Vezi Toată Ambalarea
+              <span className={styles.arrow}>→</span>
+            </a>
           </div>
 
           {/* Depozitare Card */}
           <div className={styles.card}>
-            <h2>Depozitare</h2>
-            <p>Total Stoc: <strong>{summary.depozitare.totalStock.toFixed(2)} L</strong></p>
+            <div className={styles.cardHeader}>
+              <h2>Depozitare</h2>
+              <div className={styles.cardIcon}>🗄️</div>
+            </div>
+            <div className={styles.cardContent}>
+              <div className={styles.statValue}>
+                {summary.depozitare.totalStock.toFixed(2)}
+                <span className={styles.statLabel}>Total Stoc (L)</span>
+              </div>
+              <div className={styles.statValue}>
+                {summary.depozitare.lots.length}
+                <span className={styles.statLabel}>Loturi în Stoc</span>
+              </div>
+            </div>
             <ul className={styles.previewList}>
-              {summary.depozitare.lots.slice(0, 5).map((lot) => (
-                <li key={lot.id}>{lot.reteta}: {lot.cantitate}L ({lot.packagingType || 'Necunoscut'})</li>
-              ))}
-              {summary.depozitare.lots.length > 5 && <li>...și altele</li>}
-            </ul>
-            <a href="/depozitare" className={styles.viewMore}>Vezi Toată Depozitarea</a>
-          </div>
-
-          {/* Rebuturi Card - Actualizat cu date reale */}
-          <div className={styles.card}>
-            <h2>Rebuturi</h2>
-            <p>Total Cantitate: <strong>{summary.rebuturi.totalQuantity.toFixed(2)} L</strong></p>
-            <p>Total înregistrări: <strong>{summary.rebuturi.items.length}</strong></p>
-            <ul className={styles.previewList}>
-              {summary.rebuturi.items.slice(0, 5).map((rebut) => (
-                <li key={rebut.id}>
-                  {rebut.reteta || 'Necunoscut'}: {parseFloat(rebut.cantitate).toFixed(2)}L
+              {summary.depozitare.lots.slice(0, 3).map((lot) => (
+                <li key={lot.id}>
+                  <span className={styles.itemName}>{lot.reteta}</span>
+                  <span className={styles.itemValue}>{lot.cantitate}L</span>
                 </li>
               ))}
-              {summary.rebuturi.items.length > 5 && <li>...și altele</li>}
             </ul>
-            <a href="/rebuturi" className={styles.viewMore}>Vezi Toate Rebuturile</a>
+            <a href="/depozitare" className={styles.viewMore}>
+              Vezi Toată Depozitarea
+              <span className={styles.arrow}>→</span>
+            </a>
+          </div>
+
+          {/* Rebuturi Card */}
+          <div className={styles.card}>
+            <div className={styles.cardHeader}>
+              <h2>Rebuturi</h2>
+              <div className={styles.cardIcon}>🗑️</div>
+            </div>
+            <div className={styles.cardContent}>
+              <div className={styles.statValue}>
+                {summary.rebuturi.totalQuantity.toFixed(2)}
+                <span className={styles.statLabel}>Total Cantitate (L)</span>
+              </div>
+              <div className={styles.statValue}>
+                {summary.rebuturi.items.length}
+                <span className={styles.statLabel}>Înregistrări</span>
+              </div>
+            </div>
+            <ul className={styles.previewList}>
+              {summary.rebuturi.items.slice(0, 3).map((rebut) => (
+                <li key={rebut.id}>
+                  <span className={styles.itemName}>{rebut.reteta || 'Necunoscut'}</span>
+                  <span className={styles.itemValue}>{parseFloat(rebut.cantitate).toFixed(2)}L</span>
+                </li>
+              ))}
+            </ul>
+            <a href="/rebuturi" className={styles.viewMore}>
+              Vezi Toate Rebuturile
+              <span className={styles.arrow}>→</span>
+            </a>
+          </div>
+
+          {/* Statistici Generale Card */}
+          <div className={`${styles.card} ${styles.statsCard}`}>
+            <div className={styles.cardHeader}>
+              <h2>Statistici Generale</h2>
+              <div className={styles.cardIcon}>📊</div>
+            </div>
+            <div className={styles.statsGrid}>
+              <div className={styles.statItem}>
+                <div className={styles.statNumber}>{summary.materiiPrime.items.length}</div>
+                <div className={styles.statLabel}>Materiale</div>
+              </div>
+              <div className={styles.statItem}>
+                <div className={styles.statNumber}>{summary.productions.fullFermentors.length}</div>
+                <div className={styles.statLabel}>Producție</div>
+              </div>
+              <div className={styles.statItem}>
+                <div className={styles.statNumber}>{summary.depozitare.lots.length}</div>
+                <div className={styles.statLabel}>Stocuri</div>
+              </div>
+              <div className={styles.statItem}>
+                <div className={styles.statNumber}>{summary.rebuturi.items.length}</div>
+                <div className={styles.statLabel}>Rebuturi</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

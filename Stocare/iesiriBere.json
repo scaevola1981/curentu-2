@@ -66,19 +66,6 @@
       "createdAt": "2025-09-02T17:40:24.108Z"
     },
     {
-      "id": 18,
-      "lotId": "2",
-      "reteta": "USB AMPER ALE - CB 03",
-      "cantitate": "11.88",
-      "numarUnitatiScoase": 36,
-      "ambalaj": "sticle",
-      "motiv": "rebut",
-      "dataIesire": "2025-09-02T18:12:47.676Z",
-      "utilizator": "Administrator",
-      "observatii": "",
-      "createdAt": "2025-09-02T18:12:47.712Z"
-    },
-    {
       "id": 19,
       "lotId": "4",
       "reteta": "INTRERUPATOR DE MUNCA - CB 02",
@@ -103,6 +90,71 @@
       "utilizator": "Administrator",
       "observatii": "",
       "createdAt": "2025-09-02T18:49:22.518Z"
+    },
+    {
+      "id": 21,
+      "lotId": "4",
+      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
+      "cantitate": "120.00",
+      "numarUnitatiScoase": 3,
+      "ambalaj": "keguri",
+      "motiv": "vanzare",
+      "dataIesire": "2025-09-07T08:29:57.777Z",
+      "utilizator": "Administrator",
+      "observatii": "",
+      "createdAt": "2025-09-07T08:29:57.795Z"
+    },
+    {
+      "id": 22,
+      "lotId": "14",
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": "200.00",
+      "numarUnitatiScoase": 5,
+      "ambalaj": "keguri",
+      "motiv": "vanzare",
+      "dataIesire": "2025-09-07T08:34:08.601Z",
+      "utilizator": "Administrator",
+      "observatii": "",
+      "createdAt": "2025-09-07T08:34:08.610Z"
+    },
+    {
+      "id": 23,
+      "lotId": "14",
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": "200.00",
+      "numarUnitatiScoase": 5,
+      "ambalaj": "keguri",
+      "motiv": "vanzare",
+      "dataIesire": "2025-09-07T08:34:29.696Z",
+      "utilizator": "Administrator",
+      "observatii": "",
+      "createdAt": "2025-09-07T08:34:29.707Z"
+    },
+    {
+      "id": 24,
+      "lotId": "13",
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": "122.76",
+      "numarUnitatiScoase": 372,
+      "ambalaj": "sticle",
+      "motiv": "vanzare",
+      "dataIesire": "2025-09-07T08:34:51.521Z",
+      "utilizator": "Administrator",
+      "observatii": "",
+      "createdAt": "2025-09-07T08:34:51.529Z"
+    },
+    {
+      "id": 25,
+      "lotId": "6",
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": "160.00",
+      "numarUnitatiScoase": 4,
+      "ambalaj": "keguri",
+      "motiv": "rebut",
+      "dataIesire": "2025-09-07T10:32:43.325Z",
+      "utilizator": "Administrator",
+      "observatii": "",
+      "createdAt": "2025-09-07T10:32:43.351Z"
     }
   ]
 }

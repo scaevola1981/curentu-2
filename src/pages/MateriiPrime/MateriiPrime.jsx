@@ -197,7 +197,7 @@ const MateriiPrime = () => {
       tip: "",
       subcategorie: "",
     });
-    setEditMode(false); // Revine la false
+    setEditMode(false);
   };
 
   if (isLoading) {
@@ -216,6 +216,7 @@ const MateriiPrime = () => {
       <NavBar />
       <div className={styles.container}>
         <h1 className={styles.titlu}>Materii Prime Disponibile</h1>
+        
         <div className={styles.toolbar}>
           <button onClick={loadMaterials} className={styles.buttonRefresh}>
             Reîncarcă
@@ -224,8 +225,9 @@ const MateriiPrime = () => {
             Șterge Toate
           </button>
         </div>
+        
         <form onSubmit={handleMaterialSubmit} className={styles.formular}>
-          <div className={styles.formRow}>
+          <div className={styles.formGrid}>
             <input
               type="text"
               name="denumire"
@@ -333,76 +335,88 @@ const MateriiPrime = () => {
             )}
           </div>
         </form>
-        <div className={styles.tabelContainer}>
-          <table className={styles.tabel}>
-            <thead>
-              <tr>
-                <th className={styles.headerCell}>#</th>
-                <th className={styles.headerCell}>Denumire</th>
-                <th className={styles.headerCell}>Cantitate</th>
-                <th className={styles.headerCell}>Unitate</th>
-                <th className={styles.headerCell}>Producător</th>
-                <th className={styles.headerCell}>Cod Produs</th>
-                <th className={styles.headerCell}>Lot</th>
-                <th className={styles.headerCell}>Tip</th>
-                <th className={styles.headerCell}>Subcategorie</th>
-                <th className={styles.headerCell}>Acțiuni</th>
-              </tr>
-            </thead>
-            <tbody>
-              {materii.length > 0 ? (
-                materii.map((material) => (
-                  <tr key={material.id} className={styles.row}>
-                    <td className={styles.cell}>{material.id}</td>
-                    <td className={styles.cell} title={material.denumire}>
-                      {material.denumire}
-                    </td>
-                    <td className={styles.cell}>{material.cantitate}</td>
-                    <td className={styles.cell}>{material.unitate}</td>
-                    <td className={styles.cell} title={material.producator}>
-                      {material.producator || "-"}
-                    </td>
-                    <td className={styles.cell}>{material.codProdus || "-"}</td>
-                    <td className={styles.cell}>{material.lot || "-"}</td>
-                    <td className={styles.cell}>{material.tip || "-"}</td>
-                    <td className={styles.cell}>
-                      {material.subcategorie || "-"}
-                    </td>
-                    <td className={styles.cellActions}>
-                      <button
-                        onClick={() => startAdding(material)}
-                        className={styles.buttonAdd}
-                        title="Adaugă cantitate la stoc"
-                      >
-                        + Adaugă
-                      </button>
-                      <button
-                        onClick={() => startRemoving(material)}
-                        className={styles.buttonRemove}
-                        title="Scade cantitate din stoc"
-                      >
-                        Folosește
-                      </button>
-                      <button
-                        onClick={() => deleteMaterial(material.id)}
-                        className={styles.buttonDelete}
-                        title="Șterge material"
-                      >
-                        - Șterge
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="10" className={styles.noResults}>
-                    Nu există materiale în stoc. Adăugați un material nou
-                    folosind formularul de mai sus.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        
+        <div className={styles.cardsContainer}>
+          {materii.length > 0 ? (
+            materii.map((material) => (
+              <div key={material.id} className={styles.materialCard}>
+                <div className={styles.cardHeader}>
+                  <h3 className={styles.cardTitle}>{material.denumire}</h3>
+                  <span className={styles.materialId}>ID: {material.id}</span>
+                </div>
+                
+                <div className={styles.cardContent}>
+                  <div className={styles.cardRow}>
+                    <span className={styles.cardLabel}>Cantitate:</span>
+                    <span className={styles.cardValue}>{material.cantitate} {material.unitate}</span>
+                  </div>
+                  
+                  {material.producator && (
+                    <div className={styles.cardRow}>
+                      <span className={styles.cardLabel}>Producător:</span>
+                      <span className={styles.cardValue}>{material.producator}</span>
+                    </div>
+                  )}
+                  
+                  {material.codProdus && (
+                    <div className={styles.cardRow}>
+                      <span className={styles.cardLabel}>Cod Produs:</span>
+                      <span className={styles.cardValue}>{material.codProdus}</span>
+                    </div>
+                  )}
+                  
+                  {material.lot && (
+                    <div className={styles.cardRow}>
+                      <span className={styles.cardLabel}>Lot:</span>
+                      <span className={styles.cardValue}>{material.lot}</span>
+                    </div>
+                  )}
+                  
+                  {material.tip && (
+                    <div className={styles.cardRow}>
+                      <span className={styles.cardLabel}>Tip:</span>
+                      <span className={styles.cardValue}>{material.tip}</span>
+                    </div>
+                  )}
+                  
+                  {material.subcategorie && (
+                    <div className={styles.cardRow}>
+                      <span className={styles.cardLabel}>Subcategorie:</span>
+                      <span className={styles.cardValue}>{material.subcategorie}</span>
+                    </div>
+                  )}
+                </div>
+                
+                <div className={styles.cardActions}>
+                  <button
+                    onClick={() => startAdding(material)}
+                    className={styles.buttonAdd}
+                    title="Adaugă cantitate la stoc"
+                  >
+                    + Adaugă
+                  </button>
+                  <button
+                    onClick={() => startRemoving(material)}
+                    className={styles.buttonRemove}
+                    title="Scade cantitate din stoc"
+                  >
+                    Folosește
+                  </button>
+                  <button
+                    onClick={() => deleteMaterial(material.id)}
+                    className={styles.buttonDelete}
+                    title="Șterge material"
+                  >
+                    Șterge
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className={styles.noResults}>
+              Nu există materiale în stoc. Adăugați un material nou folosind formularul de mai sus.
+            </div>
+          )}
         </div>
       </div>
     </>

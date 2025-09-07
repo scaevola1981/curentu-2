@@ -17,205 +17,402 @@
 .titlu {
   text-align: center;
   font-size: 2.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  margin-top: 5rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.fermentatorStatus {
-  margin-bottom: 2rem;
+/* Sections Container */
+.sectionsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
 }
 
-.fermentatoareGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.5rem;
-  margin-top: 1rem;
-}
-
-.fermentatorCard {
+.materialeSection,
+.ambalareSection {
+  width: 100%;
   background-color: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  padding: 1rem;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.fermentatorCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
-  background-color: rgba(255, 255, 255, 0.2);
+.materialeSection h2,
+.ambalareSection h2 {
+  margin-top: 0;
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
 }
 
-.ocupat {
-  outline: 3px solid #4299e1; /* Light blue outline for occupied state */
-  box-shadow: 0 0 20px rgba(66, 153, 225, 0.5); /* Matching shadow */
+/* Toolbar */
+.toolbar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  justify-content: center;
 }
 
-.fermentatorCardOverlay {
+/* Buttons */
+.buttonRefresh,
+.buttonExport,
+.buttonAdd,
+.buttonUpdate,
+.buttonCancel,
+.buttonAdauga,
+.buttonEdit,
+.buttonDelete,
+.buttonAmbalare,
+.buttonVerifica,
+.buttonContinua {
+  padding: 0.7rem 1.4rem;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
   color: #ffffff;
 }
 
-.cantitateInput {
-  margin: 1rem 0;
+.buttonRefresh,
+.buttonExport,
+.buttonAdd,
+.buttonUpdate,
+.buttonAdauga,
+.buttonVerifica {
+  background-color: rgba(26, 115, 232, 0.7);
+}
+
+.buttonRefresh:hover,
+.buttonExport:hover,
+.buttonAdd:hover,
+.buttonUpdate:hover,
+.buttonAdauga:hover,
+.buttonVerifica:hover {
+  background-color: rgba(26, 115, 232, 0.9);
+  transform: translateY(-2px);
+}
+
+.buttonEdit {
+  background-color: rgba(39, 174, 96, 0.7);
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+}
+
+.buttonEdit:hover {
+  background-color: rgba(39, 174, 96, 0.9);
+}
+
+.buttonDelete,
+.buttonCancel {
+  background-color: rgba(231, 76, 60, 0.7);
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+}
+
+.buttonDelete:hover,
+.buttonCancel:hover {
+  background-color: rgba(231, 76, 60, 0.9);
+}
+
+.buttonAmbalare {
+  background-color: rgba(46, 204, 113, 0.7);
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  margin-top: 1rem;
+}
+
+.buttonAmbalare:hover {
+  background-color: rgba(46, 204, 113, 0.9);
+  transform: translateY(-2px);
+}
+
+.buttonContinua {
+  background-color: rgba(255, 165, 0, 0.7);
+  padding: 0.7rem 1.4rem;
+  font-size: 1rem;
+  margin-top: 1rem;
+}
+
+.buttonContinua:hover {
+  background-color: rgba(255, 165, 0, 0.9);
+  transform: translateY(-2px);
+}
+
+/* Form */
+.formular {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.formular h3 {
+  margin-top: 0;
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.formButtons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
 }
 
 .input {
   width: 100%;
   padding: 0.8rem;
-  margin: 0.3rem 0;
-  border-radius: 12px;
+  border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  background-color: #4299e1; 
-  color: rgb(255, 255, 255); /* Dark blue text for contrast against white background */
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
   font-size: 0.95rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .input:focus {
-  border-color: #024b87; /* Light blue focus border */
-  box-shadow: 0 0 8px rgba(66, 153, 225, 0.5); /* Matching focus shadow */
+  border-color: rgba(26, 115, 232, 0.7);
+  box-shadow: 0 0 8px rgba(26, 115, 232, 0.5);
   outline: none;
-  
 }
 
-.button,
-.buttonRefresh,
-.buttonExport,
-.buttonAdauga,
-.buttonEdit,
-.buttonDelete,
-.buttonUpdate,
-.buttonCancel {
-  margin-top: 0.5rem;
-  padding: 0.7rem 1.4rem;
-  border: none;
-  border-radius: 25px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+.input::placeholder {
+  color: rgba(246, 243, 243, 0.996);
+}
+
+.inputSmall {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.1);
   color: #ffffff;
+  font-size: 0.9rem;
 }
 
-.button,
-.buttonRefresh,
-.buttonExport,
-.buttonAdauga,
-.buttonUpdate {
-  background-color: rgba(26, 115, 232, 0.7); /* Matches header background from Rebuturi */
+/* Material Cards */
+.cardsContainer {
+  margin-top: 2rem;
 }
 
-.button:hover,
-.buttonRefresh:hover,
-.buttonExport:hover,
-.buttonAdauga:hover,
-.buttonUpdate:hover {
-  background-color: #4299e1; /* Light blue hover */
-  transform: translateY(-2px);
-  box-shadow: 0 0 15px rgba(66, 153, 225, 0.6);
+.materialCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
 }
 
-.buttonDelete,
-.buttonCancel {
-  background-color: #ff6b6b; /* Red for delete/cancel */
+.materialCard {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
 }
 
-.buttonDelete:hover,
-.buttonCancel:hover {
-  background-color: #e53e3e; /* Darker red on hover */
-  transform: translateY(-2px);
+.materialCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
-.toolbar {
+.cardHeader {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.formular {
-  background-color: rgba(255, 255, 255, 0.1);
+.cardTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0;
+  color: #ffffff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.cardId {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(26, 115, 232, 0.3);
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+}
+
+.cardContent {
+  flex: 1;
+  margin-bottom: 1.2rem;
+}
+
+.cardRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cardLabel {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.cardValue {
+  color: #ffffff;
+  text-align: right;
+}
+
+.supplementSection {
+  margin-top: 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.supplementInput {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.cardActions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+/* Fermentator Cards */
+.fermentatoareGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.fermentatorCard {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+  background-color: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  height: 300px;
+}
+
+.fermentatorCard:hover {
+  transform: scale(1.05);
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.4);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.fermentatorCard.selected {
+  outline: 3px solid #4299e1;
+  box-shadow: 0 0 20px rgba(66, 153, 225, 0.5);
+}
+
+.fermentatorCardOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  padding: 1.5rem;
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+  transition: background 0.3s ease;
+}
+
+.fermentatorCardOverlay h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.fermentatorCardOverlay p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+/* Ambalare Form */
+.ambalareForm {
+  background-color: rgba(255, 255, 255, 0.05);
   padding: 1.5rem;
   border-radius: 12px;
-  margin-bottom: 2rem;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ambalareForm h3 {
+  margin-top: 0;
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+  text-align: center;
 }
 
 .formRow {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  flex-direction: column;
+  margin-bottom: 1rem;
 }
 
-.formButtons {
-  display: flex;
-  justify-content: center; /* Centrează butoanele */
-  margin-top: 1rem;
-  width: 100%; /* Asigură că butoanele ocupă lățimea disponibilă */
-}
-
-.buttonAdauga {
-  margin-top: 0.5rem;
-  padding: 0.7rem 1.4rem;
-  border: none;
-  border-radius: 25px;
+.formRow label {
+  margin-bottom: 0.5rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-  color: #ffffff;
-  background-color: rgba(26, 115, 232, 0.7);
+  color: rgba(255, 255, 255, 0.9);
 }
 
-.buttonAdauga:hover {
-  background-color: #4299e1;
-  transform: translateY(-2px);
-  box-shadow: 0 0 15px rgba(66, 153, 225, 0.6);
+.insuficienteWarning {
+  background-color: rgba(231, 76, 60, 0.2);
+  border-left: 4px solid rgba(231, 76, 60, 0.7);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1.5rem;
 }
 
-.tabelContainer {
-  overflow-x: auto;
-}
-
-.tabel {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.headerCell {
-  background-color: rgba(26, 115, 232, 0.7); /* Matches Rebuturi header */
-  padding: 0.8rem;
-  text-align: left;
-  color: #ffffff;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  position: sticky;
-  top: 0;
-}
-
-.row:nth-child(even) {
-  background-color: rgba(255, 255, 255, 0.03);
-}
-
-.cell {
-  padding: 0.7rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+.insuficienteWarning h4 {
+  margin-top: 0;
   color: #ffffff;
 }
 
-.cellActions button {
-  margin-right: 0.4rem;
+.insuficienteWarning ul {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
 }
 
+.insuficienteWarning li {
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
+/* Messages */
 .noResults,
-.loading {
+.loading,
+.noFermentatoare {
   text-align: center;
   padding: 1.5rem;
   font-weight: 600;
@@ -225,35 +422,87 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Modal */
 .modal {
   position: fixed;
-  top: 20%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(255, 255, 255, 0.1);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background-color: #2c3e50;
   padding: 2rem;
   border-radius: 12px;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
-  color: #ffffff;
-  z-index: 999;
-  max-width: 450px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  max-width: 500px;
+  width: 90%;
   text-align: center;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.modal button {
+.modalContent p {
+  color: #ffffff;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.modalButton {
   background-color: #ff6b6b;
   border: none;
   padding: 0.7rem 1.4rem;
   border-radius: 25px;
-  margin-top: 1rem;
   font-weight: 600;
   color: #ffffff;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
-.modal button:hover {
+.modalButton:hover {
   background-color: #e53e3e;
-  transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .titlu {
+    font-size: 2rem;
+  }
+  
+  .materialCards,
+  .fermentatoareGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .cardHeader {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .supplementInput {
+    flex-direction: column;
+  }
+  
+  .toolbar {
+    flex-direction: column;
+  }
+  
+  .formButtons {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
 }
