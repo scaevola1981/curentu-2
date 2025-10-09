@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import NavBar from '../../Componente/NavBar/NavBar.jsx';
-import styles from './rebuturi.module.css';
+import styles from './Rebuturi.module.css';
 
 const API_URL = 'http://localhost:3001';
 

@@ -1,20 +1,25 @@
+
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
 import {
   getMateriiPrime,
   adaugaSauSuplimenteazaMaterial,
   actualizeazaMaterial,
   stergeMaterial,
   stergeToateMaterialele,
-} from './Stocare/ingrediente.js';
-import { getFermentatoare, updateFermentator } from './Stocare/fermentatoare.js';
+} from './Stocare/ingrediente.mjs';
+import { getFermentatoare, updateFermentator } from './Stocare/fermentatoare.mjs';
 import {
   adaugaLot,
   obtineLoturi,
   actualizeazaLot,
   stergeLot,
   obtineLotDupaId,
-} from './Stocare/loturiAmbalate.js';
+} from './Stocare/loturiAmbalate.mjs';
 import {
   getMaterialeAmbalare,
   adaugaMaterialAmbalare,
@@ -23,8 +28,8 @@ import {
   stergeToateMaterialeleAmbalare,
   exportaMaterialeAmbalare,
   getMaterialePentruLot,
-} from './Stocare/materialeAmbalare.js';
-import { getReteteBere } from './Stocare/reteteBere.js';
+} from './Stocare/materialeAmbalare.mjs';
+import { getReteteBere } from './Stocare/reteteBere.mjs';
 import {
   getIesiriBere,
   adaugaIesireBere,
@@ -34,12 +39,23 @@ import {
   stergeIesireBere,
   exportaIesiriCSV,
   getIesiriPerioada,
-} from './Stocare/iesiriBere.js';
+} from './Stocare/iesiriBere.mjs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const storagePath = process.env.NODE_ENV === 'production'
+  ? path.join(process.resourcesPath, 'Stocare')
+  : path.join(__dirname, 'Stocare');
+
 const app = express();
 const PORT = 3001;
 
-app.use(cors());
-app.use('/static', express.static('Stocare'));
+app.use(cors({
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+app.use('/static', express.static(storagePath));
 app.use(express.json());
 
 function valideazaMaterial(material) {
@@ -61,9 +77,9 @@ function valideazaMaterial(material) {
   return erori;
 }
 
-app.get('/api/materii-prime', (req, res) => {
+app.get('/api/materii-prime', async (req, res) => {
   try {
-    const materii = getMateriiPrime();
+    const materii = await getMateriiPrime();
     res.json(materii);
   } catch (error) {
     console.error('Eroare la preluarea materiilor prime:', error.message, error.stack);
@@ -71,13 +87,13 @@ app.get('/api/materii-prime', (req, res) => {
   }
 });
 
-app.post('/api/materii-prime', (req, res) => {
+app.post('/api/materii-prime', async (req, res) => {
   const erori = valideazaMaterial(req.body);
   if (erori.length > 0) {
     return res.status(400).json({ error: 'Date invalide', detalii: erori });
   }
   try {
-    const rezultat = adaugaSauSuplimenteazaMaterial(req.body);
+    const rezultat = await adaugaSauSuplimenteazaMaterial(req.body);
     if (rezultat) {
       res.status(201).json({ succes: true });
     } else {
@@ -89,13 +105,13 @@ app.post('/api/materii-prime', (req, res) => {
   }
 });
 
-app.put('/api/materii-prime/:id', (req, res) => {
+app.put('/api/materii-prime/:id', async (req, res) => {
   const erori = valideazaMaterial(req.body);
   if (erori.length > 0) {
     return res.status(400).json({ error: 'Date invalide', detalii: erori });
   }
   try {
-    const rezultat = actualizeazaMaterial(req.params.id, req.body);
+    const rezultat = await actualizeazaMaterial(req.params.id, req.body);
     if (rezultat) {
       res.json({ succes: true });
     } else {
@@ -107,9 +123,9 @@ app.put('/api/materii-prime/:id', (req, res) => {
   }
 });
 
-app.delete('/api/materii-prime/:id', (req, res) => {
+app.delete('/api/materii-prime/:id', async (req, res) => {
   try {
-    const rezultat = stergeMaterial(req.params.id);
+    const rezultat = await stergeMaterial(req.params.id);
     if (rezultat) {
       res.json({ succes: true });
     } else {
@@ -121,9 +137,9 @@ app.delete('/api/materii-prime/:id', (req, res) => {
   }
 });
 
-app.delete('/api/materii-prime', (req, res) => {
+app.delete('/api/materii-prime', async (req, res) => {
   try {
-    const rezultat = stergeToateMaterialele();
+    const rezultat = await stergeToateMaterialele();
     if (rezultat) {
       res.json({ succes: true });
     } else {
@@ -335,9 +351,9 @@ app.get('/api/materiale-ambalare/export', async (req, res) => {
   }
 });
 
-app.get('/api/iesiri-bere', (req, res) => {
+app.get('/api/iesiri-bere', async (req, res) => {
   try {
-    const iesiri = getIesiriBere();
+    const iesiri = await getIesiriBere();
     res.json(iesiri);
   } catch (error) {
     console.error('Eroare la obținerea ieșirilor:', error);
@@ -345,7 +361,7 @@ app.get('/api/iesiri-bere', (req, res) => {
   }
 });
 
-app.post('/api/iesiri-bere', (req, res) => {
+app.post('/api/iesiri-bere', async (req, res) => {
   try {
     const {
       lotId,
@@ -381,7 +397,7 @@ app.post('/api/iesiri-bere', (req, res) => {
       });
     }
 
-    const iesireNoua = adaugaIesireBere({
+    const iesireNoua = await adaugaIesireBere({
       lotId: lotId.toString(),
       reteta,
       cantitate: parsedCantitate,
@@ -405,10 +421,10 @@ app.post('/api/iesiri-bere', (req, res) => {
   }
 });
 
-app.get('/api/iesiri-bere/lot/:lotId', (req, res) => {
+app.get('/api/iesiri-bere/lot/:lotId', async (req, res) => {
   try {
     const { lotId } = req.params;
-    const iesiri = getIesiriPentruLot(lotId);
+    const iesiri = await getIesiriPentruLot(lotId);
     res.json(iesiri);
   } catch (error) {
     console.error('Eroare la obținerea ieșirilor pentru lot:', error);
@@ -416,9 +432,9 @@ app.get('/api/iesiri-bere/lot/:lotId', (req, res) => {
   }
 });
 
-app.get('/api/iesiri-bere/sumar', (req, res) => {
+app.get('/api/iesiri-bere/sumar', async (req, res) => {
   try {
-    const sumar = getSumarIesiriPeRetete();
+    const sumar = await getSumarIesiriPeRetete();
     res.json(sumar);
   } catch (error) {
     console.error('Eroare la obținerea sumarului:', error);
@@ -426,9 +442,9 @@ app.get('/api/iesiri-bere/sumar', (req, res) => {
   }
 });
 
-app.get('/api/iesiri-bere/statistici', (req, res) => {
+app.get('/api/iesiri-bere/statistici', async (req, res) => {
   try {
-    const statistici = getStatisticiIesiri();
+    const statistici = await getStatisticiIesiri();
     res.json(statistici);
   } catch (error) {
     console.error('Eroare la obținerea statisticilor:', error);
@@ -436,7 +452,7 @@ app.get('/api/iesiri-bere/statistici', (req, res) => {
   }
 });
 
-app.get('/api/iesiri-bere/perioada', (req, res) => {
+app.get('/api/iesiri-bere/perioada', async (req, res) => {
   try {
     const { dataInceput, dataSfarsit } = req.query;
     if (!dataInceput || !dataSfarsit) {
@@ -444,7 +460,7 @@ app.get('/api/iesiri-bere/perioada', (req, res) => {
         error: 'Parametrii dataInceput și dataSfarsit sunt obligatorii',
       });
     }
-    const iesiri = getIesiriPerioada(dataInceput, dataSfarsit);
+    const iesiri = await getIesiriPerioada(dataInceput, dataSfarsit);
     res.json(iesiri);
   } catch (error) {
     console.error('Eroare la obținerea ieșirilor pe perioadă:', error);
@@ -452,10 +468,10 @@ app.get('/api/iesiri-bere/perioada', (req, res) => {
   }
 });
 
-app.delete('/api/iesiri-bere/:id', (req, res) => {
+app.delete('/api/iesiri-bere/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const rezultat = stergeIesireBere(parseInt(id));
+    const rezultat = await stergeIesireBere(parseInt(id));
     if (rezultat) {
       res.json({ succes: true, message: 'Ieșire ștearsă cu succes' });
     } else {
@@ -467,9 +483,9 @@ app.delete('/api/iesiri-bere/:id', (req, res) => {
   }
 });
 
-app.get('/api/iesiri-bere/export/csv', (req, res) => {
+app.get('/api/iesiri-bere/export/csv', async (req, res) => {
   try {
-    const csvData = exportaIesiriCSV();
+    const csvData = await exportaIesiriCSV();
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', `attachment; filename=iesiri-bere-${new Date().toISOString().split('T')[0]}.csv`);
     res.send('\uFEFF' + csvData);
@@ -481,7 +497,7 @@ app.get('/api/iesiri-bere/export/csv', (req, res) => {
 
 app.get('/api/rebuturi', async (req, res) => {
   try {
-    const iesiri = getIesiriBere();
+    const iesiri = await getIesiriBere();
     const rebuturi = iesiri.filter(iesire => iesire.motiv === 'rebut' || iesire.motiv === 'pierdere');
     const rebuturiCuMateriale = await Promise.all(
       rebuturi.map(async (iesire) => {

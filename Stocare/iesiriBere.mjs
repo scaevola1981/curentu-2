@@ -1,27 +1,30 @@
-import { LowSync } from 'lowdb';
-import { JSONFileSync } from 'lowdb/node';
+
+import { Low } from 'lowdb';
+import { JSONFile } from 'lowdb/node';
 import path from 'path';
 
 const __dirname = path.resolve();
 const filePath = path.join(__dirname, 'Stocare', 'iesiriBere.json');
-const adapter = new JSONFileSync(filePath);
-const db = new LowSync(adapter, { iesiri: [] });
+const adapter = new JSONFile(filePath);
+const db = new Low(adapter, { iesiri: [] });
 
 // Inițializare bază de date
-db.read();
-if (!db.data || !db.data.iesiri) {
-  db.data = { iesiri: [] };
-  db.write();
-  console.log('Baza de date pentru ieșiri bere inițializată');
-}
+(async () => {
+  await db.read();
+  if (!db.data || !db.data.iesiri) {
+    db.data = { iesiri: [] };
+    await db.write();
+    console.log('Baza de date pentru ieșiri bere inițializată');
+  }
+})();
 
 /**
  * Obține toate ieșirile de bere
  * @returns {Array} Lista tuturor ieșirilor
  */
-export function getIesiriBere() {
+export async function getIesiriBere() {
   try {
-    db.read();
+    await db.read();
     return db.data.iesiri || [];
   } catch (error) {
     console.error('Eroare la citirea ieșirilor:', error.message);
@@ -35,9 +38,9 @@ export function getIesiriBere() {
  * @returns {Object} Ieșirea adăugată cu ID
  * @throws {Error} Dacă datele sunt invalide
  */
-export function adaugaIesireBere(iesire) {
+export async function adaugaIesireBere(iesire) {
   try {
-    db.read();
+    await db.read();
     
     // Validări
     if (!iesire.lotId) {
@@ -78,7 +81,7 @@ export function adaugaIesireBere(iesire) {
     };
     
     db.data.iesiri.push(iesireNoua);
-    db.write();
+    await db.write();
     
     console.log(`Ieșire adăugată: ${iesireNoua.cantitate}L din ${iesireNoua.reteta}, numarUnitatiScoase: ${iesireNoua.numarUnitatiScoase || 'nedefinit'}`);
     return iesireNoua;
@@ -93,9 +96,9 @@ export function adaugaIesireBere(iesire) {
  * @param {number} lotId - ID-ul lotului
  * @returns {Array} Lista ieșirilor pentru lotul specificat
  */
-export function getIesiriPentruLot(lotId) {
+export async function getIesiriPentruLot(lotId) {
   try {
-    db.read();
+    await db.read();
     return db.data.iesiri.filter(iesire => iesire.lotId === lotId.toString()) || [];
   } catch (error) {
     console.error('Eroare la obținerea ieșirilor pentru lot:', error.message);
@@ -107,9 +110,9 @@ export function getIesiriPentruLot(lotId) {
  * Obține sumar ieșiri pe rețete
  * @returns {Object} Obiect cu totalurile pe rețete
  */
-export function getSumarIesiriPeRetete() {
+export async function getSumarIesiriPeRetete() {
   try {
-    db.read();
+    await db.read();
     const iesiri = db.data.iesiri || [];
     const sumar = {};
     
@@ -148,9 +151,9 @@ export function getSumarIesiriPeRetete() {
  * @param {string} dataSfarsit - Data de sfârșit (ISO string)
  * @returns {Array} Lista ieșirilor din perioada specificată
  */
-export function getIesiriPerioada(dataInceput, dataSfarsit) {
+export async function getIesiriPerioada(dataInceput, dataSfarsit) {
   try {
-    db.read();
+    await db.read();
     const iesiri = db.data.iesiri || [];
     const inceput = new Date(dataInceput);
     const sfarsit = new Date(dataSfarsit);
@@ -169,9 +172,9 @@ export function getIesiriPerioada(dataInceput, dataSfarsit) {
  * Obține statistici generale despre ieșiri
  * @returns {Object} Statistici generale
  */
-export function getStatisticiIesiri() {
+export async function getStatisticiIesiri() {
   try {
-    db.read();
+    await db.read();
     const iesiri = db.data.iesiri || [];
     
     if (iesiri.length === 0) {
@@ -224,9 +227,9 @@ export function getStatisticiIesiri() {
  * @param {number} id - ID-ul ieșirii de șters
  * @returns {boolean} True dacă s-a șters cu succes
  */
-export function stergeIesireBere(id) {
+export async function stergeIesireBere(id) {
   try {
-    db.read();
+    await db.read();
     const iesiri = db.data.iesiri || [];
     const index = iesiri.findIndex(iesire => iesire.id === parseInt(id));
     
@@ -236,7 +239,7 @@ export function stergeIesireBere(id) {
     
     iesiri.splice(index, 1);
     db.data.iesiri = iesiri;
-    db.write();
+    await db.write();
     
     console.log(`Ieșire ștearsă: ID ${id}`);
     return true;
@@ -250,9 +253,9 @@ export function stergeIesireBere(id) {
  * Exportă ieșirile în format CSV
  * @returns {string} Datele în format CSV
  */
-export function exportaIesiriCSV() {
+export async function exportaIesiriCSV() {
   try {
-    db.read();
+    await db.read();
     const iesiri = db.data.iesiri || [];
     
     if (iesiri.length === 0) {

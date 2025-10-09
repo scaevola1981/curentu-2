@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import NavBar from '../../Componente/NavBar/NavBar';
-import styles from './productie.module.css';
+import styles from './Productie.module.css';
 
 const API_URL = "http://localhost:3001/api";
 

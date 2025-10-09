@@ -1,3 +1,40 @@
 {
-  "loturi": []
+  "loturi": [
+    {
+      "id": 2,
+      "fermentatorId": 1,
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": 10,
+      "unitate": "litri",
+      "dataInceput": "2025-10-09T18:17:29.850Z",
+      "dataAmbalare": "2025-10-09T18:22:18.777Z",
+      "packagingType": "sticle",
+      "bottleSize": "0.33l",
+      "boxType": "6 sticle",
+      "kegSize": null,
+      "materialsUsed": [
+        {
+          "denumire": "Sticle 0.33l",
+          "cantitate": 31,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Capace",
+          "cantitate": 31,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Etichete",
+          "cantitate": 31,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Cutii 6 sticle",
+          "cantitate": 6,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2025-10-09T18:22:18.788Z"
+    }
+  ]
 }

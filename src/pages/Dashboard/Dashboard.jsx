@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import styles from './dashboard.module.css';
+import styles from './Dashboard.module.css';
 import NavBar from '../../Componente/NavBar/NavBar';
 import ErrorBoundary from '../../Componente/ErrorBoundary';
 

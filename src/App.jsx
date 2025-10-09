@@ -10,7 +10,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 const App = () => {
   return (
     <>
-
+      <NavBar />
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="materii-prime" element={<MateriiPrime />} />
