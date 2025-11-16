@@ -2,6 +2,14 @@ import React, { useEffect, useState } from 'react';
 import styles from './Dashboard.module.css';
 import NavBar from '../../Componente/NavBar/NavBar';
 import ErrorBoundary from '../../Componente/ErrorBoundary';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 
 const API_URL = 'http://localhost:3001';
 
@@ -11,7 +19,15 @@ const Dashboard = () => {
     productions: { fullFermentors: [] },
     ambalare: { readyLots: [] },
     depozitare: { lots: [], totalStock: 0 },
-    rebuturi: { items: [], totalQuantity: 0, totalCapace: 0, totalEtichete: 0, totalCutii: 0, totalSticle: 0, totalKeguri: 0 },
+    rebuturi: {
+      items: [],
+      totalQuantity: 0,
+      totalCapace: 0,
+      totalEtichete: 0,
+      totalCutii: 0,
+      totalSticle: 0,
+      totalKeguri: 0,
+    },
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -83,6 +99,31 @@ const Dashboard = () => {
   const currentTime = new Date().toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Bucharest' });
   const currentDate = new Date().toLocaleDateString('ro-RO');
 
+  // 🔹 Datele pentru graficul tip pie
+  const pieData = [
+    { name: 'Materii Prime', value: summary.materiiPrime.totalQuantity },
+    { name: 'Producție', value: summary.productions.fullFermentors.length },
+    { name: 'Depozitare', value: summary.depozitare.totalStock },
+    { name: 'Rebuturi', value: summary.rebuturi.totalQuantity },
+  ];
+
+  const COLORS = ['#00C49F', '#0088FE', '#FFBB28', '#FF4444'];
+
+  // 🔹 Tooltip customizat pentru grafic
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className={styles.customTooltip}>
+          <p className={styles.tooltipLabel}>{payload[0].name}</p>
+          <p className={styles.tooltipValue}>
+            {payload[0].value.toFixed(2)} {payload[0].name === 'Producție' ? 'loturi' : 'L'}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   if (isLoading) {
     return (
       <>
@@ -130,8 +171,9 @@ const Dashboard = () => {
           </div>
         </div>
         
+        {/* 🔹 Cardurile originale (păstrate integral) */}
         <div className={styles.cardContainer}>
-          {/* Materii Prime Card */}
+          {/* Materii Prime */}
           <div className={styles.card}>
             <div className={styles.cardHeader}>
               <h2>Materii Prime</h2>
@@ -161,7 +203,7 @@ const Dashboard = () => {
             </a>
           </div>
 
-          {/* Productions Card */}
+          {/* Producție */}
           <div className={styles.card}>
             <div className={styles.cardHeader}>
               <h2>Producție</h2>
@@ -187,7 +229,7 @@ const Dashboard = () => {
             </a>
           </div>
 
-          {/* Ambalare Card */}
+          {/* Ambalare */}
           <div className={styles.card}>
             <div className={styles.cardHeader}>
               <h2>Ambalare</h2>
@@ -213,7 +255,7 @@ const Dashboard = () => {
             </a>
           </div>
 
-          {/* Depozitare Card */}
+          {/* Depozitare */}
           <div className={styles.card}>
             <div className={styles.cardHeader}>
               <h2>Depozitare</h2>
@@ -243,7 +285,7 @@ const Dashboard = () => {
             </a>
           </div>
 
-          {/* Rebuturi Card */}
+          {/* Rebuturi */}
           <div className={styles.card}>
             <div className={styles.cardHeader}>
               <h2>Rebuturi</h2>
@@ -273,7 +315,7 @@ const Dashboard = () => {
             </a>
           </div>
 
-          {/* Statistici Generale Card */}
+          {/* Statistici Generale */}
           <div className={`${styles.card} ${styles.statsCard}`}>
             <div className={styles.cardHeader}>
               <h2>Statistici Generale</h2>
@@ -298,6 +340,30 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* 🔹 Graficul Pie Chart */}
+        <div className={styles.chartContainer}>
+          <h2>Distribuția Generală a Producției</h2>
+          <ResponsiveContainer width="100%" height={350}>
+            <PieChart>
+              <Pie
+                data={pieData}
+                cx="50%"
+                cy="50%"
+                outerRadius={130}
+                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(1)}%`}
+                dataKey="value"
+                isAnimationActive={true}
+              >
+                {pieData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </ErrorBoundary>

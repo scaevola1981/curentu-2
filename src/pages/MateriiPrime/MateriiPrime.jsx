@@ -221,9 +221,9 @@ const MateriiPrime = () => {
           <button onClick={loadMaterials} className={styles.buttonRefresh}>
             Reîncarcă
           </button>
-          <button onClick={deleteAllMaterials} className={styles.buttonDelete}>
+          {/* <button onClick={deleteAllMaterials} className={styles.buttonDelete}>
             Șterge Toate
-          </button>
+          </button> */}
         </div>
         
         <form onSubmit={handleMaterialSubmit} className={styles.formular}>
@@ -402,13 +402,13 @@ const MateriiPrime = () => {
                   >
                     Folosește
                   </button>
-                  <button
+                  {/* <button
                     onClick={() => deleteMaterial(material.id)}
                     className={styles.buttonDelete}
                     title="Șterge material"
                   >
                     Șterge
-                  </button>
+                  </button> */}
                 </div>
               </div>
             ))

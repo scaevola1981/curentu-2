@@ -1,7 +1,12 @@
+/* ============================================
+   MATERII PRIME — STIL DARK + MODERN (CURENTU’)
+   ============================================ */
+
+/* --- CONTAINER --- */
 .container {
-  padding: 2rem;
+  padding: clamp(1rem, 2vw, 2rem);
   min-height: 100vh;
-  background: linear-gradient(15deg, #2892D7, #002442);
+  background: #01233a;
   background-size: 300% 300%;
   animation: gradientMove 15s ease infinite;
   color: #ffffff;
@@ -14,68 +19,71 @@
   100% { background-position: 0% 50%; }
 }
 
+/* --- TITLU --- */
 .titlu {
   text-align: center;
-  font-size: 2.5rem;
-  margin-top: 5rem;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  margin-top: 4rem;
   color: #ffffff;
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 1.5px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  text-transform: uppercase;
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.4);
 }
 
+/* --- TOOLBAR --- */
 .toolbar {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin: 1.5rem 0;
 }
 
+.toolbar button {
+  border-radius: 25px;
+}
+
+/* --- FORMULAR --- */
 .formular {
   background-color: rgba(255, 255, 255, 0.1);
   padding: 1.5rem;
-  border-radius: 12px;
+  border-radius: 14px;
   margin-bottom: 2rem;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+ 
 }
 
 .formGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 1rem;
   margin-bottom: 1rem;
 }
 
+/* --- INPUTURI --- */
 .input {
   width: 100%;
-  padding: 0.8rem;
+  padding: 0.85rem;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  font-size: 0.95rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid rgba(255,255,255,0.15);
+  background-color: rgba(255,255,255,0.12);
+  color: #fff;
+  font-size: 1rem;
+  transition: 0.2s ease;
 }
 
 .input:focus {
-  border-color: rgba(26, 115, 232, 0.7);
-  box-shadow: 0 0 8px rgba(26, 115, 232, 0.5);
+  border-color: #1a73e8;
+  box-shadow: 0 0 8px rgba(26,115,232,0.6);
   outline: none;
 }
 
 .input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255,255,255,0.6);
 }
 
-.formButtons {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-}
-
-/* Butoane generale */
+/* --- BUTOANE --- */
 .button,
 .buttonRefresh,
 .buttonAdd,
@@ -83,12 +91,12 @@
 .buttonUpdate,
 .buttonDelete,
 .buttonCancel {
-  padding: 0.7rem 1.4rem;
+  padding: 0.75rem 1.6rem;
   border: none;
   border-radius: 25px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: 0.2s ease;
   color: #ffffff;
 }
 
@@ -96,85 +104,91 @@
 .buttonRefresh,
 .buttonAdd,
 .buttonUpdate {
-  background-color: rgba(26, 115, 232, 0.7);
+  background-color: rgba(26,115,232,0.75);
 }
 
 .button:hover,
 .buttonRefresh:hover,
 .buttonAdd:hover,
 .buttonUpdate:hover {
-  background-color: rgba(26, 115, 232, 0.9);
+  background-color: rgba(26,115,232,0.95);
   transform: translateY(-2px);
 }
 
+/* verde – adaugă */
 .buttonRemove {
-  background-color: rgba(39, 174, 96, 0.7);
+  background-color: rgba(39,174,96,0.75);
 }
 
 .buttonRemove:hover {
-  background-color: rgba(39, 174, 96, 0.9);
+  background-color: rgba(39,174,96,1);
+  transform: translateY(-2px);
 }
 
+/* roșu – șterge / anulează */
 .buttonDelete,
 .buttonCancel {
-  background-color: rgba(231, 76, 60, 0.7);
+  background-color: rgba(231,76,60,0.75);
 }
 
 .buttonDelete:hover,
 .buttonCancel:hover {
-  background-color: rgba(231, 76, 60, 0.9);
+  background-color: rgba(231,76,60,0.95);
+  transform: translateY(-2px);
 }
 
-/* Container pentru carduri */
+/* --- CONTAINER CARDURI --- */
 .cardsContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
   gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-/* Stiluri pentru carduri */
+/* --- CARD --- */
 .materialCard {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  background-color: rgba(255,255,255,0.1);
+  border-radius: 14px;
   padding: 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  transition: 0.25s ease;
   display: flex;
   flex-direction: column;
+ 
 }
 
 .materialCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
-  background-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.35);
+  background-color: rgba(255,255,255,0.15);
 }
 
+/* --- HEADER CARD --- */
 .cardHeader {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
   margin-bottom: 1rem;
-  padding-bottom: 0.8rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
 }
 
 .cardTitle {
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   font-weight: 600;
   margin: 0;
   color: #ffffff;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .materialId {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.7);
-  background-color: rgba(26, 115, 232, 0.3);
-  padding: 0.2rem 0.5rem;
-  border-radius: 10px;
+  color: rgba(255,255,255,0.7);
+  background-color: rgba(26,115,232,0.25);
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
 }
 
+/* --- CONȚINUT CARD --- */
 .cardContent {
   flex: 1;
   margin-bottom: 1.2rem;
@@ -184,13 +198,13 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: 0.6rem;
-  padding: 0.3rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
 }
 
 .cardLabel {
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255,255,255,0.85);
 }
 
 .cardValue {
@@ -198,79 +212,82 @@
   text-align: right;
 }
 
+/* --- ACTIONS --- */
 .cardActions {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.6rem;
   justify-content: flex-end;
 }
 
 .cardActions button {
-  padding: 0.5rem 1rem;
+  padding: 0.55rem 1.2rem;
   font-size: 0.85rem;
 }
 
+/* --- NO RESULTS --- */
 .noResults {
   text-align: center;
   padding: 2rem;
   font-weight: 600;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255,255,255,0.08);
   border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
   grid-column: 1 / -1;
 }
 
-/* Responsive design */
+/* --- RESPONSIVE --- */
 @media (max-width: 768px) {
   .container {
     padding: 1rem;
   }
-  
+
   .titlu {
     font-size: 2rem;
   }
-  
+
   .formGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .cardsContainer {
     grid-template-columns: 1fr;
   }
-  
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .cardHeader {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .cardActions {
     flex-direction: column;
-  }
-  
-  .toolbar {
-    flex-direction: column;
-    align-items: stretch;
+    gap: 0.5rem;
   }
 }
 
 @media (max-width: 480px) {
   .titlu {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
-  
+
   .formular {
     padding: 1rem;
   }
-  
+
   .materialCard {
     padding: 1rem;
   }
-  
+
   .cardRow {
     flex-direction: column;
-    gap: 0.3rem;
+    align-items: flex-start;
   }
-  
+
   .cardLabel, .cardValue {
     text-align: left;
   }

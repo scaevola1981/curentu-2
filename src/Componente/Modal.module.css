@@ -1,0 +1,79 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalBox {
+  background: #1e293b;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+  width: 90%;
+  max-width: 480px;
+  color: white;
+  text-align: center;
+  animation: popIn 0.25s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.title {
+  font-size: 1.4rem;
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+}
+
+.message {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
+  white-space: pre-line;
+}
+
+.button {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.button:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+/* Variante de culoare */
+.error {
+  background: #7f1d1d;
+}
+
+.success {
+  background: #065f46;
+}
+
+.info {
+  background: #1e293b;
+}

@@ -29,7 +29,7 @@ const reteteInitiale = [
     ingrediente: [
       { denumire: "Malt Pale Ale", cantitate: 400, unitate: "kg", tip: "malt" },
       { denumire: "Zahar brun", cantitate: 20, unitate: "kg", tip: "aditiv" },
-      { denumire: "Drojdie B.E 256", cantitate: 0.5, unitate: "kg", tip: "drojdie" },
+      { denumire: "Drojdie BE 256", cantitate: 0.5, unitate: "kg", tip: "drojdie" },
       { denumire: "Drojdie F2", cantitate: 0.5, unitate: "kg", tip: "drojdie" },
       { denumire: "Hamei Bitter", cantitate: 1, unitate: "kg", tip: "hamei" },
       { denumire: "Hamei Aroma", cantitate: 0.8, unitate: "kg", tip: "hamei" },
@@ -47,7 +47,7 @@ const reteteInitiale = [
     rezultat: { cantitate: 1000, unitate: "litri" },
     ingrediente: [
       { denumire: "Malt Pale Ale", cantitate: 372, unitate: "kg", tip: "malt" },
-      { denumire: "Drojdie B.E 256", cantitate: 0.5, unitate: "kg", tip: "drojdie" },
+      { denumire: "Drojdie BE 256", cantitate: 0.5, unitate: "kg", tip: "drojdie" },
       { denumire: "Drojdie F2", cantitate: 0.4, unitate: "kg", tip: "drojdie" },
       { denumire: "Hamei Bitter", cantitate: 1.15, unitate: "kg", tip: "hamei" },
       { denumire: "Hamei Aroma", cantitate: 2.4, unitate: "kg", tip: "hamei" },

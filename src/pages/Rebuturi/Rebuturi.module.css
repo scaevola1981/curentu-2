@@ -1,11 +1,17 @@
+/* ============================================================
+   REBUTURI – GLASSMORPHISM + ELECTRIC GLOW (stil unitar CURENTU’)
+   ============================================================ */
+
+/* ---- CONTAINER ---- */
 .container {
-  padding: 2rem;
+  padding: clamp(1rem, 2vw, 2rem);
   min-height: 100vh;
-  background: linear-gradient(15deg, #2892D7, #002442);
+  background: #00203df8;
   background-size: 300% 300%;
   animation: gradientMove 15s ease infinite;
   color: #ffffff;
   font-family: "Segoe UI", sans-serif;
+  overflow-x: hidden;
 }
 
 @keyframes gradientMove {
@@ -16,287 +22,266 @@
 
 .title {
   text-align: center;
-  font-size: 2.5rem;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
   margin-bottom: 2rem;
-  margin-top: 5rem;
-  font-weight: 600;
+  margin-top: 4rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 1.4px;
+  color: #f8fbff;
 }
 
+/* ---- TOOLBAR ---- */
 .toolbar {
   display: flex;
   justify-content: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.8rem;
 }
 
 .buttonDeleteAll {
-  padding: 0.7rem 1.4rem;
+  padding: 0.8rem 1.5rem;
   border: none;
   border-radius: 25px;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
   color: #ffffff;
-  background-color: rgba(231, 76, 60, 0.7);
+  background: rgba(231, 76, 60, 0.7);
+  cursor: pointer;
+  transition: 0.25s ease;
 }
 
 .buttonDeleteAll:hover {
-  background-color: rgba(231, 76, 60, 0.9);
-  transform: translateY(-2px);
+  background: rgba(231, 76, 60, 0.95);
+  transform: translateY(-3px);
+  box-shadow: 0 0 18px rgba(255, 100, 100, 0.4);
 }
 
+/* ---- GRID CARDURI ---- */
 .gridContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  gap: 25px;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  padding: 0 10px;
 }
 
-.recipeCard {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+/* ---- CARD LOT ---- */
+.lotCard {
+  position: relative;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
   padding: 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid rgba(255,255,255,0.10);
+  transition: 0.35s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+ 
 }
 
-.recipeCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+.lotCard:hover {
+  transform: translateY(-10px);
+  background: rgba(255,255,255,0.14);
+  box-shadow:
+    0 0 15px rgba(0, 220, 255, 0.45),
+    0 0 30px rgba(0, 200, 240, 0.25),
+    0 8px 25px rgba(0,0,0,0.45);
 }
 
+/* ---- BUTON X ---- */
+.deleteCardBtn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: #e63946;
+  border: none;
+  color: white;
+  padding: 7px 11px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.deleteCardBtn:hover {
+  background: #cc2a35;
+  transform: scale(1.1);
+  box-shadow: 0 0 12px rgba(255, 80, 90, 0.5);
+}
+
+/* ---- HEADER CARD ---- */
 .cardHeader {
   margin-bottom: 1rem;
   padding-bottom: 0.8rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  display: flex;
+  justify-content: space-between;
 }
 
 .cardHeader h2 {
+  font-size: 1.5rem;
   margin: 0;
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: #ffffff;
+  font-weight: 700;
 }
 
+.lotDate {
+  font-size: 0.9rem;
+  color: #d6d6d6;
+}
+
+/* ---- SUMMARY ---- */
 .cardSummary {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.2rem;
 }
 
 .summaryItem {
   display: flex;
   justify-content: space-between;
   margin-bottom: 0.6rem;
-  padding: 0.3rem 0;
 }
 
 .summaryLabel {
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.8);
+  opacity: 0.85;
 }
 
 .summaryValue {
+  opacity: 1;
   color: #ffffff;
 }
 
-.loturiSection {
-  margin-top: 1rem;
-}
-
-.loturiSection h3 {
-  margin: 0 0 1rem;
-  font-size: 1.3rem;
-  color: #ffffff;
-}
-
-.loturiGrid {
-  display: grid;
-  gap: 1rem;
-}
-
-.lotCard {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.lotHeader {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.8rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.lotId {
-  font-size: 0.9rem;
-  font-weight: 600;
-  background-color: rgba(26, 115, 232, 0.3);
-  padding: 0.2rem 0.5rem;
-  border-radius: 10px;
-}
-
-.lotDate {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.lotDetails {
-  margin-bottom: 0.8rem;
-}
-
-.detailRow {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-}
-
-.detailLabel {
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.detailValue {
-  color: #ffffff;
-}
-
+/* ---- MATERIAL GRID ---- */
 .materialsGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 0.5rem;
 }
 
 .materialItem {
   display: flex;
   justify-content: space-between;
-  padding: 0.3rem 0;
+  padding: 0.25rem 0;
 }
 
 .materialLabel {
+  opacity: 0.85;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.8);
 }
 
 .materialValue {
   color: #ffffff;
 }
 
+/* ---- TOTAL GENERAL ---- */
 .totalSection {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 3rem;
+  background: rgba(255,255,255,0.08);
+  padding: 1.8rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 26px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.10);
 }
 
 .totalSection h3 {
-  margin: 0 0 1rem;
-  font-size: 1.5rem;
-  color: #ffffff;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
 }
 
 .totalGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
 .totalItem {
   display: flex;
   justify-content: space-between;
-  padding: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
 }
 
 .totalLabel {
+  opacity: 0.85;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.8);
 }
 
 .totalValue {
+  font-weight: 600;
   color: #ffffff;
 }
 
+/* ---- NO DATA ---- */
 .noData {
+  margin-top: 2rem;
   text-align: center;
-  padding: 1.5rem;
-  font-weight: 600;
-  background-color: rgba(255, 255, 255, 0.1);
+  padding: 1.6rem;
   border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
 }
 
+/* ---- MODAL ---- */
 .modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  inset: 0;
+  background: rgba(0,0,0,0.75);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 2000;
 }
 
 .modalContent {
-  background-color: #2c3e50;
+  background: #0f2537;
   padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  max-width: 500px;
+  border-radius: 14px;
+  max-width: 450px;
   width: 90%;
-  text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 0 30px rgba(0,200,255,0.25);
 }
 
 .modalContent p {
   color: #ffffff;
+  margin-bottom: 1.4rem;
   font-size: 1.1rem;
-  margin-bottom: 1.5rem;
+  text-align: center;
 }
 
 .modalButton {
-  background-color: #ff6b6b;
-  border: none;
+  background: #e63946;
   padding: 0.7rem 1.4rem;
+  border: none;
   border-radius: 25px;
-  font-weight: 600;
-  color: #ffffff;
+  color: white;
+  font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: 0.25s ease;
 }
 
 .modalButton:hover {
-  background-color: #e53e3e;
+  background: #cc2a35;
+  transform: translateY(-2px);
 }
 
+/* ---- RESPONSIVE ---- */
+
 @media (max-width: 768px) {
-  .container {
-    padding: 1rem;
-  }
-
-  .title {
-    font-size: 2rem;
-  }
-
   .gridContainer {
     grid-template-columns: 1fr;
   }
-
-  .totalGrid {
-    grid-template-columns: 1fr;
+  .materialsGrid {
+    grid-template-columns: repeat(2, 1fr);
   }
+}
 
+@media (max-width: 480px) {
   .materialsGrid {
     grid-template-columns: 1fr;
   }
-
-  .toolbar {
-    flex-direction: column;
+  .totalGrid {
+    grid-template-columns: 1fr;
+  }
+  .title {
+    margin-top: 3rem;
   }
 }

@@ -1,263 +1,258 @@
-import React, { useEffect, useState } from 'react';
-import NavBar from '../../Componente/NavBar/NavBar.jsx';
-import styles from './Rebuturi.module.css';
+import React, { useEffect, useState } from "react";
+import NavBar from "../../Componente/NavBar/NavBar.jsx";
+import styles from "./Rebuturi.module.css";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
 
-const API_URL = 'http://localhost:3001';
+const API_URL = "http://localhost:3001";
+
+const COLORS = [
+  "#00C49F",
+  "#0088FE",
+  "#FFBB28",
+  "#FF4444",
+  "#AA66FF",
+  "#33DD88",
+];
+
+// Tooltip custom
+const CustomTooltip = ({ active, payload }) => {
+  if (!active || !payload?.length) return null;
+
+  return (
+    <div
+      style={{
+        background: "rgba(15, 23, 42, 0.9)",
+        border: "1px solid #334155",
+        padding: "10px 14px",
+        borderRadius: "8px",
+        color: "#fff",
+        boxShadow: "0 0 12px rgba(0,255,255,0.3)",
+      }}
+    >
+      <p style={{ margin: 0, fontWeight: 700, color: "#38bdf8" }}>
+        {payload[0].name}
+      </p>
+      <p style={{ margin: 0 }}>{payload[0].value} unități</p>
+    </div>
+  );
+};
+
+// 🔥 Funcție: calculează totalurile din lista de rebuturi
+const calculeazaTotaluri = (rebuturi) => {
+  const initial = {
+    litri: 0,
+    capace: 0,
+    etichete: 0,
+    cutii: 0,
+    sticle: 0,
+    keguri: 0,
+  };
+
+  return rebuturi.reduce((tot, r) => {
+    const m = r.materiale || {};
+
+    return {
+      litri: tot.litri + parseFloat(r.cantitate || 0),
+      capace: tot.capace + (m.capace || 0),
+      etichete: tot.etichete + (m.etichete || 0),
+      cutii: tot.cutii + (m.cutii || 0),
+      sticle: tot.sticle + (m.sticle || 0),
+      keguri: tot.keguri + (m.keguri || 0),
+    };
+  }, initial);
+};
 
 const Rebuturi = () => {
   const [rebuturi, setRebuturi] = useState([]);
-  const [grupatePeReteta, setGrupatePeReteta] = useState({});
-  const [totalLitri, setTotalLitri] = useState(0);
-  const [totalCapace, setTotalCapace] = useState(0);
-  const [totalEtichete, setTotalEtichete] = useState(0);
-  const [totalCutii, setTotalCutii] = useState(0);
-  const [totalSticle, setTotalSticle] = useState(0);
-  const [totalKeguri, setTotalKeguri] = useState(0);
-  const [error, setError] = useState('');
+  const [totaluri, setTotaluri] = useState({
+    litri: 0,
+    capace: 0,
+    etichete: 0,
+    cutii: 0,
+    sticle: 0,
+    keguri: 0,
+  });
+  const [error, setError] = useState("");
+
+  // Date pentru Pie Chart
+  const pieData = [
+    { name: "Litri", value: totaluri.litri },
+    { name: "Capace", value: totaluri.capace },
+    { name: "Etichete", value: totaluri.etichete },
+    { name: "Cutii", value: totaluri.cutii },
+    { name: "Sticle", value: totaluri.sticle },
+    { name: "Keguri", value: totaluri.keguri },
+  ];
+
+  // Încarcă datele
+  const loadRebuturi = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/rebuturi`);
+      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+
+      const rebuturiData = await res.json();
+      setRebuturi(rebuturiData);
+
+      // Calcule totale
+      const rezultate = calculeazaTotaluri(rebuturiData);
+      setTotaluri(rezultate);
+
+      setError("");
+    } catch (err) {
+      setError(`Eroare la încărcarea rebuturilor: ${err.message}`);
+    }
+  };
 
   useEffect(() => {
     loadRebuturi();
   }, []);
 
-  const loadRebuturi = async () => {
-    try {
-      const res = await fetch(`${API_URL}/api/rebuturi`);
-      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-      const rebuturiData = await res.json();
-      setRebuturi(rebuturiData);
-
-      // Group by reteta
-      const grupate = rebuturiData.reduce((acc, rebut) => {
-        const reteta = rebut.reteta || 'Necunoscut';
-        if (!acc[reteta]) {
-          acc[reteta] = {
-            loturi: [],
-            totalLitri: 0,
-            totalCapace: 0,
-            totalEtichete: 0,
-            totalCutii: 0,
-            totalSticle: 0,
-            totalKeguri: 0,
-          };
-        }
-        acc[reteta].loturi.push(rebut);
-        acc[reteta].totalLitri += parseFloat(rebut.cantitate);
-        acc[reteta].totalCapace += rebut.materiale?.capace || 0;
-        acc[reteta].totalEtichete += rebut.materiale?.etichete || 0;
-        acc[reteta].totalCutii += rebut.materiale?.cutii || 0;
-        acc[reteta].totalSticle += rebut.materiale?.sticle || 0;
-        acc[reteta].totalKeguri += rebut.materiale?.keguri || 0;
-        return acc;
-      }, {});
-
-      // Calculate overall totals
-      const litri = rebuturiData.reduce((sum, rebut) => sum + parseFloat(rebut.cantitate), 0);
-      const capace = rebuturiData.reduce((sum, rebut) => sum + (rebut.materiale?.capace || 0), 0);
-      const etichete = rebuturiData.reduce((sum, rebut) => sum + (rebut.materiale?.etichete || 0), 0);
-      const cutii = rebuturiData.reduce((sum, rebut) => sum + (rebut.materiale?.cutii || 0), 0);
-      const sticle = rebuturiData.reduce((sum, rebut) => sum + (rebut.materiale?.sticle || 0), 0);
-      const keguri = rebuturiData.reduce((sum, rebut) => sum + (rebut.materiale?.keguri || 0), 0);
-
-      setGrupatePeReteta(grupate);
-      setTotalLitri(litri);
-      setTotalCapace(capace);
-      setTotalEtichete(etichete);
-      setTotalCutii(cutii);
-      setTotalSticle(sticle);
-      setTotalKeguri(keguri);
-      setError('');
-    } catch (error) {
-      setError(`Eroare la încărcarea rebuturilor: ${error.message}`);
-    }
-  };
-
-  const handleDeleteAllRebuturi = async () => {
-    if (!window.confirm('Sigur doriți să ștergeți toate rebuturile? Această acțiune nu poate fi anulată!')) return;
+  // Șterge rebut individual
+  const handleDeleteRebut = async (id) => {
+    if (!window.confirm("Sigur doriți să ștergeți acest rebut?")) return;
 
     try {
-      const res = await fetch(`${API_URL}/api/iesiri-bere`, {
-        method: 'DELETE',
+      const res = await fetch(`${API_URL}/api/rebuturi/${id}`, {
+        method: "DELETE",
       });
-      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-      
-      // Reset all state
-      setRebuturi([]);
-      setGrupatePeReteta({});
-      setTotalLitri(0);
-      setTotalCapace(0);
-      setTotalEtichete(0);
-      setTotalCutii(0);
-      setTotalSticle(0);
-      setTotalKeguri(0);
-      setError('Toate rebuturile au fost șterse cu succes!');
-    } catch (error) {
-      setError(`Eroare la ștergerea rebuturilor: ${error.message}`);
+
+      if (!res.ok) throw new Error("Eroare la ștergerea rebutului");
+
+      const listaNoua = rebuturi.filter((r) => r.id !== id);
+      setRebuturi(listaNoua);
+
+      // recalculăm totalurile
+      const rezultate = calculeazaTotaluri(listaNoua);
+      setTotaluri(rezultate);
+    } catch (err) {
+      setError(`Eroare la ștergerea rebutului: ${err.message}`);
     }
   };
 
   return (
     <>
       <NavBar />
+
       <div className={styles.container}>
+        {/* EROARE */}
         {error && (
           <div className={styles.modal}>
             <div className={styles.modalContent}>
               <p>{error}</p>
-              <button className={styles.modalButton} onClick={() => setError('')}>
+              <button className={styles.modalButton} onClick={() => setError("")}>
                 Închide
               </button>
             </div>
           </div>
         )}
-        <h1 className={styles.title}>Rebuturi și Pierderi</h1>
-        
-        <div className={styles.toolbar}>
-          {import.meta.env.MODE === 'production' && (
-            <button className={styles.buttonDeleteAll} onClick={handleDeleteAllRebuturi}>
-              Șterge Toate Rebuturile
-            </button>
-          )}
-        </div>
 
-        {Object.keys(grupatePeReteta).length === 0 ? (
+        <h1 className={styles.title}>Rebuturi și Pierderi</h1>
+
+        {/* Dacă nu există rebuturi */}
+        {rebuturi.length === 0 ? (
           <p className={styles.noData}>Nu există rebuturi sau pierderi înregistrate.</p>
         ) : (
           <>
+            {/* === CARDURI === */}
             <div className={styles.gridContainer}>
-              {Object.entries(grupatePeReteta).map(([reteta, date]) => (
-                <div key={reteta} className={styles.recipeCard}>
+              {rebuturi.map((rebut) => (
+                <div key={rebut.id} className={styles.lotCard}>
+                  <button
+                    className={styles.deleteCardBtn}
+                    onClick={() => handleDeleteRebut(rebut.id)}
+                  >
+                    ✕
+                  </button>
+
                   <div className={styles.cardHeader}>
-                    <h2>{reteta}</h2>
+                    <h2>{rebut.reteta}</h2>
+                    <span className={styles.lotDate}>
+                      {new Date(rebut.dataIesire).toLocaleDateString("ro-RO")}
+                    </span>
                   </div>
-                  
+
                   <div className={styles.cardSummary}>
                     <div className={styles.summaryItem}>
-                      <span className={styles.summaryLabel}>Total Litri:</span>
-                      <span className={styles.summaryValue}>{date.totalLitri.toFixed(2)} L</span>
+                      <span>Cantitate:</span>
+                      <strong>{parseFloat(rebut.cantitate).toFixed(2)} L</strong>
                     </div>
+
                     <div className={styles.summaryItem}>
-                      <span className={styles.summaryLabel}>Capace:</span>
-                      <span className={styles.summaryValue}>{date.totalCapace}</span>
+                      <span>Ambalaj:</span>
+                      <strong>{rebut.ambalaj}</strong>
                     </div>
+
                     <div className={styles.summaryItem}>
-                      <span className={styles.summaryLabel}>Etichete:</span>
-                      <span className={styles.summaryValue}>{date.totalEtichete}</span>
-                    </div>
-                    <div className={styles.summaryItem}>
-                      <span className={styles.summaryLabel}>Sticle:</span>
-                      <span className={styles.summaryValue}>{date.totalSticle}</span>
-                    </div>
-                    <div className={styles.summaryItem}>
-                      <span className={styles.summaryLabel}>Keguri:</span>
-                      <span className={styles.summaryValue}>{date.totalKeguri}</span>
-                    </div>
-                    <div className={styles.summaryItem}>
-                      <span className={styles.summaryLabel}>Loturi:</span>
-                      <span className={styles.summaryValue}>{date.loturi.length}</span>
+                      <span>Unități:</span>
+                      <strong>{rebut.numarUnitatiScoase}</strong>
                     </div>
                   </div>
-                  
-                  <div className={styles.loturiSection}>
-                    <h3>Loturi</h3>
-                    <div className={styles.loturiGrid}>
-                      {date.loturi.map((rebut) => (
-                        <div key={rebut.id} className={styles.lotCard}>
-                          <div className={styles.lotHeader}>
-                            <span className={styles.lotId}>Lot ID: {rebut.lotId}</span>
-                            <span className={styles.lotDate}>
-                              {new Date(rebut.dataIesire).toLocaleDateString('ro-RO')}
-                            </span>
-                          </div>
-                          
-                          <div className={styles.lotDetails}>
-                            <div className={styles.detailRow}>
-                              <span className={styles.detailLabel}>Cantitate:</span>
-                              <span className={styles.detailValue}>{parseFloat(rebut.cantitate).toFixed(2)} L</span>
-                            </div>
-                            <div className={styles.detailRow}>
-                              <span className={styles.detailLabel}>Ambalaj:</span>
-                              <span className={styles.detailValue}>{rebut.ambalaj}</span>
-                            </div>
-                            {rebut.boxType && (
-                              <div className={styles.detailRow}>
-                                <span className={styles.detailLabel}>Tip ambalaj:</span>
-                                <span className={styles.detailValue}>{rebut.boxType}</span>
-                              </div>
-                            )}
-                            <div className={styles.detailRow}>
-                              <span className={styles.detailLabel}>Unități:</span>
-                              <span className={styles.detailValue}>{rebut.numarUnitatiScoase || '-'}</span>
-                            </div>
-                            {rebut.detaliiIesire && (
-                              <div className={styles.detailRow}>
-                                <span className={styles.detailLabel}>Detalii:</span>
-                                <span className={styles.detailValue}>{rebut.detaliiIesire}</span>
-                              </div>
-                            )}
-                          </div>
-                          
-                          <div className={styles.materialsGrid}>
-                            <div className={styles.materialItem}>
-                              <span className={styles.materialLabel}>Capace</span>
-                              <span className={styles.materialValue}>{rebut.materiale?.capace || 0}</span>
-                            </div>
-                            <div className={styles.materialItem}>
-                              <span className={styles.materialLabel}>Etichete</span>
-                              <span className={styles.materialValue}>{rebut.materiale?.etichete || 0}</span>
-                            </div>
-                            <div className={styles.materialItem}>
-                              <span className={styles.materialLabel}>Cutii</span>
-                              <span className={styles.materialValue}>{rebut.materiale?.cutii || 0}</span>
-                            </div>
-                            <div className={styles.materialItem}>
-                              <span className={styles.materialLabel}>Sticle</span>
-                              <span className={styles.materialValue}>{rebut.materiale?.sticle || 0}</span>
-                            </div>
-                            <div className={styles.materialItem}>
-                              <span className={styles.materialLabel}>Keguri</span>
-                              <span className={styles.materialValue}>{rebut.materiale?.keguri || 0}</span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+
+                  {/* Materiale */}
+                  <div className={styles.materialsGrid}>
+                    {["capace", "etichete", "cutii", "sticle", "keguri"].map((key) => (
+                      <div key={key} className={styles.materialItem}>
+                        <span className={styles.materialLabel}>{key}</span>
+                        <span className={styles.materialValue}>
+                          {rebut.materiale?.[key] || 0}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               ))}
             </div>
-            
+
+            {/* === TOTAL GENERAL === */}
             <div className={styles.totalSection}>
               <h3>Total General</h3>
+
               <div className={styles.totalGrid}>
+                {Object.entries(totaluri).map(([key, value]) => (
+                  <div key={key} className={styles.totalItem}>
+                    <span className={styles.totalLabel}>{key}:</span>
+                    <span className={styles.totalValue}>{value}</span>
+                  </div>
+                ))}
+
                 <div className={styles.totalItem}>
-                  <span className={styles.totalLabel}>Litri:</span>
-                  <span className={styles.totalValue}>{totalLitri.toFixed(2)} L</span>
-                </div>
-                <div className={styles.totalItem}>
-                  <span className={styles.totalLabel}>Capace:</span>
-                  <span className={styles.totalValue}>{totalCapace}</span>
-                </div>
-                <div className={styles.totalItem}>
-                  <span className={styles.totalLabel}>Etichete:</span>
-                  <span className={styles.totalValue}>{totalEtichete}</span>
-                </div>
-                <div className={styles.totalItem}>
-                  <span className={styles.totalLabel}>Cutii:</span>
-                  <span className={styles.totalValue}>{totalCutii}</span>
-                </div>
-                <div className={styles.totalItem}>
-                  <span className={styles.totalLabel}>Sticle:</span>
-                  <span className={styles.totalValue}>{totalSticle}</span>
-                </div>
-                <div className={styles.totalItem}>
-                  <span className={styles.totalLabel}>Keguri:</span>
-                  <span className={styles.totalValue}>{totalKeguri}</span>
-                </div>
-                <div className={styles.totalItem}>
-                  <span className={styles.totalLabel}>Total înregistrări:</span>
+                  <span className={styles.totalLabel}>Total rebuturi:</span>
                   <span className={styles.totalValue}>{rebuturi.length}</span>
                 </div>
               </div>
+            </div>
+
+            {/* === PIE CHART === */}
+            <div className={styles.chartContainer}>
+              <h2>Distribuția Rebuturilor</h2>
+
+              <ResponsiveContainer width="100%" height={350}>
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={130}
+                    dataKey="value"
+                    label={({ name, percent }) =>
+                      `${name} ${(percent * 100).toFixed(1)}%`
+                    }
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
           </>
         )}
