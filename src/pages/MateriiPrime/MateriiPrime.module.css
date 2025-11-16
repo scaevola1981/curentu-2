@@ -129,6 +129,7 @@
 .buttonDelete,
 .buttonCancel {
   background-color: rgba(231,76,60,0.75);
+  margin-left: 16px;
 }
 
 .buttonDelete:hover,
@@ -211,6 +212,47 @@
   color: #ffffff;
   text-align: right;
 }
+
+.supplementSection {
+  display: flex;
+  flex-direction: row;
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.inputSmall {
+  width: 50%;
+  padding: 9px 20px;
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid #05ee816e;
+  color: rgb(3, 3, 3);
+}
+
+.inputSmall:hover {
+  background: #5bf194;
+  color: rgb(0, 67, 168);
+}
+
+.buttonAddSmall {
+   width: 50%;
+  padding: 9px 14px;
+  background: #03bff8;
+  color: rgb(255, 255, 255);
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.buttonAddSmall:hover {
+  background: #02ff6c;
+  color: #027699;
+}
+
+
 
 /* --- ACTIONS --- */
 .cardActions {

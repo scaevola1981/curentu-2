@@ -2,23 +2,16 @@ import React, { useEffect, useState } from "react";
 import styles from "./MateriiPrime.module.css";
 import NavBar from "../../Componente/NavBar/NavBar";
 
-const UNITATI = [
-  "kg",
-  "g",
-  "l",
-  "ml",
-  "buc",
-  "pachete",
-  "tone",
-  "m",
-  "m²",
-  "m³",
-];
+const UNITATI = ["kg", "g", "l", "ml", "buc", "pachete", "tone", "m", "m²", "m³"];
 const API_URL = "http://localhost:3001/api/materii-prime";
 
 const MateriiPrime = () => {
   const [materii, setMaterii] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // formular adăugare / scădere
   const [nouMaterial, setNouMaterial] = useState({
+    id: null,
     denumire: "",
     cantitate: "",
     unitate: "",
@@ -28,18 +21,23 @@ const MateriiPrime = () => {
     tip: "",
     subcategorie: "",
   });
-  const [editMode, setEditMode] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
-  // Load materials from API
+  const [editMode, setEditMode] = useState(false);
+
+  // input-uri de suplimentare permanent vizibile în card
+  const [supplementCantitati, setSupplementCantitati] = useState({});
+
+  // ============================
+  // LOAD MATERIALS
+  // ============================
   const loadMaterials = async () => {
     setIsLoading(true);
     try {
       const res = await fetch(API_URL);
       const data = await res.json();
       setMaterii(data);
-    } catch (error) {
-      console.error("Error loading materials:", error);
+    } catch (err) {
+      console.error("Eroare la încărcare:", err);
       setMaterii([]);
     }
     setIsLoading(false);
@@ -49,145 +47,166 @@ const MateriiPrime = () => {
     loadMaterials();
   }, []);
 
-  // Handle form input changes
+  // ============================
+  // INPUT CHANGES
+  // ============================
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNouMaterial((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Add or update material
-  const handleMaterialSubmit = async (e) => {
-    e.preventDefault();
-    if (!nouMaterial.denumire.trim()) {
-      alert("Denumirea materialului este obligatorie!");
-      return;
-    }
-    const cantitate = parseFloat(nouMaterial.cantitate);
-    if (isNaN(cantitate) || cantitate <= 0) {
-      alert("Cantitatea trebuie să fie un număr pozitiv!");
+  // input suplimentare per card
+  const handleSupplementChange = (id, value) => {
+    setSupplementCantitati((prev) => ({
+      ...prev,
+      [id]: value ? Number(value) : "",
+    }));
+  };
+
+  // ============================
+  // SUPLIMENTARE MATERIAL (CARD)
+  // ============================
+  const handleSupplementMaterial = async (id) => {
+    const cant = supplementCantitati[id];
+
+    if (!cant || cant <= 0) {
+      alert("Introduceți o cantitate validă!");
       return;
     }
 
-    const materialData = {
-      id: editMode ? nouMaterial.id : undefined,
+    const mat = materii.find((m) => m.id === id);
+    if (!mat) return alert("Materialul nu există!");
+
+    const newCant = mat.cantitate + cant;
+
+    try {
+      const res = await fetch(`${API_URL}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...mat, cantitate: newCant }),
+      });
+
+      if (!res.ok) throw new Error("Eroare la actualizare");
+
+      setMaterii((prev) =>
+        prev.map((m) =>
+          m.id === id ? { ...m, cantitate: newCant } : m
+        )
+      );
+
+      setSupplementCantitati((prev) => ({ ...prev, [id]: "" }));
+    } catch (err) {
+      alert("Eroare la suplimentare: " + err.message);
+    }
+  };
+
+  // ============================
+  // SUBMIT FORM — Add / Remove
+  // ============================
+  const handleMaterialSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!nouMaterial.denumire.trim()) {
+      alert("Denumirea este obligatorie!");
+      return;
+    }
+
+    const cant = parseFloat(nouMaterial.cantitate);
+    if (isNaN(cant) || cant <= 0) {
+      alert("Cantitatea trebuie să fie pozitivă!");
+      return;
+    }
+
+    const payload = {
       denumire: nouMaterial.denumire.trim(),
-      cantitate: Number(cantitate.toFixed(2)),
-      unitate: nouMaterial.unitate.trim() || "kg",
-      producator: nouMaterial.producator.trim() || "",
-      codProdus: nouMaterial.codProdus.trim() || "",
-      lot: nouMaterial.lot.trim() || "",
-      tip: nouMaterial.tip.trim() || "",
-      subcategorie: nouMaterial.subcategorie.trim() || "",
+      unitate: nouMaterial.unitate || "kg",
+      producator: nouMaterial.producator.trim(),
+      codProdus: nouMaterial.codProdus.trim(),
+      lot: nouMaterial.lot.trim(),
+      tip: nouMaterial.tip.trim(),
+      subcategorie: nouMaterial.subcategorie.trim(),
     };
 
     try {
+      // UPDATE EXISTENT
       if (editMode && nouMaterial.id) {
-        const existingMaterial = materii.find((m) => m.id === nouMaterial.id);
-        if (existingMaterial) {
-          if (editMode === "add") {
-            // Adaugă la stoc
-            materialData.cantitate = Number(
-              (existingMaterial.cantitate + cantitate).toFixed(2)
-            );
-          } else if (editMode === "remove") {
-            // Scade din stoc
-            const newQuantity = existingMaterial.cantitate - cantitate;
-            if (newQuantity < 0) {
-              alert(
-                "Nu poți scădea mai mult decât cantitatea disponibilă pe stoc!"
-              );
-              return;
-            }
-            materialData.cantitate = Number(newQuantity.toFixed(2));
+        const existing = materii.find((m) => m.id === nouMaterial.id);
+
+        if (editMode === "add") {
+          payload.cantitate = existing.cantitate + cant;
+        } else if (editMode === "remove") {
+          if (cant > existing.cantitate) {
+            alert("Nu poți folosi mai mult decât ai pe stoc!");
+            return;
           }
+          payload.cantitate = existing.cantitate - cant;
         }
-        // Update material
+
         await fetch(`${API_URL}/${nouMaterial.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(materialData),
+          body: JSON.stringify(payload),
         });
       } else {
-        // Add new material
+        // CREATE
+        payload.cantitate = cant;
+
         await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(materialData),
+          body: JSON.stringify(payload),
         });
       }
+
       resetForm();
       loadMaterials();
-    } catch (error) {
-      console.error("Error saving material:", error);
-      alert(
-        "Eroare la salvarea materialului! Verificați consola pentru detalii."
-      );
+    } catch (err) {
+      alert("Eroare la salvare: " + err.message);
     }
   };
 
-  // Delete material
-  const deleteMaterial = async (id) => {
-    if (!window.confirm("Sigur doriți să ștergeți acest material?")) return;
-    try {
-      await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-      loadMaterials();
-    } catch (error) {
-      console.error("Error deleting material:", error);
-      alert(
-        "Eroare la ștergerea materialului! Verificați consola pentru detalii."
-      );
-    }
-  };
-
-  // Delete all materials
-  const deleteAllMaterials = async () => {
-    if (!window.confirm("Sigur doriți să ștergeți TOATE materialele?")) return;
-    try {
-      await fetch(API_URL, { method: "DELETE" });
-      loadMaterials();
-    } catch (error) {
-      console.error("Error deleting all materials:", error);
-      alert(
-        "Eroare la ștergerea materialelor! Verificați consola pentru detalii."
-      );
-    }
-  };
-
-  // Start editing material
-  const startAdding = (material) => {
-    setNouMaterial({
-      id: material.id,
-      denumire: material.denumire,
-      cantitate: "", // Reset quantity to allow adding to existing
-      unitate: material.unitate,
-      producator: material.producator || "",
-      codProdus: material.codProdus || "",
-      lot: material.lot || "",
-      tip: material.tip || "",
-      subcategorie: material.subcategorie || "",
-    });
+  // ============================
+  // Editare card - Add
+  // ============================
+  const startAdding = (m) => {
     setEditMode("add");
-  };
-
-  // Pentru scădere din stoc
-  const startRemoving = (material) => {
     setNouMaterial({
-      id: material.id,
-      denumire: material.denumire,
+      id: m.id,
+      denumire: m.denumire,
       cantitate: "",
-      unitate: material.unitate,
-      producator: material.producator || "",
-      codProdus: material.codProdus || "",
-      lot: material.lot || "",
-      tip: material.tip || "",
-      subcategorie: material.subcategorie || "",
+      unitate: m.unitate,
+      producator: m.producator || "",
+      codProdus: m.codProdus || "",
+      lot: m.lot || "",
+      tip: m.tip || "",
+      subcategorie: m.subcategorie || "",
     });
-    setEditMode("remove");
   };
 
-  // Cancel editing
+  // ============================
+  // Editare card - Remove
+  // ============================
+  const startRemoving = (m) => {
+    setEditMode("remove");
+    setNouMaterial({
+      id: m.id,
+      denumire: m.denumire,
+      cantitate: "",
+      unitate: m.unitate,
+      producator: m.producator || "",
+      codProdus: m.codProdus || "",
+      lot: m.lot || "",
+      tip: m.tip || "",
+      subcategorie: m.subcategorie || "",
+    });
+  };
+
+  // ============================
+  // RESET FORM
+  // ============================
   const resetForm = () => {
     setNouMaterial({
+      id: null,
       denumire: "",
       cantitate: "",
       unitate: "",
@@ -200,13 +219,14 @@ const MateriiPrime = () => {
     setEditMode(false);
   };
 
+  // ============================
+  // RENDER
+  // ============================
   if (isLoading) {
     return (
       <>
         <NavBar />
-        <div className={styles.container}>
-          <p>Se încarcă datele...</p>
-        </div>
+        <div className={styles.container}>Se încarcă...</div>
       </>
     );
   }
@@ -214,20 +234,14 @@ const MateriiPrime = () => {
   return (
     <>
       <NavBar />
+
       <div className={styles.container}>
         <h1 className={styles.titlu}>Materii Prime Disponibile</h1>
-        
-        <div className={styles.toolbar}>
-          <button onClick={loadMaterials} className={styles.buttonRefresh}>
-            Reîncarcă
-          </button>
-          {/* <button onClick={deleteAllMaterials} className={styles.buttonDelete}>
-            Șterge Toate
-          </button> */}
-        </div>
-        
+
+        {/* ================= FORM ADD/REMOVE ================= */}
         <form onSubmit={handleMaterialSubmit} className={styles.formular}>
           <div className={styles.formGrid}>
+
             <input
               type="text"
               name="denumire"
@@ -237,6 +251,7 @@ const MateriiPrime = () => {
               className={styles.input}
               required
             />
+
             <input
               type="number"
               name="cantitate"
@@ -251,7 +266,6 @@ const MateriiPrime = () => {
               onChange={handleInputChange}
               className={styles.input}
               step="0.01"
-              min="0.01"
               required
             />
 
@@ -262,161 +276,86 @@ const MateriiPrime = () => {
               className={styles.input}
               required
             >
-              <option value="" disabled>
-                Unitate
-              </option>
-              {UNITATI.map((unitate) => (
-                <option key={unitate} value={unitate}>
-                  {unitate}
-                </option>
+              <option value="">Unitate</option>
+              {UNITATI.map((u) => (
+                <option key={u} value={u}>{u}</option>
               ))}
             </select>
-            <input
-              type="text"
-              name="producator"
-              placeholder="Producător"
-              value={nouMaterial.producator}
-              onChange={handleInputChange}
-              className={styles.input}
-            />
-            <input
-              type="text"
-              name="codProdus"
-              placeholder="Cod produs"
-              value={nouMaterial.codProdus}
-              onChange={handleInputChange}
-              className={styles.input}
-            />
-            <input
-              type="text"
-              name="lot"
-              placeholder="Lot"
-              value={nouMaterial.lot}
-              onChange={handleInputChange}
-              className={styles.input}
-            />
-            <input
-              type="text"
-              name="tip"
-              placeholder="Tip"
-              value={nouMaterial.tip}
-              onChange={handleInputChange}
-              className={styles.input}
-            />
-            <input
-              type="text"
-              name="subcategorie"
-              placeholder="Subcategorie"
-              value={nouMaterial.subcategorie}
-              onChange={handleInputChange}
-              className={styles.input}
-            />
+
+            <input name="producator" placeholder="Producător" className={styles.input} value={nouMaterial.producator} onChange={handleInputChange} />
+            <input name="codProdus" placeholder="Cod produs" className={styles.input} value={nouMaterial.codProdus} onChange={handleInputChange} />
+            <input name="lot" placeholder="Lot" className={styles.input} value={nouMaterial.lot} onChange={handleInputChange} />
+            <input name="tip" placeholder="Tip" className={styles.input} value={nouMaterial.tip} onChange={handleInputChange} />
+            <input name="subcategorie" placeholder="Subcategorie" className={styles.input} value={nouMaterial.subcategorie} onChange={handleInputChange} />
+
           </div>
+
           <div className={styles.formButtons}>
-            <button
-              type="submit"
-              className={editMode ? styles.buttonUpdate : styles.button}
-            >
+            <button type="submit" className={styles.button}>
               {editMode === "add"
-                ? "Adaugă la Stoc"
+                ? "Adaugă la stoc"
                 : editMode === "remove"
-                ? "Scade din Stoc"
+                ? "Scade din stoc"
                 : "Adaugă Material"}
             </button>
 
             {editMode && (
-              <button
-                type="button"
-                className={styles.buttonCancel}
-                onClick={resetForm}
-              >
+              <button type="button" className={styles.buttonCancel} onClick={resetForm}>
                 Anulează
               </button>
             )}
           </div>
         </form>
-        
+
+        {/* ===================== CARDURI ===================== */}
         <div className={styles.cardsContainer}>
-          {materii.length > 0 ? (
-            materii.map((material) => (
-              <div key={material.id} className={styles.materialCard}>
-                <div className={styles.cardHeader}>
-                  <h3 className={styles.cardTitle}>{material.denumire}</h3>
-                  <span className={styles.materialId}>ID: {material.id}</span>
-                </div>
-                
-                <div className={styles.cardContent}>
-                  <div className={styles.cardRow}>
-                    <span className={styles.cardLabel}>Cantitate:</span>
-                    <span className={styles.cardValue}>{material.cantitate} {material.unitate}</span>
-                  </div>
-                  
-                  {material.producator && (
-                    <div className={styles.cardRow}>
-                      <span className={styles.cardLabel}>Producător:</span>
-                      <span className={styles.cardValue}>{material.producator}</span>
-                    </div>
-                  )}
-                  
-                  {material.codProdus && (
-                    <div className={styles.cardRow}>
-                      <span className={styles.cardLabel}>Cod Produs:</span>
-                      <span className={styles.cardValue}>{material.codProdus}</span>
-                    </div>
-                  )}
-                  
-                  {material.lot && (
-                    <div className={styles.cardRow}>
-                      <span className={styles.cardLabel}>Lot:</span>
-                      <span className={styles.cardValue}>{material.lot}</span>
-                    </div>
-                  )}
-                  
-                  {material.tip && (
-                    <div className={styles.cardRow}>
-                      <span className={styles.cardLabel}>Tip:</span>
-                      <span className={styles.cardValue}>{material.tip}</span>
-                    </div>
-                  )}
-                  
-                  {material.subcategorie && (
-                    <div className={styles.cardRow}>
-                      <span className={styles.cardLabel}>Subcategorie:</span>
-                      <span className={styles.cardValue}>{material.subcategorie}</span>
-                    </div>
-                  )}
-                </div>
-                
-                <div className={styles.cardActions}>
-                  <button
-                    onClick={() => startAdding(material)}
-                    className={styles.buttonAdd}
-                    title="Adaugă cantitate la stoc"
-                  >
-                    + Adaugă
-                  </button>
-                  <button
-                    onClick={() => startRemoving(material)}
-                    className={styles.buttonRemove}
-                    title="Scade cantitate din stoc"
-                  >
-                    Folosește
-                  </button>
-                  {/* <button
-                    onClick={() => deleteMaterial(material.id)}
-                    className={styles.buttonDelete}
-                    title="Șterge material"
-                  >
-                    Șterge
-                  </button> */}
-                </div>
+          {materii.map((m) => (
+            <div key={m.id} className={styles.materialCard}>
+
+              <div className={styles.cardHeader}>
+                <h3>{m.denumire}</h3>
+                <span>ID: {m.id}</span>
               </div>
-            ))
-          ) : (
-            <div className={styles.noResults}>
-              Nu există materiale în stoc. Adăugați un material nou folosind formularul de mai sus.
+
+              <div className={styles.cardContent}>
+                <div className={styles.cardRow}>
+                  <span>Cantitate:</span>
+                  <span>{m.cantitate} {m.unitate}</span>
+                </div>
+
+                {m.producator && <div className={styles.cardRow}><span>Producător:</span><span>{m.producator}</span></div>}
+                {m.codProdus && <div className={styles.cardRow}><span>Cod:</span><span>{m.codProdus}</span></div>}
+                {m.lot && <div className={styles.cardRow}><span>Lot:</span><span>{m.lot}</span></div>}
+                {m.tip && <div className={styles.cardRow}><span>Tip:</span><span>{m.tip}</span></div>}
+                {m.subcategorie && <div className={styles.cardRow}><span>Subcategorie:</span><span>{m.subcategorie}</span></div>}
+              </div>
+
+              {/* INPUT SUPLIMENTARE PERMANENT */}
+              <div className={styles.supplementSection}>
+                <input
+                  type="number"
+                  className={styles.inputSmall}
+                  placeholder="Suplimenteaza"
+                  value={supplementCantitati[m.id] || ""}
+                  onChange={(e) => handleSupplementChange(m.id, e.target.value)}
+                  step="0.01"
+                />
+                <button
+                  className={styles.buttonAddSmall}
+                  onClick={() => handleSupplementMaterial(m.id)}
+                >
+                  + Adaugă
+                </button>
+                 <div className={styles.cardActions}>
+                {/* <button className={styles.buttonAdd} onClick={() => startAdding(m)}>+ Adaugă</button> */}
+                {/* <button className={styles.buttonRemove} onClick={() => startRemoving(m)}>Folosește</button> */}
+              </div>
+
+              </div>
+
+             
             </div>
-          )}
+          ))}
         </div>
       </div>
     </>

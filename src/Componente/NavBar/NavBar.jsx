@@ -1,121 +1,74 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import styles from './NavBar.module.css';
 
 const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState('');
-
-  const handleToggle = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const handleNavClick = (item) => {
-    setActiveItem(item);
-    setIsMenuOpen(false);
-  };
+  const location = useLocation();
 
   useEffect(() => {
-    let lastScroll = 0;
-    const handleScroll = () => {
-      const navbar = document.querySelector(`.${styles.navbar}`);
-      const currentScroll = window.pageYOffset;
-      
-      if (currentScroll > lastScroll && currentScroll > 50) {
-        navbar.classList.add(`${styles.hide}`);
-      } else {
-        navbar.classList.remove(`${styles.hide}`);
-      }
-      lastScroll = currentScroll;
+    setIsMenuOpen(false);
+  }, [location.pathname]);
+
+  // Hide on scroll
+  useEffect(() => {
+    let last = 0;
+    const nav = document.querySelector(`.${styles.navbar}`);
+
+    const onScroll = () => {
+      const curr = window.pageYOffset;
+      if (curr > last && curr > 50) nav.classList.add(styles.hide);
+      else nav.classList.remove(styles.hide);
+      last = curr;
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  const links = [
+    { to: "/", label: "Dashboard", icon: "📊" },
+    { to: "/materii-prime", label: "Materii Prime", icon: "🌾" },
+    { to: "/productie", label: "Producție", icon: "⚗️" },
+    { to: "/ambalare", label: "Ambalare", icon: "📦" },
+    { to: "/depozitare", label: "Depozitare", icon: "🏚️" },
+    { to: "/rebuturi", label: "Rebuturi", icon: "🗑️" },
+  ];
 
   return (
     <nav className={styles.navbar}>
-      <div className={styles.logo}>
-        <Link to="/" onClick={() => handleNavClick('')}>
-          <span className={styles.logoIcon}>🍺</span>
-          <span className={styles.logoText}>CURENTU'</span>
+      <div className={styles.left}>
+        <Link to="/" className={styles.brand}>
+          <span className={styles.logo}>⚡</span>
+          <span className={styles.brandText}>CURENTU'</span>
         </Link>
       </div>
-      
+
       <button 
-        className={`${styles.menuToggle} ${isMenuOpen ? styles.active : ''}`} 
-        onClick={handleToggle}
-        aria-label="Toggle menu"
+        className={`${styles.menuBtn} ${isMenuOpen ? styles.open : ""}`}
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
       >
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
       </button>
-      
-      <ul className={`${styles.navList} ${isMenuOpen ? styles.active : ''}`}>
-        <li className={styles.navItem}>
-          <Link 
-            to="/" 
-            className={`${styles.navLink} ${activeItem === 'dashboard' ? styles.active : ''}`}
-            onClick={() => handleNavClick('dashboard')}
-          >
-            <span className={styles.navIcon}>📋</span>
-            Dashboard
-          </Link>
-        </li>
-        <li className={styles.navItem}>
-          <Link 
-            to="/materii-prime" 
-            className={`${styles.navLink} ${activeItem === 'materii-prime' ? styles.active : ''}`}
-            onClick={() => handleNavClick('materii-prime')}
-          >
-            <span className={styles.navIcon}>🌾</span>
-            Materii Prime
-          </Link>
-        </li>
-        <li className={styles.navItem}>
-          <Link 
-            to="/productie" 
-            className={`${styles.navLink} ${activeItem === 'productie' ? styles.active : ''}`}
-            onClick={() => handleNavClick('productie')}
-          >
-            <span className={styles.navIcon}>🏭</span>
-            Producție
-          </Link>
-        </li>
-        <li className={styles.navItem}>
-          <Link 
-            to="/ambalare" 
-            className={`${styles.navLink} ${activeItem === 'ambalare' ? styles.active : ''}`}
-            onClick={() => handleNavClick('ambalare')}
-          >
-            <span className={styles.navIcon}>📦</span>
-            Ambalare
-          </Link>
-        </li>
-        <li className={styles.navItem}>
-          <Link 
-            to="/depozitare" 
-            className={`${styles.navLink} ${activeItem === 'depozitare' ? styles.active : ''}`}
-            onClick={() => handleNavClick('depozitare')}
-          >
-            <span className={styles.navIcon}>🗄️</span>
-            Depozitare
-          </Link>
-        </li>
-        <li className={styles.navItem}>
-          <Link 
-            to="/rebuturi" 
-            className={`${styles.navLink} ${activeItem === 'rebuturi' ? styles.active : ''}`}
-            onClick={() => handleNavClick('rebuturi')}
-          >
-            <span className={styles.navIcon}>🗑️</span>
-            Rebuturi
-          </Link>
-        </li>
+
+      <ul className={`${styles.navList} ${isMenuOpen ? styles.show : ""}`}>
+        {links.map((l) => (
+          <li key={l.to}>
+            <Link 
+              to={l.to} 
+              className={`${styles.navLink} ${location.pathname === l.to ? styles.active : ""}`}
+            >
+              <span className={styles.icon}>{l.icon}</span>
+              {l.label}
+            </Link>
+          </li>
+        ))}
       </ul>
-      
-      <div className={`${styles.navOverlay} ${isMenuOpen ? styles.active : ''}`} onClick={() => setIsMenuOpen(false)}></div>
+
+      <div 
+        className={`${styles.overlay} ${isMenuOpen ? styles.show : ""}`}
+        onClick={() => setIsMenuOpen(false)}
+      />
     </nav>
   );
 };
