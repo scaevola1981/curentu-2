@@ -1,66 +1,84 @@
 {
   "name": "curentu-app",
   "version": "1.0.0",
-  "private": true,
+  "private": false,
   "description": "Aplicația Curentu - Gestiune Marfuri",
   "type": "module",
   "main": "electron.mjs",
   "author": "Curentu Team",
+
   "scripts": {
     "dev": "vite",
     "build:react": "vite build",
     "preview": "vite preview",
+
     "electron": "electron .",
     "electron:dev": "concurrently \"npm run dev\" \"wait-on http://localhost:5173 && electron .\"",
+
     "electron:build": "npm run build:react && electron-builder --dir",
     "electron:dist": "npm run build:react && electron-builder",
+
     "build:win": "npm run build:react && electron-builder --win portable",
     "build:linux": "npm run build:react && electron-builder --linux AppImage",
     "build:mac": "npm run build:react && electron-builder --mac dmg",
+
     "postinstall": "electron-builder install-app-deps"
   },
+
   "build": {
     "appId": "com.curentu.app",
     "productName": "Curentu - Gestiune Marfuri",
+
     "directories": {
       "output": "release",
       "buildResources": "assets"
     },
+
     "files": [
       "electron.mjs",
       "preload.js",
       "server.mjs",
       "dist/**/*",
       "Stocare/**/*",
-      "package.json",
-      "node_modules/**/*"
+      "package.json"
     ],
+
     "extraFiles": [
       {
         "from": "Stocare",
-        "to": "Stocare",
-        "filter": [
-          "**/*"
-        ]
+        "to": "Stocare"
       }
     ],
+
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "scaevola1981",
+        "repo": "curentu-2"
+      }
+    ],
+
     "win": {
       "target": "portable",
       "icon": "assets/icon.ico"
     },
+
     "linux": {
       "target": "AppImage",
       "icon": "assets/icon.png"
     },
+
     "mac": {
       "target": "dmg",
       "icon": "assets/icon.icns"
     },
+
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
     }
   },
+
   "dependencies": {
     "axios": "^1.7.7",
     "cors": "^2.8.5",
@@ -72,13 +90,15 @@
     "recharts": "^3.4.1",
     "uuid": "^11.1.0"
   },
+
   "devDependencies": {
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.4.1",
     "concurrently": "^9.2.1",
     "electron": "^39.1.2",
-    "electron-builder": "^24.0.0",
+    "electron-builder": "^24.13.3",
+    "electron-updater": "^6.6.2",
     "vite": "^6.3.5",
     "wait-on": "^8.0.5"
   }
