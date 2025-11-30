@@ -45,11 +45,7 @@ import {
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const storagePath =
-  process.env.NODE_ENV === "production"
-    ? path.join(process.resourcesPath, "Stocare")
-    : path.join(__dirname, "Stocare");
-
+const storagePath = path.join(__dirname, "Stocare");
 const app = express();
 const PORT = 3001;
 

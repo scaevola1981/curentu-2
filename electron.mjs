@@ -101,7 +101,9 @@ function waitForServer(retries = 20, delay = 1000) {
 
 function startServer() {
   return new Promise((resolve) => {
-    const serverPath = path.join(__dirname, "server.mjs");
+   const serverPath = app.isPackaged
+  ? path.join(process.resourcesPath, "server.mjs")
+  : path.join(__dirname, "server.mjs");
 
     if (!existsSync(serverPath)) {
       console.log("⚠️ server.mjs lipsă – se continuă fără server.");
