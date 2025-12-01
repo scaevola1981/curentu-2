@@ -1,5 +1,5 @@
 import { app, BrowserWindow, ipcMain, Menu } from "electron";
-import { autoUpdater } from "electron-updater";
+import { createRequire } from 'module';
 import path from "path";
 import { fileURLToPath } from "url";
 import { spawn } from "child_process";
@@ -10,7 +10,8 @@ import { existsSync } from "fs";
 // ==========================================
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
+const require = createRequire(import.meta.url);
+const { autoUpdater } = require("electron-updater");
 let mainWindow = null;
 let serverProcess = null;
 
