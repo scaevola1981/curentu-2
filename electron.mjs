@@ -1,5 +1,5 @@
 import { app, BrowserWindow, ipcMain, Menu } from "electron";
-import { createRequire } from 'module';
+import { createRequire } from "module";
 import path from "path";
 import { fileURLToPath } from "url";
 import { spawn } from "child_process";
@@ -75,7 +75,6 @@ ipcMain.on("test-update", (_, type) => {
   }
 });
 
-
 // ==========================================
 // 🟦 SERVER EXPRESS
 // ==========================================
@@ -102,9 +101,9 @@ function waitForServer(retries = 20, delay = 1000) {
 
 function startServer() {
   return new Promise((resolve) => {
-   const serverPath = app.isPackaged
-  ? path.join(process.resourcesPath, "server.mjs")
-  : path.join(__dirname, "server.mjs");
+    const serverPath = app.isPackaged
+      ? path.join(process.resourcesPath, "app.asar.unpacked", "server.mjs")
+      : path.join(__dirname, "server.mjs");
 
     if (!existsSync(serverPath)) {
       console.log("⚠️ server.mjs lipsă – se continuă fără server.");
@@ -208,9 +207,7 @@ app.on("activate", () => {
 // ==========================================
 // 🚨 ERORI GLOBALE
 // ==========================================
-process.on("uncaughtException", (err) =>
-  console.error("💥 Uncaught:", err)
-);
+process.on("uncaughtException", (err) => console.error("💥 Uncaught:", err));
 process.on("unhandledRejection", (reason) =>
   console.error("💥 Rejected:", reason)
 );
