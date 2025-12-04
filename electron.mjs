@@ -100,7 +100,7 @@ function waitForServer(retries = 20, delay = 1000) {
 }
 
 function startServer() {
-  return new Promise((resolve) => {
+  return new Promise(async (resolve) => {
     const fs = require("fs");
     const logPath = path.join(app.getPath("userData"), "server-debug.log");
 
@@ -116,53 +116,37 @@ function startServer() {
 
     log(`🔍 Server path: ${serverPath}`);
     log(`🔍 File exists: ${existsSync(serverPath)}`);
-    log(`🔍 process.resourcesPath: ${process.resourcesPath}`);
 
     if (!existsSync(serverPath)) {
-      log("⚠️ server.mjs lipsă la path principal");
-
-      const altPaths = [
-        path.join(process.resourcesPath, "server.mjs"),
-        path.join(process.resourcesPath, "app", "server.mjs"),
-        path.join(__dirname, "server.mjs"),
-      ];
-
-      for (const altPath of altPaths) {
-        log(`🔍 Trying: ${altPath} - exists: ${existsSync(altPath)}`);
-      }
-
+      log("⚠️ server.mjs lipsă");
       return resolve(false);
     }
 
-    log("✅ server.mjs găsit, pornire server...");
+    log("✅ server.mjs găsit, pornire în același proces...");
 
-    serverProcess = spawn(process.execPath, [serverPath], {
-      cwd: __dirname,
-      stdio: ["ignore", "pipe", "pipe"],
-      detached: false,
-    });
-
-    serverProcess.stdout.on("data", (d) => {
-      const msg = d.toString().trim();
-      log(`[SERVER] ${msg}`);
-    });
-
-    serverProcess.stderr.on("data", (d) => {
-      const msg = d.toString().trim();
-      log(`[SERVER ERR] ${msg}`);
-    });
-
-    setTimeout(() => {
-      waitForServer().finally(() => resolve(true));
-    }, 2500);
+    try {
+      // Importăm și rulăm serverul în același proces
+      const serverModule = await import(serverPath);
+      log("✅ Server importat cu succes!");
+      
+      // Așteaptă să pornească
+      setTimeout(() => {
+        waitForServer()
+          .then(() => {
+            log("✅ Server răspunde pe localhost:3001");
+            resolve(true);
+          })
+          .catch((err) => {
+            log(`❌ Server timeout: ${err.message}`);
+            resolve(false);
+          });
+      }, 1000);
+    } catch (err) {
+      log(`❌ Eroare import server: ${err.message}`);
+      log(`❌ Stack: ${err.stack}`);
+      resolve(false);
+    }
   });
-}
-
-function stopServer() {
-  if (serverProcess && !serverProcess.killed) {
-    console.log("🛑 Oprire server...");
-    serverProcess.kill("SIGTERM");
-  }
 }
 
 // ==========================================
