@@ -1,8 +1,7 @@
 import { app, BrowserWindow, ipcMain, Menu } from "electron";
 import { createRequire } from "module";
 import path from "path";
-import { fileURLToPath } from "url";
-import { spawn } from "child_process";
+import { fileURLToPath, pathToFileURL } from "url";
 import { existsSync } from "fs";
 
 // ==========================================
@@ -12,8 +11,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const require = createRequire(import.meta.url);
 const { autoUpdater } = require("electron-updater");
+
 let mainWindow = null;
-let serverProcess = null;
 
 app.commandLine.appendSwitch("disable-gpu-sandbox");
 app.commandLine.appendSwitch("disable-software-rasterizer");
@@ -22,7 +21,7 @@ app.commandLine.appendSwitch("disable-software-rasterizer");
 // 🌐 AUTO-UPDATER
 // ==========================================
 autoUpdater.autoDownload = true;
-autoUpdater.autoInstallOnAppQuit = false; // instalarea va fi făcută manual după confirmare
+autoUpdater.autoInstallOnAppQuit = false;
 
 function setupAutoUpdater() {
   console.log("🔍 Verific update-uri...");
@@ -42,11 +41,9 @@ function setupAutoUpdater() {
     mainWindow?.webContents.send("update_error", err.message);
   });
 
-  // Verifică automat după pornire
   autoUpdater.checkForUpdatesAndNotify();
 }
 
-// IPC — instalare update la cerere
 ipcMain.on("install_update", () => {
   console.log("🛠 Instalare update...");
   autoUpdater.quitAndInstall();
@@ -64,11 +61,9 @@ ipcMain.on("test-update", (_, type) => {
     case "available":
       mainWindow.webContents.send("update_available");
       break;
-
     case "ready":
       mainWindow.webContents.send("update_ready");
       break;
-
     case "error":
       mainWindow.webContents.send("update_error", "Eroare simulată");
       break;
@@ -94,74 +89,87 @@ function waitForServer(retries = 20, delay = 1000) {
           }
         });
     };
-
     check(0);
   });
 }
 
-function startServer() {
-  return new Promise(async (resolve) => {
-    const fs = require("fs");
-    const logPath = path.join(app.getPath("userData"), "server-debug.log");
+async function startServer() {
+  const fs = require("fs");
+  const logPath = path.join(app.getPath("userData"), "server-debug.log");
 
-    function log(msg) {
-      const timestamp = new Date().toISOString();
-      fs.appendFileSync(logPath, `[${timestamp}] ${msg}\n`);
-      console.log(msg);
-    }
+  function log(msg) {
+    const timestamp = new Date().toISOString();
+    fs.appendFileSync(logPath, `[${timestamp}] ${msg}\n`);
+    console.log(msg);
+  }
 
+  try {
+    // Determinăm path-ul către server.mjs
     const serverPath = app.isPackaged
       ? path.join(process.resourcesPath, "app.asar.unpacked", "server.mjs")
       : path.join(__dirname, "server.mjs");
 
     log(`🔍 Server path: ${serverPath}`);
     log(`🔍 File exists: ${existsSync(serverPath)}`);
+    log(`🔍 process.resourcesPath: ${process.resourcesPath}`);
+    log(`🔍 __dirname: ${__dirname}`);
 
     if (!existsSync(serverPath)) {
-      log("⚠️ server.mjs lipsă");
-      return resolve(false);
+      log("⚠️ server.mjs lipsă la path principal");
+
+      // Încercăm path-uri alternative
+      const altPaths = [
+        path.join(process.resourcesPath, "server.mjs"),
+        path.join(process.resourcesPath, "app", "server.mjs"),
+        path.join(__dirname, "server.mjs"),
+      ];
+
+      for (const altPath of altPaths) {
+        log(`🔍 Trying: ${altPath} - exists: ${existsSync(altPath)}`);
+      }
+
+      log("❌ server.mjs nu a fost găsit în niciun path");
+      return false;
     }
 
     log("✅ server.mjs găsit, pornire în același proces...");
 
-    try {
-      // Importăm și rulăm serverul în același proces
-      const serverModule = await import(serverPath);
-      log("✅ Server importat cu succes!");
-      
-      // Așteaptă să pornească
-      setTimeout(() => {
-        waitForServer()
-          .then(() => {
-            log("✅ Server răspunde pe localhost:3001");
-            resolve(true);
-          })
-          .catch((err) => {
-            log(`❌ Server timeout: ${err.message}`);
-            resolve(false);
-          });
-      }, 1000);
-    } catch (err) {
-      log(`❌ Eroare import server: ${err.message}`);
-      log(`❌ Stack: ${err.stack}`);
-      resolve(false);
-    }
-  });
+    // Convertim path-ul în file:// URL pentru import() pe Windows
+    const serverUrl = pathToFileURL(serverPath);
+    log(`🔍 Server URL: ${serverUrl.href}`);
+
+    // Importăm și rulăm serverul în același proces Electron
+    const serverModule = await import(serverUrl.href);
+    log("✅ Server importat cu succes!");
+
+    // Așteaptă ca serverul să devină disponibil
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    await waitForServer();
+    log("✅ Server răspunde pe http://localhost:3001");
+    
+    return true;
+  } catch (err) {
+    log(`❌ Eroare la pornirea serverului: ${err.message}`);
+    log(`❌ Stack: ${err.stack}`);
+    return false;
+  }
 }
 
 // ==========================================
 // 🪟 FEREASTRĂ PRINCIPALĂ
 // ==========================================
 function getIconPath() {
-  const p = [
+  const paths = [
     path.join(__dirname, "assets", "icon.ico"),
     path.join(__dirname, "assets", "icon.png"),
   ];
-  return p.find((x) => existsSync(x)) || null;
+  return paths.find((p) => existsSync(p)) || null;
 }
 
 async function createWindow() {
-  startServer();
+  // Pornim serverul ÎNAINTE de fereastră
+  await startServer();
 
   mainWindow = new BrowserWindow({
     width: 1400,
@@ -179,21 +187,25 @@ async function createWindow() {
     },
   });
 
+  // Ascundem meniul complet
   Menu.setApplicationMenu(null);
 
+  // Afișăm fereastra când e gata
   mainWindow.once("ready-to-show", () => {
     mainWindow.show();
   });
 
+  // Încărcăm UI-ul
   const indexFile = path.join(__dirname, "dist", "index.html");
 
   if (existsSync(indexFile)) {
     await mainWindow.loadFile(indexFile);
   } else {
+    // Development mode - Vite dev server
     await mainWindow.loadURL("http://localhost:5173");
   }
 
-  // 🔥 PORNEȘTE AUTO-UPDATER CÂND UI ESTE GATA
+  // Pornim auto-updater când UI-ul e încărcat
   setupAutoUpdater();
 
   mainWindow.on("closed", () => {
@@ -207,18 +219,24 @@ async function createWindow() {
 app.whenReady().then(createWindow);
 
 app.on("window-all-closed", () => {
-  stopServer();
-  if (process.platform !== "darwin") app.quit();
+  if (process.platform !== "darwin") {
+    app.quit();
+  }
 });
 
 app.on("activate", () => {
-  if (!BrowserWindow.getAllWindows().length) createWindow();
+  if (!BrowserWindow.getAllWindows().length) {
+    createWindow();
+  }
 });
 
 // ==========================================
 // 🚨 ERORI GLOBALE
 // ==========================================
-process.on("uncaughtException", (err) => console.error("💥 Uncaught:", err));
-process.on("unhandledRejection", (reason) =>
-  console.error("💥 Rejected:", reason)
-);
+process.on("uncaughtException", (err) => {
+  console.error("💥 Uncaught Exception:", err);
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error("💥 Unhandled Rejection:", reason);
+});
