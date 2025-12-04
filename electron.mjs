@@ -101,57 +101,57 @@ function waitForServer(retries = 20, delay = 1000) {
 
 function startServer() {
   return new Promise((resolve) => {
-    const fs = require('fs');
-    const logPath = path.join(app.getPath('userData'), 'server-debug.log');
-    
+    const fs = require("fs");
+    const logPath = path.join(app.getPath("userData"), "server-debug.log");
+
     function log(msg) {
       const timestamp = new Date().toISOString();
       fs.appendFileSync(logPath, `[${timestamp}] ${msg}\n`);
       console.log(msg);
     }
-    
+
     const serverPath = app.isPackaged
       ? path.join(process.resourcesPath, "app.asar.unpacked", "server.mjs")
       : path.join(__dirname, "server.mjs");
-    
+
     log(`🔍 Server path: ${serverPath}`);
     log(`🔍 File exists: ${existsSync(serverPath)}`);
     log(`🔍 process.resourcesPath: ${process.resourcesPath}`);
-    
+
     if (!existsSync(serverPath)) {
       log("⚠️ server.mjs lipsă la path principal");
-      
+
       const altPaths = [
         path.join(process.resourcesPath, "server.mjs"),
         path.join(process.resourcesPath, "app", "server.mjs"),
-        path.join(__dirname, "server.mjs")
+        path.join(__dirname, "server.mjs"),
       ];
-      
+
       for (const altPath of altPaths) {
         log(`🔍 Trying: ${altPath} - exists: ${existsSync(altPath)}`);
       }
-      
+
       return resolve(false);
     }
-    
+
     log("✅ server.mjs găsit, pornire server...");
-    
-    serverProcess = spawn("node", [serverPath], {
+
+    serverProcess = spawn(process.execPath, [serverPath], {
       cwd: __dirname,
       stdio: ["ignore", "pipe", "pipe"],
       detached: false,
     });
-    
+
     serverProcess.stdout.on("data", (d) => {
       const msg = d.toString().trim();
       log(`[SERVER] ${msg}`);
     });
-    
+
     serverProcess.stderr.on("data", (d) => {
       const msg = d.toString().trim();
       log(`[SERVER ERR] ${msg}`);
     });
-    
+
     setTimeout(() => {
       waitForServer().finally(() => resolve(true));
     }, 2500);
