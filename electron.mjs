@@ -73,25 +73,6 @@ ipcMain.on("test-update", (_, type) => {
 // ==========================================
 // 🟦 SERVER EXPRESS
 // ==========================================
-function waitForServer(retries = 20, delay = 1000) {
-  return new Promise((resolve, reject) => {
-    const check = (attempt) => {
-      fetch("http://localhost:3001")
-        .then((res) => {
-          if (res.ok) return resolve(true);
-          throw new Error("Bad status");
-        })
-        .catch(() => {
-          if (attempt < retries) {
-            setTimeout(() => check(attempt + 1), delay);
-          } else {
-            reject(new Error("Server timeout"));
-          }
-        });
-    };
-    check(0);
-  });
-}
 
 async function startServer() {
   const fs = require("fs");
@@ -104,58 +85,40 @@ async function startServer() {
   }
 
   try {
-    // Determinăm path-ul către server.mjs
     const serverPath = app.isPackaged
       ? path.join(process.resourcesPath, "app.asar.unpacked", "server.mjs")
       : path.join(__dirname, "server.mjs");
 
     log(`🔍 Server path: ${serverPath}`);
     log(`🔍 File exists: ${existsSync(serverPath)}`);
-    log(`🔍 process.resourcesPath: ${process.resourcesPath}`);
-    log(`🔍 __dirname: ${__dirname}`);
 
     if (!existsSync(serverPath)) {
-      log("⚠️ server.mjs lipsă la path principal");
-
-      // Încercăm path-uri alternative
-      const altPaths = [
-        path.join(process.resourcesPath, "server.mjs"),
-        path.join(process.resourcesPath, "app", "server.mjs"),
-        path.join(__dirname, "server.mjs"),
-      ];
-
-      for (const altPath of altPaths) {
-        log(`🔍 Trying: ${altPath} - exists: ${existsSync(altPath)}`);
-      }
-
-      log("❌ server.mjs nu a fost găsit în niciun path");
+      log("⚠️ server.mjs lipsă");
       return false;
     }
 
-    log("✅ server.mjs găsit, pornire în același proces...");
+    log("✅ server.mjs găsit, pornire în fundal...");
 
-    // Convertim path-ul în file:// URL pentru import() pe Windows
     const serverUrl = pathToFileURL(serverPath);
     log(`🔍 Server URL: ${serverUrl.href}`);
 
-    // Importăm și rulăm serverul în același proces Electron
-    const serverModule = await import(serverUrl.href);
-    log("✅ Server importat cu succes!");
+    // Importăm serverul în FUNDAL - nu așteptăm
+    import(serverUrl.href)
+      .then(() => {
+        log("✅ Server importat cu succes!");
+        log("⏳ Serverul pornește în fundal...");
+      })
+      .catch((err) => {
+        log(`❌ Eroare import server: ${err.message}`);
+      });
 
-    // Așteaptă ca serverul să devină disponibil
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    await waitForServer();
-    log("✅ Server răspunde pe http://localhost:3001");
-    
+    // Returnăm IMEDIAT - nu așteptăm serverul
     return true;
   } catch (err) {
-    log(`❌ Eroare la pornirea serverului: ${err.message}`);
-    log(`❌ Stack: ${err.stack}`);
+    log(`❌ Eroare: ${err.message}`);
     return false;
   }
 }
-
 // ==========================================
 // 🪟 FEREASTRĂ PRINCIPALĂ
 // ==========================================
