@@ -1,6 +1,6 @@
 {
   "name": "curentu-app",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "private": false,
   "description": "Aplicația Curentu - Gestiune Marfuri",
   "type": "module",
@@ -37,7 +37,8 @@
     ],
     "asarUnpack": [
       "server.mjs",
-      "Stocare/**/*"
+      "Stocare/**/*",
+      "node_modules/**/*"
     ],
     "extraFiles": [
       {
