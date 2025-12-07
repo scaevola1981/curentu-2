@@ -1,6 +1,6 @@
 {
   "name": "curentu-app",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "private": false,
   "description": "Aplicația Curentu - Gestiune Marfuri",
   "type": "module",
@@ -21,6 +21,7 @@
   },
   "build": {
     "asar": false,
+    "asarUnpack": null,
     "appId": "com.curentu.app",
     "productName": "Curentu - Gestiune Marfuri",
     "directories": {
