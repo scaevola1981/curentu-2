@@ -1,6 +1,6 @@
 {
   "name": "curentu-app",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "private": false,
   "description": "Aplicația Curentu - Gestiune Marfuri",
   "type": "module",
@@ -20,47 +20,45 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {
-    "asar": false,
-    "asarUnpack": null,
-    "appId": "com.curentu.app",
-    "productName": "Curentu - Gestiune Marfuri",
-    "directories": {
-      "output": "release",
-      "buildResources": "assets"
-    },
-    "files": [
-      "electron.mjs",
-      "preload.js",
-      "server.mjs",
-      "dist/**/*",
-      "Stocare/**/*",
-      "package.json",
-      "node_modules/**/*"
-    ],
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "scaevola1981",
-        "repo": "curentu-2"
-      }
-    ],
-    "win": {
-      "target": "portable",
-      "icon": "assets/icon.ico"
-    },
-    "linux": {
-      "target": "AppImage",
-      "icon": "assets/icon.png"
-    },
-    "mac": {
-      "target": "dmg",
-      "icon": "assets/icon.icns"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
-    }
+  "asar": false,
+  "appId": "com.curentu.app",
+  "productName": "Curentu - Gestiune Marfuri",
+  "directories": {
+    "output": "release",
+    "buildResources": "assets"
   },
+  "files": [
+    "electron.mjs",
+    "preload.js",
+    "server.mjs",
+    "dist/**/*",
+    "Stocare/**/*",
+    "package.json"
+  ],
+  "publish": [
+    {
+      "provider": "github",
+      "owner": "scaevola1981",
+      "repo": "curentu-2"
+    }
+  ],
+  "win": {
+    "target": "portable",
+    "icon": "assets/icon.ico"
+  },
+  "linux": {
+    "target": "AppImage",
+    "icon": "assets/icon.png"
+  },
+  "mac": {
+    "target": "dmg",
+    "icon": "assets/icon.icns"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true
+  }
+},
   "dependencies": {
     "axios": "^1.7.7",
     "cors": "^2.8.5",

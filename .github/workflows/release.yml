@@ -28,7 +28,7 @@ jobs:
       - run: npm run build:react
       
       - name: Build Electron
-        run: npx electron-builder --publish never
+        run: npx electron-builder --publish never --config.asar=false
       
       - name: Upload to Release
         uses: softprops/action-gh-release@v1

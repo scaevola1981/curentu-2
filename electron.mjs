@@ -86,8 +86,8 @@ async function startServer() {
 
   try {
     const serverPath = app.isPackaged
-      ? path.join(process.resourcesPath, "app.asar.unpacked", "server.mjs")
-      : path.join(__dirname, "server.mjs");
+  ? path.join(process.resourcesPath, "app", "server.mjs")  // ← FĂRĂ .asar.unpacked
+  : path.join(__dirname, "server.mjs");
 
     log(`🔍 Server path: ${serverPath}`);
     log(`🔍 File exists: ${existsSync(serverPath)}`);
