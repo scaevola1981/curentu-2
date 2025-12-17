@@ -3,6 +3,7 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import { existsSync } from "fs";
 
 import {
   getMateriiPrime,
@@ -46,6 +47,12 @@ import {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const storagePath = path.join(__dirname, "Stocare");
+
+// Determine image path based on environment
+const imagePath = existsSync(path.join(__dirname, "dist", "Imagini"))
+  ? path.join(__dirname, "dist", "Imagini")
+  : path.join(__dirname, "public", "Imagini");
+
 const app = express();
 const PORT = 3001;
 
@@ -57,6 +64,7 @@ app.use(
   })
 );
 app.use("/static", express.static(storagePath));
+app.use("/Imagini", express.static(imagePath)); // ✅ Serve images
 app.use(express.json());
 
 function valideazaMaterial(material) {
