@@ -1,0 +1,39 @@
+name: Build & Release
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install Wine for Windows builds
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y wine64 wine32
+      
+      - run: npm ci
+      
+      - run: npm run build:react
+      
+      - name: Build Windows only
+        run: npx electron-builder --win --publish never
+      
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

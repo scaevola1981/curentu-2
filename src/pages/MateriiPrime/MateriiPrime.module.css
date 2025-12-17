@@ -1,0 +1,336 @@
+/* ============================================
+   MATERII PRIME — STIL DARK + MODERN (CURENTU’)
+   ============================================ */
+
+/* --- CONTAINER --- */
+.container {
+  padding: clamp(1rem, 2vw, 2rem);
+  min-height: 100vh;
+  background: #01233a;
+  background-size: 300% 300%;
+  animation: gradientMove 15s ease infinite;
+  color: #ffffff;
+  font-family: "Segoe UI", sans-serif;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* --- TITLU --- */
+.titlu {
+  text-align: center;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  margin-top: 4rem;
+  color: #ffffff;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+}
+
+/* --- TOOLBAR --- */
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.toolbar button {
+  border-radius: 25px;
+}
+
+/* --- FORMULAR --- */
+.formular {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 14px;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+ 
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* --- INPUTURI --- */
+.input {
+  width: 100%;
+  padding: 0.85rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background-color: rgba(255,255,255,0.12);
+  color: #fff;
+  font-size: 1rem;
+  transition: 0.2s ease;
+}
+
+.input:focus {
+  border-color: #1a73e8;
+  box-shadow: 0 0 8px rgba(26,115,232,0.6);
+  outline: none;
+}
+
+.input::placeholder {
+  color: rgba(255,255,255,0.6);
+}
+
+/* --- BUTOANE --- */
+.button,
+.buttonRefresh,
+.buttonAdd,
+.buttonRemove,
+.buttonUpdate,
+.buttonDelete,
+.buttonCancel {
+  padding: 0.75rem 1.6rem;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+  color: #ffffff;
+}
+
+.button,
+.buttonRefresh,
+.buttonAdd,
+.buttonUpdate {
+  background-color: rgba(26,115,232,0.75);
+}
+
+.button:hover,
+.buttonRefresh:hover,
+.buttonAdd:hover,
+.buttonUpdate:hover {
+  background-color: rgba(26,115,232,0.95);
+  transform: translateY(-2px);
+}
+
+/* verde – adaugă */
+.buttonRemove {
+  background-color: rgba(39,174,96,0.75);
+}
+
+.buttonRemove:hover {
+  background-color: rgba(39,174,96,1);
+  transform: translateY(-2px);
+}
+
+/* roșu – șterge / anulează */
+.buttonDelete,
+.buttonCancel {
+  background-color: rgba(231,76,60,0.75);
+  margin-left: 16px;
+}
+
+.buttonDelete:hover,
+.buttonCancel:hover {
+  background-color: rgba(231,76,60,0.95);
+  transform: translateY(-2px);
+}
+
+/* --- CONTAINER CARDURI --- */
+.cardsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* --- CARD --- */
+.materialCard {
+  background-color: rgba(255,255,255,0.1);
+  border-radius: 14px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  transition: 0.25s ease;
+  display: flex;
+  flex-direction: column;
+ 
+}
+
+.materialCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.35);
+  background-color: rgba(255,255,255,0.15);
+}
+
+/* --- HEADER CARD --- */
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  color: #ffffff;
+}
+
+.materialId {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.7);
+  background-color: rgba(26,115,232,0.25);
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+}
+
+/* --- CONȚINUT CARD --- */
+.cardContent {
+  flex: 1;
+  margin-bottom: 1.2rem;
+}
+
+.cardRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+.cardLabel {
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+}
+
+.cardValue {
+  color: #ffffff;
+  text-align: right;
+}
+
+.supplementSection {
+  display: flex;
+  flex-direction: row;
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.inputSmall {
+  width: 50%;
+  padding: 9px 20px;
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid #05ee816e;
+  color: rgb(3, 3, 3);
+}
+
+.inputSmall:hover {
+  background: #5bf194;
+  color: rgb(0, 67, 168);
+}
+
+.buttonAddSmall {
+   width: 50%;
+  padding: 9px 14px;
+  background: #03bff8;
+  color: rgb(255, 255, 255);
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.buttonAddSmall:hover {
+  background: #02ff6c;
+  color: #027699;
+}
+
+
+
+/* --- ACTIONS --- */
+.cardActions {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+}
+
+.cardActions button {
+  padding: 0.55rem 1.2rem;
+  font-size: 0.85rem;
+}
+
+/* --- NO RESULTS --- */
+.noResults {
+  text-align: center;
+  padding: 2rem;
+  font-weight: 600;
+  background-color: rgba(255,255,255,0.08);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  grid-column: 1 / -1;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .titlu {
+    font-size: 2rem;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .cardsContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cardHeader {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .cardActions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .titlu {
+    font-size: 1.6rem;
+  }
+
+  .formular {
+    padding: 1rem;
+  }
+
+  .materialCard {
+    padding: 1rem;
+  }
+
+  .cardRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cardLabel, .cardValue {
+    text-align: left;
+  }
+}

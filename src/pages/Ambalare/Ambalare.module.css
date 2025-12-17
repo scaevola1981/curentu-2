@@ -1,0 +1,293 @@
+/* ==== CONTAINER GENERAL (similar Depozitare) ==== */
+.container {
+  padding: clamp(1rem, 2vw, 2rem);
+  min-height: 100vh;
+  background: #00203df8;
+  background-size: 300% 300%;
+  animation: gradientMove 15s ease infinite;
+  color: #ffffff;
+  font-family: "Segoe UI", sans-serif;
+  overflow-x: hidden;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ==== TITLU ==== */
+.titlu {
+  text-align: center;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: 700;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #ffffff;
+}
+
+/* ==== SECTION WRAPPER (Depozitare style) ==== */
+.sectionsContainer {
+  background: rgba(32, 32, 32, 0.4);
+  border-radius: 12px;
+  padding: clamp(15px, 2vw, 25px);
+  box-shadow: 0 8px 46px rgb(5, 194, 241);
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* ==== SUB-SECTIONS ==== */
+.ambalareSection,
+.materialeSection {
+  background: rgba(255,255,255,0.05);
+  padding: 22px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: 0 0 25px rgba(0,255,255,0.15);
+}
+
+.ambalareSection h2,
+.materialeSection h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.6rem;
+}
+
+/* ==== FERMENTATOARE GRID ==== */
+.fermentatoareGrid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.fermentatorCard {
+  position: relative;
+  height: 280px;
+  background-color: #013350d5;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  transition: 0.3s ease;
+  cursor: pointer;
+}
+
+.fermentatorCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 10px 10px 15px rgba(2, 248, 228, 0.25);
+}
+
+.selected {
+  border: 2px solid #1a73e8;
+  box-shadow: 0 0 20px rgba(0,149,213,0.6);
+}
+
+.fermentatorCardOverlay {
+  padding: 1rem;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: linear-gradient(to top, rgba(48, 47, 47, 0.8), transparent);
+}
+
+/* ==== INPUTURI (le păstrăm EXACT ca la tine) ==== */
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+  
+}
+
+.input {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  padding: 0.9rem;
+  border-radius: 8px;
+  background: rgb(255, 255, 255);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #363636;
+  font-size: 1rem;
+}
+
+/* ==== FORM ==== */
+
+.formRow {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.formButtons {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+/* ==== BUTTONS (exact stil Depozitare) ==== */
+
+.buttonVerifica,
+.buttonRefresh,
+.buttonExport,
+.buttonAdd,
+.buttonUpdate,
+.buttonAdauga {
+  padding: 12px;
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 12px;
+  background-color: rgba(39, 174, 96, 0.85);
+  transition: 0.2s ease;
+}
+
+.buttonRefresh {
+  margin-right: 12px;
+}
+
+.buttonUpdate {
+  width: 150px;
+}
+
+
+
+.buttonVerifica:hover,
+.buttonRefresh:hover,
+.buttonExport:hover,
+.buttonAdd:hover,
+.buttonUpdate:hover,
+.buttonAdauga:hover {
+  background-color: rgba(1, 255, 111, 0.205);
+  transform: translateY(-2px);
+}
+
+/* ==== Butoane roșii (ștergere) ==== */
+.buttonDelete,
+.buttonCancel {
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 600;
+  border: none;
+  background-color: rgba(231, 76, 60, 0.85);
+  color: #fff;
+}
+
+.buttonEdit {
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 600;
+  border: none;
+  background-color: rgb(5, 130, 247);
+  color: #fff;
+}
+
+.buttonEdit:hover {
+  background-color: rgba(1, 131, 252, 0.596);
+  transform: translateY(-2px);
+}
+
+.buttonDelete:hover,
+.buttonCancel:hover {
+  background-color: rgba(245, 30, 7, 0.795);
+  transform: translateY(-2px);
+}
+
+/* ==== Material Cards ==== */
+.materialCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(430px, 1fr));
+  gap: 20px;
+   margin-top: 20px;
+}
+
+.materialCard {
+  display :flex;
+  flex-direction: column;
+  min-height: 280px;
+  background: #013350d5;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  transition: 0.3s ease;
+}
+
+.materialCard:hover {
+  transform: translateY(-10px);
+  box-shadow: 10px 10px 15px rgba(2, 248, 228, 0.25);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.cardId {
+  background: #1a73e8;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.inputSmall {
+  width: 100%;
+  padding: 12px 10px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  margin-top: 6px;
+}
+
+.buttonAdauga {
+  width: 100%;
+  margin-left: 0;
+  margin-top: 8px;
+  border-radius: 12px;
+}
+
+/* ==== Actions inside cards ==== */
+.cardActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.cardActions button {
+  flex: 1;
+   flex: 1 1 calc(50% - 10px);
+}
+
+/* ==== RESPONSIVE ==== */
+@media (max-width: 768px) {
+
+  .input,
+  .select,
+  .buttonSmall {
+    font-size: 0.9rem;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  .cardRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .cardsContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .tabNavigation {
+    flex-direction: column;
+  }
+
+  .tabButton {
+    width: 100%;
+  }
+}

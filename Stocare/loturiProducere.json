@@ -1,0 +1,80 @@
+{
+  "loturi": [
+    {
+      "id": 2,
+      "fermentatorId": 3,
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": 96,
+      "dataInceput": "2025-08-10T15:01:33.572Z",
+      "dataAmbalare": "2025-08-11T18:07:49.328Z",
+      "packagingType": "sticle",
+      "bottleSize": "0.33l",
+      "boxType": "24 sticle",
+      "kegSize": null,
+      "materialsUsed": [
+        {
+          "denumire": "Sticle 0.33l",
+          "cantitate": 291,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Capace",
+          "cantitate": 291,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Etichete",
+          "cantitate": 291,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Cutii 24 sticle",
+          "cantitate": 13,
+          "unitate": "buc"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "fermentatorId": 4,
+      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
+      "cantitate": "16.00",
+      "unitate": "litri",
+      "dataInceput": "2025-08-10T16:20:20.478Z",
+      "dataAmbalare": "2025-08-11T18:08:24.926Z",
+      "packagingType": "keguri",
+      "bottleSize": null,
+      "boxType": null,
+      "kegSize": "Keg 50l",
+      "materialsUsed": [
+        {
+          "denumire": "Keg 50l",
+          "cantitate": 1,
+          "unitate": "buc"
+        }
+      ],
+      "dataActualizare": "2025-08-19T09:05:46.678Z"
+    },
+    {
+      "id": 4,
+      "fermentatorId": 1,
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": "0.07",
+      "unitate": "litri",
+      "dataInceput": "2025-08-10T16:23:58.196Z",
+      "dataAmbalare": "2025-08-11T18:24:37.868Z",
+      "packagingType": "keguri",
+      "bottleSize": null,
+      "boxType": null,
+      "kegSize": "Keg 40l",
+      "materialsUsed": [
+        {
+          "denumire": "Keg 40l",
+          "cantitate": 1,
+          "unitate": "buc"
+        }
+      ],
+      "dataActualizare": "2025-08-19T08:19:31.206Z"
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "materialeAmbalare": [
+    {
+      "id": 1,
+      "denumire": "Sticle 0.33l",
+      "tip": "sticle",
+      "cantitate": 1012,
+      "unitate": "buc",
+      "producator": "Generic Packaging",
+      "codProdus": "STICLA-001",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 2,
+      "denumire": "Cutii 6 sticle",
+      "tip": "cutii",
+      "cantitate": 1089,
+      "unitate": "buc",
+      "producator": "Generic Packaging",
+      "codProdus": "CUTIE-001",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 3,
+      "denumire": "Cutii 12 sticle",
+      "tip": "cutii",
+      "cantitate": 784,
+      "unitate": "buc",
+      "producator": "Generic Packaging",
+      "codProdus": "CUTIE-002",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 4,
+      "denumire": "Cutii 24 sticle",
+      "tip": "cutii",
+      "cantitate": 635,
+      "unitate": "buc",
+      "producator": "Generic Packaging",
+      "codProdus": "CUTIE-003",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 5,
+      "denumire": "Keg 10l",
+      "tip": "keg",
+      "cantitate": 19,
+      "unitate": "buc",
+      "producator": "Generic Kegs",
+      "codProdus": "KEG-001",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 6,
+      "denumire": "Keg 20l",
+      "tip": "keg",
+      "cantitate": 77,
+      "unitate": "buc",
+      "producator": "Generic Kegs",
+      "codProdus": "KEG-002",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 7,
+      "denumire": "Keg 30l",
+      "tip": "keg",
+      "cantitate": 100,
+      "unitate": "buc",
+      "producator": "Generic Kegs",
+      "codProdus": "KEG-003",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 8,
+      "denumire": "Keg 40l",
+      "tip": "keg",
+      "cantitate": 64,
+      "unitate": "buc",
+      "producator": "Generic Kegs",
+      "codProdus": "KEG-004",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 9,
+      "denumire": "Keg 50l",
+      "tip": "keg",
+      "cantitate": 100,
+      "unitate": "buc",
+      "producator": "Generic Kegs",
+      "codProdus": "KEG-005",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 10,
+      "denumire": "Etichete",
+      "tip": "etichete",
+      "cantitate": 3017,
+      "unitate": "buc",
+      "producator": "Generic Labels",
+      "codProdus": "ETICHETA-001",
+      "lot": "",
+      "subcategorie": ""
+    },
+    {
+      "id": 11,
+      "denumire": "Capace",
+      "tip": "capace",
+      "cantitate": 3517,
+      "unitate": "buc",
+      "producator": "Generic Caps",
+      "codProdus": "CAPAC-001",
+      "lot": "",
+      "subcategorie": ""
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "fermentatoare": [
+    {
+      "id": 1,
+      "nume": "Fermentator 1",
+      "capacitate": 1000,
+      "ocupat": true,
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": 900,
+      "dataInceput": "2025-11-14T20:00:42.681Z",
+      "imagine": "/Imagini/fermentator.png"
+    },
+    {
+      "id": 2,
+      "nume": "Fermentator 2",
+      "capacitate": 1000,
+      "ocupat": true,
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": 300,
+      "dataInceput": "2025-11-15T12:18:50.809Z",
+      "imagine": "/Imagini/fermentator.png"
+    },
+    {
+      "id": 3,
+      "nume": "Fermentator 3",
+      "capacitate": 1000,
+      "ocupat": true,
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": 435,
+      "dataInceput": "2025-11-15T16:46:52.268Z",
+      "imagine": "/Imagini/fermentator.png"
+    },
+    {
+      "id": 4,
+      "nume": "Fermentator 4",
+      "capacitate": 1000,
+      "ocupat": true,
+      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
+      "cantitate": 234,
+      "dataInceput": "2025-11-15T16:48:24.774Z",
+      "imagine": "/Imagini/fermentator.png"
+    },
+    {
+      "id": 5,
+      "nume": "Fermentator 5",
+      "capacitate": 2000,
+      "ocupat": true,
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": 123,
+      "dataInceput": "2025-11-15T16:48:40.244Z",
+      "imagine": "/Imagini/fermentator.png"
+    },
+    {
+      "id": 6,
+      "nume": "Fermentator 6",
+      "capacitate": 2000,
+      "ocupat": false,
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": 0,
+      "dataInceput": "2025-11-15T16:49:03.933Z",
+      "imagine": "/Imagini/fermentator.png"
+    }
+  ]
+}

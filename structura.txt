@@ -1,0 +1,161 @@
+.
+├── assets
+│   ├── icon.ico
+│   └── icon.png
+├── build.js
+├── convert-to-commonjs.js
+├── curentu-2
+│   ├── assets
+│   │   ├── icon.ico
+│   │   └── icon.png
+│   ├── build.js
+│   ├── convert-to-commonjs.js
+│   ├── CurentuApp.zip
+│   ├── db.json
+│   ├── electron.mjs
+│   ├── eslint.config.js
+│   ├── .gitignore
+│   ├── index.html
+│   ├── LICENSE
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── preload.js
+│   ├── public
+│   │   └── Imagini
+│   │       ├── adaptor.png
+│   │       ├── fermentator.png
+│   │       ├── intrerupator.png
+│   │       └── usb-amper-ale.png
+│   ├── server.mjs
+│   ├── src
+│   │   ├── App.jsx
+│   │   ├── Componente
+│   │   │   ├── ErrorBoundary.jsx
+│   │   │   ├── Modal.jsx
+│   │   │   ├── Modal.module.css
+│   │   │   └── NavBar
+│   │   │       ├── NavBar.jsx
+│   │   │       └── NavBar.module.css
+│   │   ├── index.css
+│   │   ├── main.jsx
+│   │   └── pages
+│   │       ├── Ambalare
+│   │       │   ├── Ambalare.jsx
+│   │       │   └── Ambalare.module.css
+│   │       ├── Dashboard
+│   │       │   ├── Dashboard.jsx
+│   │       │   └── Dashboard.module.css
+│   │       ├── Depozitare
+│   │       │   ├── Depozitare.jsx
+│   │       │   └── Depozitare.module.css
+│   │       ├── MateriiPrime
+│   │       │   ├── MateriiPrime.jsx
+│   │       │   └── MateriiPrime.module.css
+│   │       ├── Productie
+│   │       │   ├── Productie.jsx
+│   │       │   └── Productie.module.css
+│   │       └── Rebuturi
+│   │           ├── Rebuturi.jsx
+│   │           └── Rebuturi.module.css
+│   ├── Stocare
+│   │   ├── ambalare.mjs
+│   │   ├── db.json
+│   │   ├── db.mjs
+│   │   ├── depozitare.mjs
+│   │   ├── fermentatoare.json
+│   │   ├── fermentatoare.mjs
+│   │   ├── iesiriBere.json
+│   │   ├── iesiriBere.mjs
+│   │   ├── ingrediente.json
+│   │   ├── ingrediente.mjs
+│   │   ├── loturiAmbalate.json
+│   │   ├── loturiAmbalate.mjs
+│   │   ├── loturiProducere.json
+│   │   ├── materialeAmbalare.json
+│   │   ├── materialeAmbalare.mjs
+│   │   ├── packaging.json
+│   │   ├── rebut.json
+│   │   ├── rebut.mjs
+│   │   ├── reteteBere.json
+│   │   ├── reteteBere.mjs
+│   │   ├── retete.mjs
+│   │   └── utils
+│   │       └── ambalare.mjs
+│   ├── structura.txt
+│   └── vite.config.js
+├── CurentuApp.zip
+├── db.json
+├── electron.mjs
+├── eslint.config.js
+├── .gitignore
+├── index.html
+├── LICENSE
+├── package.json
+├── package-lock.json
+├── preload.js
+├── proiect-curentu.zip
+├── public
+│   └── Imagini
+│       ├── adaptor.png
+│       ├── fermentator.png
+│       ├── intrerupator.png
+│       └── usb-amper-ale.png
+├── server.mjs
+├── src
+│   ├── App.jsx
+│   ├── Componente
+│   │   ├── ErrorBoundary.jsx
+│   │   ├── Modal.jsx
+│   │   ├── Modal.module.css
+│   │   └── NavBar
+│   │       ├── NavBar.jsx
+│   │       └── NavBar.module.css
+│   ├── index.css
+│   ├── main.jsx
+│   └── pages
+│       ├── Ambalare
+│       │   ├── Ambalare.jsx
+│       │   └── Ambalare.module.css
+│       ├── Dashboard
+│       │   ├── Dashboard.jsx
+│       │   └── Dashboard.module.css
+│       ├── Depozitare
+│       │   ├── Depozitare.jsx
+│       │   └── Depozitare.module.css
+│       ├── MateriiPrime
+│       │   ├── MateriiPrime.jsx
+│       │   └── MateriiPrime.module.css
+│       ├── Productie
+│       │   ├── Productie.jsx
+│       │   └── Productie.module.css
+│       └── Rebuturi
+│           ├── Rebuturi.jsx
+│           └── Rebuturi.module.css
+├── Stocare
+│   ├── ambalare.mjs
+│   ├── db.json
+│   ├── db.mjs
+│   ├── depozitare.mjs
+│   ├── fermentatoare.json
+│   ├── fermentatoare.mjs
+│   ├── iesiriBere.json
+│   ├── iesiriBere.mjs
+│   ├── ingrediente.json
+│   ├── ingrediente.mjs
+│   ├── loturiAmbalate.json
+│   ├── loturiAmbalate.mjs
+│   ├── loturiProducere.json
+│   ├── materialeAmbalare.json
+│   ├── materialeAmbalare.mjs
+│   ├── packaging.json
+│   ├── rebut.json
+│   ├── rebut.mjs
+│   ├── reteteBere.json
+│   ├── reteteBere.mjs
+│   ├── retete.mjs
+│   └── utils
+│       └── ambalare.mjs
+├── structura.txt
+└── vite.config.js
+
+32 directories, 127 files
