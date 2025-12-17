@@ -26,19 +26,42 @@ autoUpdater.autoInstallOnAppQuit = false;
 function setupAutoUpdater() {
   console.log("🔍 Verific update-uri...");
 
-  autoUpdater.on("update-available", () => {
-    console.log("📦 Update disponibil");
-    mainWindow?.webContents.send("update_available");
+  autoUpdater.on("update-available", (info) => {
+    console.log("📦 Update disponibil:", info.version);
+    mainWindow?.webContents.send("update_available", {
+      version: info.version,
+      releaseDate: info.releaseDate
+    });
   });
 
-  autoUpdater.on("update-downloaded", () => {
-    console.log("⬇️ Update descărcat");
-    mainWindow?.webContents.send("update_ready");
+  autoUpdater.on("download-progress", (progressObj) => {
+    console.log(`⬇️ Progres descărcare: ${Math.round(progressObj.percent)}%`);
+    mainWindow?.webContents.send("download_progress", {
+      percent: Math.round(progressObj.percent),
+      transferred: progressObj.transferred,
+      total: progressObj.total,
+      bytesPerSecond: progressObj.bytesPerSecond
+    });
+  });
+
+  autoUpdater.on("update-downloaded", (info) => {
+    console.log("✅ Update descărcat:", info.version);
+    mainWindow?.webContents.send("update_ready", {
+      version: info.version
+    });
   });
 
   autoUpdater.on("error", (err) => {
     console.error("❌ AutoUpdater Error:", err);
     mainWindow?.webContents.send("update_error", err.message);
+  });
+
+  autoUpdater.on("checking-for-update", () => {
+    console.log("🔍 Verificare update-uri în curs...");
+  });
+
+  autoUpdater.on("update-not-available", (info) => {
+    console.log("✓ Nu există update-uri disponibile. Versiune curentă:", info.version);
   });
 
   autoUpdater.checkForUpdatesAndNotify();

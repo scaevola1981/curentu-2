@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // 🆕 AUTO-UPDATER
   // ============================
   onUpdateAvailable: createListener("update_available"),
+  onDownloadProgress: createListener("download_progress"),
   onUpdateReady: createListener("update_ready"),
   onUpdateError: createListener("update_error"),
   installUpdate: () => ipcRenderer.send("install_update"),

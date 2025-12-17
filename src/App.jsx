@@ -40,16 +40,6 @@ const App = () => {
     <>
       <NavBar />
       <UpdateNotification />
-      
-      {/* 🛠 DEBUG BUTTON (Temporar) */}
-      <div style={{ position: "fixed", bottom: "10px", left: "10px", zIndex: 9999 }}>
-        <button 
-          onClick={() => window.electronAPI.testUpdate("available")}
-          style={{ background: "red", color: "white", padding: "5px", border: "none", borderRadius: "5px", cursor: "pointer" }}
-        >
-          TEST UPDATE
-        </button>
-      </div>
 
       {/* ===============================
                🔥 ROUTING

@@ -2,18 +2,27 @@ import { useEffect, useState } from "react";
 import "./UpdateNotification.css"; // We will create this next
 
 const UpdateNotification = () => {
-  const [updateStatus, setUpdateStatus] = useState(null); // "available", "ready", "error"
+  const [updateStatus, setUpdateStatus] = useState(null); // "available", "downloading", "ready", "error"
   const [errorMessage, setErrorMessage] = useState("");
+  const [downloadProgress, setDownloadProgress] = useState(0);
+  const [updateInfo, setUpdateInfo] = useState(null);
 
   useEffect(() => {
     if (!window.electronAPI) return;
 
-    const removeAvailableListener = window.electronAPI.onUpdateAvailable(() => {
+    const removeAvailableListener = window.electronAPI.onUpdateAvailable((info) => {
       setUpdateStatus("available");
+      setUpdateInfo(info);
     });
 
-    const removeReadyListener = window.electronAPI.onUpdateReady(() => {
+    const removeProgressListener = window.electronAPI.onDownloadProgress((progress) => {
+      setUpdateStatus("downloading");
+      setDownloadProgress(progress.percent);
+    });
+
+    const removeReadyListener = window.electronAPI.onUpdateReady((info) => {
       setUpdateStatus("ready");
+      setUpdateInfo(info);
     });
 
     const removeErrorListener = window.electronAPI.onUpdateError((msg) => {
@@ -35,19 +44,38 @@ const UpdateNotification = () => {
       {updateStatus === "available" && (
         <div className="content">
           <span className="icon">📦</span>
-          <span>Versiune nouă disponibilă. Se descarcă...</span>
+          <span>
+            Versiune nouă disponibilă{updateInfo?.version ? ` (v${updateInfo.version})` : ""}. Se descarcă...
+          </span>
+        </div>
+      )}
+
+      {updateStatus === "downloading" && (
+        <div className="content">
+          <span className="icon">⬇️</span>
+          <div className="download-info">
+            <span>Se descarcă: {downloadProgress}%</span>
+            <div className="progress-bar">
+              <div 
+                className="progress-fill" 
+                style={{ width: `${downloadProgress}%` }}
+              />
+            </div>
+          </div>
         </div>
       )}
 
       {updateStatus === "ready" && (
         <div className="content">
           <span className="icon">✅</span>
-          <span>Update descărcat.</span>
+          <span>
+            Update descărcat{updateInfo?.version ? ` (v${updateInfo.version})` : ""}.
+          </span>
           <button
             onClick={() => window.electronAPI.installUpdate()}
             className="restart-btn"
           >
-            Repornește acum
+            Instalează și Restart
           </button>
         </div>
       )}
