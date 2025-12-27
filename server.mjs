@@ -52,14 +52,19 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Determinăm calea de stocare (Writable)
+// Determinăm calea de stocare (Writable)
 let storagePath;
+
 if (process.env.USER_DATA_PATH) {
   storagePath = path.join(process.env.USER_DATA_PATH, "Stocare");
+  console.log(`[SERVER] 🔒 SECURE Storage Path: ${storagePath}`);
+
   if (!existsSync(storagePath)) {
     try {
       // Creăm folderul Stocare în AppData
       const fs = await import("fs");
       fs.mkdirSync(storagePath, { recursive: true });
+      console.log(`[SERVER] 📁 Created Main Storage Directory: ${storagePath}`);
 
       // COPIEM DB INITIAL SAU MIGRAM DATE VECHI
       const templateDb = path.join(__dirname, "Stocare", "db.json");
@@ -92,7 +97,9 @@ if (process.env.USER_DATA_PATH) {
   }
 } else {
   // Fallback (Dev / Local)
+  // CRITICAL: Warn about local usage
   storagePath = path.join(__dirname, "Stocare");
+  console.warn(`[SERVER] ⚠️ USER_DATA_PATH not set. Using LOCAL path: ${storagePath}. This should NOT happen in Production!`);
 }
 
 // Determine image path (Unpacked logic)
@@ -103,14 +110,63 @@ const imagePath = existsSync(path.join(__dirname, "dist", "Imagini"))
 const app = express();
 const PORT = 3001;
 
+app.disable("x-powered-by");
+
 app.use(
   cors({
     origin: "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Confirm-Delete"],
   })
 );
-app.use("/static", express.static(storagePath));
+
+// Middleware for basic security headers
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  next();
+});
+
+// Middleware to protect sensitive files in /static
+const protectStatic = (req, res, next) => {
+  const forbiddenExtensions = [".json", ".env", ".log"];
+  const forbiddenDirs = ["/backups", "/.git"];
+
+  const normalizedUrl = req.url.toLowerCase();
+
+  // Block sensitive extensions
+  if (forbiddenExtensions.some(ext => normalizedUrl.endsWith(ext))) {
+    console.warn(`[SECURITY] Blocked access to sensitive file: ${req.url}`);
+    return res.status(403).send("Forbidden");
+  }
+
+  // Block sensitive directories
+  if (forbiddenDirs.some(dir => normalizedUrl.includes(dir))) {
+    console.warn(`[SECURITY] Blocked access to sensitive directory: ${req.url}`);
+    return res.status(403).send("Forbidden");
+  }
+
+  next();
+};
+
+// Middleware to require confirmation for DELETE operations
+const requireDeleteConfirmation = (req, res, next) => {
+  const confirmHeader = req.headers['x-confirm-delete'];
+
+  if (confirmHeader !== 'true') {
+    console.warn(`[SECURITY] DELETE blocked without confirmation: ${req.method} ${req.url}`);
+    return res.status(403).json({
+      error: "Confirmare necesară",
+      message: "Pentru ștergere, trimiteți header-ul X-Confirm-Delete: true"
+    });
+  }
+
+  console.log(`[SECURITY] DELETE confirmed: ${req.method} ${req.url}`);
+  next();
+};
+
+
+app.use("/static", protectStatic, express.static(storagePath));
 app.use("/Imagini", express.static(imagePath)); // ✅ Serve images
 app.use(express.json());
 
@@ -199,7 +255,7 @@ app.put("/api/materii-prime/:id", async (req, res) => {
   }
 });
 
-app.delete("/api/materii-prime/:id", async (req, res) => {
+app.delete("/api/materii-prime/:id", requireDeleteConfirmation, async (req, res) => {
   try {
     const rezultat = await stergeMaterial(req.params.id);
     if (rezultat) {
@@ -217,7 +273,7 @@ app.delete("/api/materii-prime/:id", async (req, res) => {
   }
 });
 
-app.delete("/api/materii-prime", async (req, res) => {
+app.delete("/api/materii-prime", requireDeleteConfirmation, async (req, res) => {
   try {
     const rezultat = await stergeToateMaterialele();
     if (rezultat) {

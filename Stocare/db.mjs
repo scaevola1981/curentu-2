@@ -9,12 +9,21 @@ import { DATA_PATH } from './config.mjs';
 
 // === CONFIGURARE CALE ===
 // === CONFIGURARE CALE ===
-// Prioritize USER_DATA_PATH from Electron (AppData), then config, then user Documents
+// Prioritize USER_DATA_PATH from Electron (AppData)
 const dbDir = process.env.USER_DATA_PATH
-  ? join(process.env.USER_DATA_PATH, "Stocare")
-  : (DATA_PATH || join(homedir(), "Documents", "CurentuApp"));
+    ? join(process.env.USER_DATA_PATH, "Stocare")
+    : (DATA_PATH || join(homedir(), "Documents", "CurentuApp"));
 
-if (!existsSync(dbDir)) mkdirSync(dbDir, { recursive: true });
+if (process.env.USER_DATA_PATH) {
+    console.log(`[DB] 🔒 Using SECURE path provided by Host: ${dbDir}`);
+} else {
+    console.warn(`[DB] ⚠️ Using FALLBACK path: ${dbDir} (Check if this is intended for PROD)`);
+}
+
+if (!existsSync(dbDir)) {
+    console.log(`[DB] 📁 Creating storage directory: ${dbDir}`);
+    mkdirSync(dbDir, { recursive: true });
+}
 
 const dbPath = join(dbDir, "db.json");
 const backupsDir = join(dbDir, "backups");
