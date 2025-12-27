@@ -33,6 +33,7 @@ const NavBar = () => {
     { to: "/ambalare", label: "Ambalare", icon: "📦" },
     { to: "/depozitare", label: "Depozitare", icon: "🏚️" },
     { to: "/rebuturi", label: "Rebuturi", icon: "🗑️" },
+    { to: "/setari", label: "Setări", icon: "⚙️" },
   ];
 
   return (
@@ -44,7 +45,7 @@ const NavBar = () => {
         </Link>
       </div>
 
-      <button 
+      <button
         className={`${styles.menuBtn} ${isMenuOpen ? styles.open : ""}`}
         onClick={() => setIsMenuOpen(!isMenuOpen)}
       >
@@ -54,8 +55,8 @@ const NavBar = () => {
       <ul className={`${styles.navList} ${isMenuOpen ? styles.show : ""}`}>
         {links.map((l) => (
           <li key={l.to}>
-            <Link 
-              to={l.to} 
+            <Link
+              to={l.to}
               className={`${styles.navLink} ${location.pathname === l.to ? styles.active : ""}`}
             >
               <span className={styles.icon}>{l.icon}</span>
@@ -65,7 +66,7 @@ const NavBar = () => {
         ))}
       </ul>
 
-      <div 
+      <div
         className={`${styles.overlay} ${isMenuOpen ? styles.show : ""}`}
         onClick={() => setIsMenuOpen(false)}
       />

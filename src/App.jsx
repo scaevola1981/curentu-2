@@ -11,6 +11,7 @@ import Ambalare from "./pages/Ambalare/Ambalare";
 import Depozitare from "./pages/Depozitare/Depozitare";
 import Rebuturi from "./pages/Rebuturi/Rebuturi";
 
+import Setari from "./pages/Setari/Setari";
 import "./index.css";
 
 const App = () => {
@@ -52,6 +53,8 @@ const App = () => {
           <Route path="/ambalare" element={<Ambalare />} />
           <Route path="/depozitare" element={<Depozitare />} />
           <Route path="/rebuturi" element={<Rebuturi />} />
+          <Route path="/rebuturi" element={<Rebuturi />} />
+          <Route path="/setari" element={<Setari />} />
         </Routes>
       </div>
     </>

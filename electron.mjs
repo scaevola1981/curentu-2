@@ -26,6 +26,12 @@ autoUpdater.autoInstallOnAppQuit = false;
 function setupAutoUpdater() {
   console.log("🔍 Verific update-uri...");
 
+  // FORCE DEV UPDATES (User Request)
+  if (!app.isPackaged) {
+    autoUpdater.forceDevUpdateConfig = true;
+    console.log("⚠️ Dev Mode: Force Update Config ENABLED");
+  }
+
   autoUpdater.on("update-available", (info) => {
     console.log("📦 Update disponibil:", info.version);
     mainWindow?.webContents.send("update_available", {
@@ -62,6 +68,7 @@ function setupAutoUpdater() {
 
   autoUpdater.on("update-not-available", (info) => {
     console.log("✓ Nu există update-uri disponibile. Versiune curentă:", info.version);
+    mainWindow?.webContents.send("update_not_available", info);
   });
 
   autoUpdater.checkForUpdatesAndNotify();
@@ -107,10 +114,10 @@ async function startServer() {
     console.log(msg);
   }
 
-  try {  
-const serverPath = app.isPackaged
-  ? path.join(process.resourcesPath, "app.asar.unpacked", "server.mjs")
-  : path.join(__dirname, "server.mjs");
+  try {
+    const serverPath = app.isPackaged
+      ? path.join(process.resourcesPath, "app.asar.unpacked", "server.mjs")
+      : path.join(__dirname, "server.mjs");
     log(`🔍 Server path: ${serverPath}`);
     log(`🔍 File exists: ${existsSync(serverPath)}`);
 
@@ -213,6 +220,16 @@ async function createWindow() {
 // 🔧 EVENIMENTE APLICAȚIE
 // ==========================================
 app.whenReady().then(createWindow);
+
+// =============================
+// 📢 IPC HANDLERS
+// =============================
+ipcMain.handle("get-app-version", () => app.getVersion());
+
+ipcMain.handle("check-for-updates", async () => {
+  console.log("📢 Manual update check requested");
+  return autoUpdater.checkForUpdates();
+});
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {

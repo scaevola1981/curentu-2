@@ -6,6 +6,10 @@
   "type": "module",
   "main": "electron.mjs",
   "author": "Curentu Team",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/scaevola1981/curentu-2"
+  },
   "scripts": {
     "dev": "vite",
     "build:react": "vite build",

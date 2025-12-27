@@ -16,9 +16,10 @@ const retetaImages = {
 
 const API_URL = "http://localhost:3001/api";
 
+const SERVER_URL = "http://localhost:3001";
+
 const Productie = () => {
   const [retete, setRetete] = useState([]);
-  const [stocMateriale, setStocMateriale] = useState([]);
   const [fermentatoare, setFermentatoare] = useState([]);
   const [selectedReteta, setSelectedReteta] = useState(null);
   const [selectedFermentator, setSelectedFermentator] = useState(null);
@@ -36,7 +37,7 @@ const Productie = () => {
   const step4Ref = useRef(null);
   const step5Ref = useRef(null);
 
-  // --- Load Rețete ---
+  // --- Load Data ---
   const loadRetete = useCallback(async () => {
     try {
       const res = await fetch(`${API_URL}/retete-bere`);
@@ -48,31 +49,6 @@ const Productie = () => {
     }
   }, []);
 
-  const normalizeName = (name) => {
-    return name
-      .toLowerCase()
-      .replace(/\./g, "")
-      .replace(/-/g, "")
-      .replace(/fermentis|drojdie|us|u\.s/g, "")
-      .replace(/\s+/g, "")
-      .trim();
-  };
-
-  // --- Load Materii Prime ---
-  const loadMateriale = useCallback(async () => {
-    try {
-      const res = await fetch(`${API_URL}/materii-prime`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      setStocMateriale(
-        data.map((m) => ({ ...m, cantitate: Number(m.cantitate) }))
-      );
-    } catch (err) {
-      setError("Eroare la încărcarea materialelor: " + err.message);
-    }
-  }, []);
-
-  // --- Load Fermentatoare ---
   const loadFermentatoare = useCallback(async () => {
     try {
       const res = await fetch(`${API_URL}/fermentatoare`);
@@ -84,7 +60,7 @@ const Productie = () => {
     }
   }, []);
 
-  // --- Selectări ---
+  // --- Handlers ---
   const selectReteta = (r) => {
     setSelectedReteta(r);
     setSelectedFermentator(null);
@@ -113,9 +89,21 @@ const Productie = () => {
     setSuccess("");
   };
 
-  // --- Verifică stoc ---
-  // --- Verifică stoc ---
-  // --- Verifică stoc (BACKEND) ---
+  const resetVerificare = () => {
+    setConsumMateriale([]);
+    setMaterialeInsuficiente([]);
+    setCanProduce(false);
+  };
+
+  const resetTot = () => {
+    setSelectedReteta(null);
+    setSelectedFermentator(null);
+    setCantitateProdusa("");
+    setStocVerificat(false);
+    resetVerificare();
+  };
+
+  // --- Backend Logic ---
   const verificaStoc = useCallback(async () => {
     if (!selectedReteta || !selectedFermentator || !cantitateProdusa) {
       setError("Completați toți pașii înainte de verificare!");
@@ -146,12 +134,11 @@ const Productie = () => {
 
       const { canProduce, missing, details } = await res.json();
 
-      // Mapping pentru UI
       const consum = details.map((d) => ({
         denumire: d.nume,
         cantitate: d.necesarOriginal,
         unitate: d.unitateNecesar,
-        disponibil: d.disponibilOriginal, // Adăugăm info pt UI
+        disponibil: d.disponibilOriginal,
         unitateStoc: d.unitateStoc
       }));
 
@@ -177,7 +164,6 @@ const Productie = () => {
     }
   }, [selectedReteta, selectedFermentator, cantitateProdusa]);
 
-  // --- Confirmare producție (BACKEND) ---
   const confirmaProductia = useCallback(async () => {
     if (!canProduce)
       return setError("Nu se poate produce: ingrediente insuficiente.");
@@ -201,7 +187,7 @@ const Productie = () => {
       setSuccess("Producție confirmată și transferată în fermentator!");
       setError("");
       resetTot();
-      await loadFermentatoare(); // Reload fermenters state
+      await loadFermentatoare();
     } catch (err) {
       setError("Eroare la confirmarea producției: " + err.message);
     }
@@ -213,21 +199,7 @@ const Productie = () => {
     loadFermentatoare,
   ]);
 
-  const resetVerificare = () => {
-    setConsumMateriale([]);
-    setMaterialeInsuficiente([]);
-    setCanProduce(false);
-  };
-
-  const resetTot = () => {
-    setSelectedReteta(null);
-    setSelectedFermentator(null);
-    setCantitateProdusa("");
-    setStocVerificat(false);
-    resetVerificare();
-  };
-
-  // --- Auto scroll pe pași ---
+  // --- Effects ---
   useEffect(() => {
     const scrollTo = (ref) =>
       ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -243,33 +215,29 @@ const Productie = () => {
     canProduce,
   ]);
 
-  // --- Init ---
   useEffect(() => {
     loadRetete();
     loadFermentatoare();
-    // Nu mai încărcăm tot stocul pe client (loadMateriale removed)
   }, [loadRetete, loadFermentatoare]);
+
+  // FIX: Helper for images
+  const getImgUrl = (path) => {
+    if (!path) return "";
+    if (path.startsWith("http")) return path;
+    return `${SERVER_URL}${path}`;
+  };
 
   return (
     <>
       <NavBar />
       <div className={styles.container}>
-        {/* 🔹 Modals pentru feedback */}
+        {/* ... (Error/Success modals) */}
+
         {error && (
-          <Modal
-            title="Eroare"
-            message={error}
-            type="error"
-            onClose={() => setError("")}
-          />
+          <Modal title="Eroare" message={error} type="error" onClose={() => setError("")} />
         )}
         {success && (
-          <Modal
-            title="Succes"
-            message={success}
-            type="success"
-            onClose={() => setSuccess("")}
-          />
+          <Modal title="Succes" message={success} type="success" onClose={() => setSuccess("")} />
         )}
 
         <h1>Planificare Producție</h1>
@@ -283,26 +251,21 @@ const Productie = () => {
                 key={f.id}
                 className={`${f.ocupat ? styles.ocupat : styles.liber} ${styles.fermentatorCard}`}
                 style={{
-                  backgroundImage: `url(${f.imagine})`,
+                  // FIX: Use Server URL
+                  backgroundImage: `url(${getImgUrl(f.imagine)})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
               >
+                {/* ... content ... */}
                 <div className={styles.fermentatorCardOverlay}>
                   <h3>{f.nume}</h3>
                   <p>Capacitate: {f.capacitate}L</p>
                   {f.ocupat ? (
                     <>
-                      <p>
-                        <strong>Rețetă:</strong> {f.reteta}
-                      </p>
-                      <p>
-                        <strong>Cantitate:</strong> {f.cantitate}L
-                      </p>
-                      <p>
-                        <strong>Data:</strong>{" "}
-                        {new Date(f.dataInceput).toLocaleDateString()}
-                      </p>
+                      <p><strong>Rețetă:</strong> {f.reteta}</p>
+                      <p><strong>Cantitate:</strong> {f.cantitate}L</p>
+                      <p><strong>Data:</strong> {new Date(f.dataInceput).toLocaleDateString()}</p>
                     </>
                   ) : (
                     <p className={styles.statusLiber}>Disponibil</p>
@@ -326,7 +289,8 @@ const Productie = () => {
                   className={`${selectedReteta?.id === r.id ? styles.selected : ""} ${styles.retetaCard}`}
                   onClick={() => selectReteta(r)}
                   style={{
-                    backgroundImage: `url(${retetaImages[r.denumire] || "/Imagini/adaptor.png"})`,
+                    // FIX: Use Server URL for recipes too
+                    backgroundImage: `url(${getImgUrl(retetaImages[r.denumire] || "/Imagini/adaptor.png")})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                   }}
@@ -335,9 +299,7 @@ const Productie = () => {
                     <h3>{r.denumire}</h3>
                     <p>Tip: {r.tip}</p>
                     <p>Durată: {r.durata} zile</p>
-                    <p>
-                      Rezultat: {r.rezultat.cantitate} {r.rezultat.unitate}
-                    </p>
+                    <p>Rezultat: {r.rezultat.cantitate} {r.rezultat.unitate}</p>
                   </div>
                 </div>
               ))
@@ -358,7 +320,8 @@ const Productie = () => {
                     className={`${selectedFermentator?.id === f.id ? styles.selectedFermentator : ""} ${styles.fermentatorSelectCard}`}
                     onClick={() => selectFermentator(f)}
                     style={{
-                      backgroundImage: `url(${f.imagine})`,
+                      // FIX: Use Server URL
+                      backgroundImage: `url(${getImgUrl(f.imagine)})`,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                     }}

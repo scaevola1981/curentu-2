@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from "electron";
+const { contextBridge, ipcRenderer } = require("electron");
 
 // Wrapper sigur pentru evenimente IPC (fără memory leaks)
 const createListener = (channel) => (callback) => {
@@ -20,6 +20,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   onUpdateAvailable: createListener("update_available"),
   onDownloadProgress: createListener("download_progress"),
   onUpdateReady: createListener("update_ready"),
+  onUpdateNotAvailable: createListener("update_not_available"), // Missing listener added
   onUpdateError: createListener("update_error"),
   installUpdate: () => ipcRenderer.send("install_update"),
 
@@ -27,13 +28,12 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // ℹ️ INFORMAȚII SISTEM
   // ============================
   platform: process.platform,
-  isDev: process.env.NODE_ENV === "development",
 
   // TEST UPDATER 🔥
-  testUpdate: (type) => ipcRenderer.send("test-update", type)
+  testUpdate: (type) => ipcRenderer.send("test-update", type),
+
+  // REAL UPDATE CHECK
+  checkForUpdates: () => ipcRenderer.invoke("check-for-updates")
 });
 
-console.log("🔗 Preload OK");
-
-
-console.log("🛡️ Preload loaded (contextIsolation active)");
+console.log("🔗 Preload OK (CommonJS)");

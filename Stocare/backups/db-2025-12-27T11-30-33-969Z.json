@@ -105,9 +105,9 @@
       "id": 1,
       "nume": "Fermentator 1",
       "capacitate": 1000,
-      "ocupat": false,
+      "ocupat": true,
       "reteta": "USB AMPER ALE - CB 03",
-      "cantitate": 0,
+      "cantitate": 900,
       "dataInceput": "2025-11-14T20:00:42.681Z",
       "imagine": "/Imagini/fermentator.png"
     },
@@ -636,33 +636,6 @@
         }
       ],
       "dataCreare": "2025-11-15T16:51:29.320Z"
-    },
-    {
-      "id": 23,
-      "fermentatorId": 1,
-      "reteta": "USB AMPER ALE - CB 03",
-      "cantitate": 460,
-      "unitate": "litri",
-      "dataInceput": "2025-11-14T20:00:42.681Z",
-      "dataAmbalare": "2025-12-27T11:49:00.543Z",
-      "packagingType": "keguri",
-      "bottleSize": null,
-      "boxType": null,
-      "sticlePerCutie": null,
-      "cantitateSticle": null,
-      "cantitateCutii": null,
-      "sticleLibere": null,
-      "descriereAmbalare": null,
-      "kegSize": "Keg 40l",
-      "materialsUsed": [
-        {
-          "denumire": "Keg 40l",
-          "cantitate": 23,
-          "unitate": "buc"
-        }
-      ],
-      "dataCreare": "2025-12-27T11:49:00.544Z",
-      "dataActualizare": "2025-12-27T11:49:33.452Z"
     }
   ],
   "materialeAmbalare": [
@@ -747,7 +720,7 @@
       "id": 8,
       "denumire": "Keg 40l",
       "tip": "keg",
-      "cantitate": 41,
+      "cantitate": 64,
       "unitate": "buc",
       "producator": "Generic Kegs",
       "codProdus": "KEG-004",
@@ -971,20 +944,6 @@
       "observatii": "",
       "detaliiIesire": "90 keguri (900.00L)",
       "createdAt": "2025-12-27T09:23:38.863Z"
-    },
-    {
-      "id": 23,
-      "lotId": "23",
-      "reteta": "USB AMPER ALE - CB 03",
-      "cantitate": "440.00",
-      "numarUnitatiScoase": 11,
-      "ambalaj": "keguri",
-      "motiv": "vanzare",
-      "dataIesire": "2025-12-27T11:49:33.440Z",
-      "utilizator": "Administrator",
-      "observatii": "",
-      "detaliiIesire": "11 keguri (440.00L)",
-      "createdAt": "2025-12-27T11:49:33.443Z"
     }
   ]
 }

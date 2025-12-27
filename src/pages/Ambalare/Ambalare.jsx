@@ -4,6 +4,7 @@ import styles from "./Ambalare.module.css";
 import Modal from "../../Componente/Modal";
 
 const API_URL = "http://localhost:3001/api";
+const SERVER_URL = "http://localhost:3001";
 
 const Ambalare = () => {
   const [materiale, setMateriale] = useState([]);
@@ -91,8 +92,7 @@ const Ambalare = () => {
       if (!res.ok) {
         const errorText = await res.text();
         throw new Error(
-          `Eroare la actualizare: ${res.status} - ${
-            errorText || "Resursa nu a fost găsită"
+          `Eroare la actualizare: ${res.status} - ${errorText || "Resursa nu a fost găsită"
           }`
         );
       }
@@ -142,8 +142,7 @@ const Ambalare = () => {
       if (!res.ok) {
         const errorText = await res.text();
         throw new Error(
-          `Eroare la ${isEditing ? "actualizare" : "adăugare"} material: ${
-            res.status
+          `Eroare la ${isEditing ? "actualizare" : "adăugare"} material: ${res.status
           } - ${errorText || "Resursa nu a fost găsită"}`
         );
       }
@@ -152,8 +151,8 @@ const Ambalare = () => {
       setMateriale((prev) =>
         isEditing
           ? prev.map((m) =>
-              m.id === parseInt(editId) ? { ...m, ...updatedMaterial } : m
-            )
+            m.id === parseInt(editId) ? { ...m, ...updatedMaterial } : m
+          )
           : [...prev, updatedMaterial]
       );
 
@@ -364,12 +363,12 @@ const Ambalare = () => {
     if (insuficiente.length > 0) {
       setError(
         `Materiale insuficiente pentru ${cantitateDeAmbalatNum}L:\n` +
-          insuficiente
-            .map(
-              (amb) =>
-                `${amb.denumire}: Necesare ${amb.cantitateNecesara} ${amb.unitate}, Disponibile ${amb.cantitateDisponibila} ${amb.unitate}`
-            )
-            .join("\n")
+        insuficiente
+          .map(
+            (amb) =>
+              `${amb.denumire}: Necesare ${amb.cantitateNecesara} ${amb.unitate}, Disponibile ${amb.cantitateDisponibila} ${amb.unitate}`
+          )
+          .join("\n")
       );
     } else {
       setError("Toate materialele necesare sunt disponibile în stoc!");
@@ -415,12 +414,12 @@ const Ambalare = () => {
     if (insuficiente.length > 0 && !force) {
       setError(
         `Materiale insuficiente pentru ${cantitateDeAmbalatNum}L:\n` +
-          insuficiente
-            .map(
-              (amb) =>
-                `${amb.denumire}: Necesare ${amb.cantitateNecesara} ${amb.unitate}, Disponibile ${amb.cantitateDisponibila} ${amb.unitate}`
-            )
-            .join("\n")
+        insuficiente
+          .map(
+            (amb) =>
+              `${amb.denumire}: Necesare ${amb.cantitateNecesara} ${amb.unitate}, Disponibile ${amb.cantitateDisponibila} ${amb.unitate}`
+          )
+          .join("\n")
       );
       return;
     }
@@ -474,12 +473,12 @@ const Ambalare = () => {
           boxType === "6 sticle"
             ? 6
             : boxType === "12 sticle"
-            ? 12
-            : boxType === "20 sticle"
-            ? 20
-            : boxType === "24 sticle"
-            ? 24
-            : 20;
+              ? 12
+              : boxType === "20 sticle"
+                ? 20
+                : boxType === "24 sticle"
+                  ? 24
+                  : 20;
 
         cantitateSticle = Math.floor(cantitateDeAmbalatNum / bottleCapacity);
         cantitateCutii = Math.floor(cantitateSticle / sticlePerCutie);
@@ -541,10 +540,9 @@ const Ambalare = () => {
       setKegSize("");
       setAmbalareInsuficiente([]);
       setError(
-        `Ambalare realizată cu succes! ${cantitateDeAmbalatNum}L au fost ambalate.${
-          remainingQuantity > 0
-            ? ` Au rămas ${remainingQuantity}L în fermentator.`
-            : ""
+        `Ambalare realizată cu succes! ${cantitateDeAmbalatNum}L au fost ambalate.${remainingQuantity > 0
+          ? ` Au rămas ${remainingQuantity}L în fermentator.`
+          : ""
         }`
       );
     } catch (error) {
@@ -589,15 +587,14 @@ const Ambalare = () => {
                 fermentatoare.map((fermentator) => (
                   <div
                     key={fermentator.id}
-                    className={`${styles.fermentatorCard} ${
-                      selectedFermentator?.id === fermentator.id
-                        ? styles.selected
-                        : ""
-                    }`}
+                    className={`${styles.fermentatorCard} ${selectedFermentator?.id === fermentator.id
+                      ? styles.selected
+                      : ""
+                      }`}
                     onClick={() => setSelectedFermentator(fermentator)}
                     style={{
                       backgroundImage: fermentator.imagine
-                        ? `url(${fermentator.imagine})`
+                        ? `url(${SERVER_URL}${fermentator.imagine})`
                         : "none",
                       backgroundSize: "cover",
                       backgroundPosition: "center",
