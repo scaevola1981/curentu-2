@@ -94,29 +94,59 @@ const defaultData = {
   rebuturi: [],
 };
 
+const safeBackupsDir = join(homedir(), "Documents", "Curentu_Safe_Backups");
+
 // === 🔹 SYSTEM BACKUP ===
 function performBackup() {
   try {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+
+    // 1. Internal Backup (App Data)
     if (!existsSync(backupsDir)) {
       mkdirSync(backupsDir, { recursive: true });
     }
 
     if (existsSync(dbPath)) {
-      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
       const backupFile = join(backupsDir, `db-${timestamp}.json`);
       copyFileSync(dbPath, backupFile);
-      console.log(`[🛡️] Backup creat: ${backupFile}`);
+      console.log(`[🛡️] Backup intern creat: ${backupFile}`);
 
+      // Internal Rotation (Keep last 30)
       const files = readdirSync(backupsDir)
         .map(f => ({ name: f, path: join(backupsDir, f), time: statSync(join(backupsDir, f)).mtime.getTime() }))
-        .sort((a, b) => b.time - a.time); // Newest first
+        .sort((a, b) => b.time - a.time);
 
       if (files.length > 30) {
         files.slice(30).forEach(file => {
           try {
             unlinkSync(file.path);
           } catch (e) {
-            console.error(`Eroare stergere backup vechi: ${e.message}`);
+            console.error(`Eroare stergere backup intern vechi: ${e.message}`);
+          }
+        });
+      }
+
+      // 2. EXTERNAL SAFE BACKUP (My Documents - Survives Uninstall)
+      if (!existsSync(safeBackupsDir)) {
+        mkdirSync(safeBackupsDir, { recursive: true });
+      }
+
+      const safeBackupFile = join(safeBackupsDir, `db-${timestamp}.json`);
+      copyFileSync(dbPath, safeBackupFile);
+      console.log(`[🏰] SAFE Backup extern creat: ${safeBackupFile}`);
+
+      // External Rotation (Keep last 50)
+      const safeFiles = readdirSync(safeBackupsDir)
+        .filter(f => f.endsWith(".json"))
+        .map(f => ({ name: f, path: join(safeBackupsDir, f), time: statSync(join(safeBackupsDir, f)).mtime.getTime() }))
+        .sort((a, b) => b.time - a.time);
+
+      if (safeFiles.length > 50) {
+        safeFiles.slice(50).forEach(file => {
+          try {
+            unlinkSync(file.path);
+          } catch (e) {
+            console.error(`Eroare stergere safe backup vechi: ${e.message}`);
           }
         });
       }

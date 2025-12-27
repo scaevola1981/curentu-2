@@ -695,7 +695,7 @@ initializeDb().then(() => {
     }
   });
 
-  app.listen(PORT, () => {
-    console.log(`✅ Serverul rulează pe http://localhost:${PORT}`);
+  app.listen(PORT, "127.0.0.1", () => {
+    console.log(`✅ Serverul rulează pe http://127.0.0.1:${PORT} (Securizat: Localhost Only)`);
   });
 });
