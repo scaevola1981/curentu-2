@@ -61,16 +61,33 @@ if (process.env.USER_DATA_PATH) {
       const fs = await import("fs");
       fs.mkdirSync(storagePath, { recursive: true });
 
-      // COPIEM DB INITIAL (TEMPLATE) DACĂ NU EXISTĂ
+      // COPIEM DB INITIAL SAU MIGRAM DATE VECHI
       const templateDb = path.join(__dirname, "Stocare", "db.json");
       const targetDb = path.join(storagePath, "db.json");
 
-      if (fs.existsSync(templateDb) && !fs.existsSync(targetDb)) {
-        console.log(`[INIT] Copiere DB template -> ${targetDb}`);
-        fs.copyFileSync(templateDb, targetDb);
+      if (!fs.existsSync(targetDb)) {
+        // 1. Încercăm migrare din Documents (Legacy v1.3.1)
+        try {
+          const os = await import("os");
+          const legacyDb = path.join(os.homedir(), "Documents", "CurentuApp", "db.json");
+
+          if (fs.existsSync(legacyDb)) {
+            console.log(`[INIT] 🔄 DETECTAT DATE VECHI (Legacy): ${legacyDb}`);
+            console.log(`[INIT] 🔄 Migrare automată către: ${targetDb}`);
+            fs.copyFileSync(legacyDb, targetDb);
+          } else if (fs.existsSync(templateDb)) {
+            // 2. Fallback: Template
+            console.log(`[INIT] ✨ DB Nou -> Copiere Template.`);
+            fs.copyFileSync(templateDb, targetDb);
+          }
+        } catch (migErr) {
+          console.error("[INIT] ⚠️ Eroare migrare:", migErr);
+          // Fallback last resort
+          if (fs.existsSync(templateDb)) fs.copyFileSync(templateDb, targetDb);
+        }
       }
     } catch (e) {
-      console.error("[INIT] Eroare la inițializare stocare:", e);
+      console.error("[INIT] 💥 Eroare la inițializare stocare:", e);
     }
   }
 } else {
