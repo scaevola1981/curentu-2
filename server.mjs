@@ -50,9 +50,35 @@ import { initializeDb } from "./Stocare/db.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const storagePath = path.join(__dirname, "Stocare");
 
-// Determine image path based on environment
+// Determinăm calea de stocare (Writable)
+let storagePath;
+if (process.env.USER_DATA_PATH) {
+  storagePath = path.join(process.env.USER_DATA_PATH, "Stocare");
+  if (!existsSync(storagePath)) {
+    try {
+      // Creăm folderul Stocare în AppData
+      const fs = await import("fs");
+      fs.mkdirSync(storagePath, { recursive: true });
+
+      // COPIEM DB INITIAL (TEMPLATE) DACĂ NU EXISTĂ
+      const templateDb = path.join(__dirname, "Stocare", "db.json");
+      const targetDb = path.join(storagePath, "db.json");
+
+      if (fs.existsSync(templateDb) && !fs.existsSync(targetDb)) {
+        console.log(`[INIT] Copiere DB template -> ${targetDb}`);
+        fs.copyFileSync(templateDb, targetDb);
+      }
+    } catch (e) {
+      console.error("[INIT] Eroare la inițializare stocare:", e);
+    }
+  }
+} else {
+  // Fallback (Dev / Local)
+  storagePath = path.join(__dirname, "Stocare");
+}
+
+// Determine image path (Unpacked logic)
 const imagePath = existsSync(path.join(__dirname, "dist", "Imagini"))
   ? path.join(__dirname, "dist", "Imagini")
   : path.join(__dirname, "public", "Imagini");

@@ -8,7 +8,12 @@ import { homedir } from 'os';
 import { DATA_PATH } from './config.mjs';
 
 // === CONFIGURARE CALE ===
-const dbDir = DATA_PATH || join(homedir(), "Documents", "CurentuApp");
+// === CONFIGURARE CALE ===
+// Prioritize USER_DATA_PATH from Electron (AppData), then config, then user Documents
+const dbDir = process.env.USER_DATA_PATH
+  ? join(process.env.USER_DATA_PATH, "Stocare")
+  : (DATA_PATH || join(homedir(), "Documents", "CurentuApp"));
+
 if (!existsSync(dbDir)) mkdirSync(dbDir, { recursive: true });
 
 const dbPath = join(dbDir, "db.json");

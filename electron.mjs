@@ -161,6 +161,7 @@ function getIconPath() {
 
 async function createWindow() {
   // Pornim serverul ÎNAINTE de fereastră
+  process.env.USER_DATA_PATH = app.getPath("userData");
   await startServer();
 
   mainWindow = new BrowserWindow({
