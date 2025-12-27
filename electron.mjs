@@ -71,7 +71,9 @@ function setupAutoUpdater() {
     mainWindow?.webContents.send("update_not_available", info);
   });
 
-  autoUpdater.checkForUpdatesAndNotify();
+  // DISABLED: Prevents 404 errors on Mac when update server unavailable
+  // autoUpdater.checkForUpdatesAndNotify();
+  console.log("⚠️ Auto-update checking is DISABLED for production stability");
 }
 
 ipcMain.on("install_update", () => {

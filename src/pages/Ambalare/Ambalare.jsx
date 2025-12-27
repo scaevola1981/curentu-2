@@ -3,8 +3,8 @@ import NavBar from "../../Componente/NavBar/NavBar";
 import styles from "./Ambalare.module.css";
 import Modal from "../../Componente/Modal";
 
-const API_URL = "http://localhost:3001/api";
-const SERVER_URL = "http://localhost:3001";
+const API_URL = "http://127.0.0.1:3001/api";
+const SERVER_URL = "http://127.0.0.1:3001";
 
 const Ambalare = () => {
   const [materiale, setMateriale] = useState([]);

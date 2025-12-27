@@ -55,9 +55,19 @@ const __dirname = dirname(__filename);
 // Determinăm calea de stocare (Writable)
 let storagePath;
 
-if (process.env.USER_DATA_PATH) {
+// Check if running in development mode
+// Dev mode = USER_DATA_PATH not set OR explicitly in development environment
+const isDev = !process.env.USER_DATA_PATH || process.env.NODE_ENV === 'development';
+
+if (isDev) {
+  // DEV MODE: Use local Stocare folder directly
+  storagePath = path.join(__dirname, "Stocare");
+  console.log(`[SERVER] 🔧 DEV MODE - Using local storage: ${storagePath}`);
+  console.log(`[SERVER] 📂 Data will be read from ./Stocare folder`);
+} else {
+  // PRODUCTION MODE: Use USER_DATA_PATH
   storagePath = path.join(process.env.USER_DATA_PATH, "Stocare");
-  console.log(`[SERVER] 🔒 SECURE Storage Path: ${storagePath}`);
+  console.log(`[SERVER] 🔒 PROD MODE - Using secure storage: ${storagePath}`);
 
   if (!existsSync(storagePath)) {
     try {
@@ -95,11 +105,6 @@ if (process.env.USER_DATA_PATH) {
       console.error("[INIT] 💥 Eroare la inițializare stocare:", e);
     }
   }
-} else {
-  // Fallback (Dev / Local)
-  // CRITICAL: Warn about local usage
-  storagePath = path.join(__dirname, "Stocare");
-  console.warn(`[SERVER] ⚠️ USER_DATA_PATH not set. Using LOCAL path: ${storagePath}. This should NOT happen in Production!`);
 }
 
 // Determine image path (Unpacked logic)
@@ -200,6 +205,7 @@ function valideazaMaterial(material) {
 app.get("/api/materii-prime", async (req, res) => {
   try {
     const materii = await getMateriiPrime();
+    console.log("Răspuns GET /api/materii-prime:", materii);
     res.json(materii);
   } catch (error) {
     console.error(

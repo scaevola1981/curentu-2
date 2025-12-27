@@ -3,7 +3,7 @@ import styles from "./MateriiPrime.module.css";
 import NavBar from "../../Componente/NavBar/NavBar";
 
 const UNITATI = ["kg", "g", "l", "ml", "buc", "pachete", "tone", "m", "m²", "m³"];
-const API_URL = "http://localhost:3001/api/materii-prime";
+const API_URL = "http://127.0.0.1:3001/api/materii-prime";
 
 const MateriiPrime = () => {
   const [materii, setMaterii] = useState([]);

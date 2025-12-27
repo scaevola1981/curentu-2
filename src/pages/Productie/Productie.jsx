@@ -14,9 +14,9 @@ const retetaImages = {
   "USB Amper Ale": "/Imagini/usb-amper-ale.png",
 };
 
-const API_URL = "http://localhost:3001/api";
+const API_URL = "http://127.0.0.1:3001/api";
 
-const SERVER_URL = "http://localhost:3001";
+const SERVER_URL = "http://127.0.0.1:3001";
 
 const Productie = () => {
   const [retete, setRetete] = useState([]);

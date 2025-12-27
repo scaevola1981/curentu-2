@@ -5,24 +5,28 @@ import { JSONFile } from "lowdb/node";
 import { join } from "path";
 import { existsSync, mkdirSync, copyFileSync, readdirSync, statSync, unlinkSync, readFileSync } from "fs";
 import { homedir } from 'os';
-import { DATA_PATH } from './config.mjs';
 
 // === CONFIGURARE CALE ===
 // === CONFIGURARE CALE ===
-// Prioritize USER_DATA_PATH from Electron (AppData)
-const dbDir = process.env.USER_DATA_PATH
-    ? join(process.env.USER_DATA_PATH, "Stocare")
-    : (DATA_PATH || join(homedir(), "Documents", "CurentuApp"));
+// Match server.mjs logic: dev mode uses local, production uses USER_DATA_PATH
+const isDev = !process.env.USER_DATA_PATH || process.env.NODE_ENV === 'development';
 
-if (process.env.USER_DATA_PATH) {
-    console.log(`[DB] 🔒 Using SECURE path provided by Host: ${dbDir}`);
+let dbDir;
+if (isDev) {
+  // DEV MODE: Use local Stocare relative to project root
+  // We need to go up one level from Stocare/ to get to project root
+  const currentDir = new URL('.', import.meta.url).pathname;
+  dbDir = join(currentDir); // This is already in Stocare folder
+  console.log(`[DB] 🔧 DEV MODE - Using local path: ${dbDir}`);
 } else {
-    console.warn(`[DB] ⚠️ Using FALLBACK path: ${dbDir} (Check if this is intended for PROD)`);
+  // PRODUCTION MODE: Use USER_DATA_PATH
+  dbDir = join(process.env.USER_DATA_PATH, "Stocare");
+  console.log(`[DB] 🔒 PROD MODE - Using secure path: ${dbDir}`);
 }
 
 if (!existsSync(dbDir)) {
-    console.log(`[DB] 📁 Creating storage directory: ${dbDir}`);
-    mkdirSync(dbDir, { recursive: true });
+  console.log(`[DB] 📁 Creating storage directory: ${dbDir}`);
+  mkdirSync(dbDir, { recursive: true });
 }
 
 const dbPath = join(dbDir, "db.json");

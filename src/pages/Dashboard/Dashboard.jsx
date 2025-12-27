@@ -11,7 +11,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-const API_URL = 'http://localhost:3001';
+const API_URL = 'http://127.0.0.1:3001';
 
 const Dashboard = () => {
   const [summary, setSummary] = useState({

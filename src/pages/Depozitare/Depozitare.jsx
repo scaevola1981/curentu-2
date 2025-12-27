@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import NavBar from "../../Componente/NavBar/NavBar.jsx";
 import styles from "./Depozitare.module.css";
 
-const API_URL = "http://localhost:3001";
+const API_URL = "http://127.0.0.1:3001";
 const LOT_UPDATE_ENDPOINT = "/api/ambalare";
 
 // helper pentru a determina câte sticle are o cutie
