@@ -3,280 +3,90 @@
 import { Low } from "lowdb";
 import { JSONFile } from "lowdb/node";
 import { join } from "path";
-import { homedir } from "os";
-import { existsSync, mkdirSync } from "fs";
+import { existsSync, mkdirSync, copyFileSync, readdirSync, statSync, unlinkSync, readFileSync } from "fs";
+import { homedir } from 'os';
 import { DATA_PATH } from './config.mjs';
 
 // === CONFIGURARE CALE ===
-const dbDir = join(homedir(), "Documents", "CurentuApp");
+const dbDir = DATA_PATH || join(homedir(), "Documents", "CurentuApp");
 if (!existsSync(dbDir)) mkdirSync(dbDir, { recursive: true });
 
 const dbPath = join(dbDir, "db.json");
+const backupsDir = join(dbDir, "backups");
+
 console.log(`[📦] Baza de date activă: ${dbPath}`);
 
-// === 🔹 INGREDIENTE din rețetele CURENTU’ ===
-const materiiPrimeInitiale = [
-  // --- Malțuri ---
-  {
-    id: 1,
-    denumire: "Malț Pale Ale",
-    tip: "malt",
-    cantitate: 0,
-    unitate: "kg",
-    producator: "Weyermann",
-    codProdus: "MALT-PALEALE",
-    subcategorie: "Malt de bază",
-  },
-  {
-    id: 2,
-    denumire: "Malț Pilsner",
-    tip: "malt",
-    cantitate: 0,
-    unitate: "kg",
-    producator: "Weyermann",
-    codProdus: "MALT-PILS",
-    subcategorie: "Malt de bază",
-  },
+// === 🔹 STRUCTURI INITIALE CORECTE ===
 
-  // --- Hamei ---
-  {
-    id: 3,
-    denumire: "Hamei Citra",
-    tip: "hamei",
-    cantitate: 0,
-    unitate: "kg",
-    producator: "Yakima Chief",
-    codProdus: "HOP-CITRA",
-    subcategorie: "Aromatic",
-  },
-  {
-    id: 4,
-    denumire: "Hamei Mosaic",
-    tip: "hamei",
-    cantitate: 0,
-    unitate: "kg",
-    producator: "Yakima Chief",
-    codProdus: "HOP-MOSAIC",
-    subcategorie: "Aromatic",
-  },
-  {
-    id: 5,
-    denumire: "Hamei Saaz",
-    tip: "hamei",
-    cantitate: 0,
-    unitate: "kg",
-    producator: "Czech Hops",
-    codProdus: "HOP-SAAZ",
-    subcategorie: "Tradițional",
-  },
-
-  // --- Drojdii ---
-  {
-    id: 6,
-    denumire: "Drojdie US 05",
-    tip: "drojdie",
-    cantitate: 0,
-    unitate: "pachete",
-    producator: "Fermentis",
-    codProdus: "YST-US05",
-    subcategorie: "Ale",
-  },
-  {
-    id: 7,
-    denumire: "Drojdie BE 256",
-    tip: "drojdie",
-    cantitate: 0,
-    unitate: "pachete",
-    producator: "Fermentis",
-    codProdus: "YST-S23",
-    subcategorie: "Lager",
-  },
-  {
-    id: 8,
-    denumire: "Drojdie F2",
-    tip: "drojdie",
-    cantitate: 0,
-    unitate: "pachete",
-    producator: "Fermentis",
-    codProdus: "YST-S23",
-    subcategorie: "Lager",
-  },
-
-  // --- Adjuvanți și altele ---
-  {
-    id: 9,
-    denumire: "Irish Moss",
-    tip: "aditiv",
-    cantitate: 0,
-    unitate: "kg",
-    producator: "Whirlfloc",
-    codProdus: "ADD-IM",
-    subcategorie: "Clarificare",
-  },
-  {
-    id: 10,
-    denumire: "Zahăr brun",
-    tip: "zahar",
-    cantitate: 0,
-    unitate: "kg",
-    producator: "Generic",
-    codProdus: "SUG-BRN",
-    subcategorie: "Refermentare",
-  },
-  {
-    id: 11,
-    denumire: "Apă filtrată",
-    tip: "apa",
-    cantitate: 0,
-    unitate: "litri",
-    producator: "Intern",
-    codProdus: "WAT-FILT",
-    subcategorie: "Apă tehnologică",
-  },
-];
-
-// === 🔹 MATERIALE AMBALARE ===
-const materialeAmbalareInitiale = [
-  {
-    id: 1,
-    denumire: "Sticle 0.33l",
-    tip: "sticle",
-    cantitate: 0,
-    unitate: "buc",
-    producator: "Generic Packaging",
-    codProdus: "STICLA-033",
-  },
-  {
-    id: 2,
-    denumire: "Cutii 6 sticle",
-    tip: "cutii",
-    cantitate: 0,
-    unitate: "buc",
-    producator: "Generic Packaging",
-    codProdus: "CUTIE-6",
-  },
-  {
-    id: 3,
-    denumire: "Cutii 12 sticle",
-    tip: "cutii",
-    cantitate: 0,
-    unitate: "buc",
-    producator: "Generic Packaging",
-    codProdus: "CUTIE-12",
-  },
-  {
-    id: 4,
-    denumire: "Cutii 20 sticle",
-    tip: "cutii",
-    cantitate: 0,
-    unitate: "buc",
-    producator: "Generic Packaging",
-    codProdus: "CUTIE-12",
-  },
-  {
-    id: 5,
-    denumire: "Keg 10l",
-    tip: "keg",
-    cantitate: 0,
-    unitate: "buc",
-    producator: "Generic Kegs",
-    codProdus: "KEG-10",
-  },
-  {
-    id: 6,
-    denumire: "Keg 20l",
-    tip: "keg",
-    cantitate: 0,
-    unitate: "buc",
-    producator: "Generic Kegs",
-    codProdus: "KEG-20",
-  },
-  {
-    id: 7,
-    denumire: "Keg 40l",
-    tip: "keg",
-    cantitate: 0,
-    unitate: "buc",
-    producator: "Generic Kegs",
-    codProdus: "KEG-40",
-  },
-  {
-    id: 8,
-    denumire: "Etichete",
-    tip: "etichete",
-    cantitate: 0,
-    unitate: "buc",
-    producator: "Generic Labels",
-    codProdus: "ETICHETA-001",
-  },
-  {
-    id: 9,
-    denumire: "Capace",
-    tip: "capace",
-    cantitate: 0,
-    unitate: "buc",
-    producator: "Generic Caps",
-    codProdus: "CAPAC-001",
-  },
-];
-
-// === 🔹 FERMENTATOARE ===
-const fermentatoareInitiale = [
-  { id: 1, denumire: "F1", capacitate: 1000, unitate: "L", status: "liber" },
-  { id: 2, denumire: "F2", capacitate: 1000, unitate: "L", status: "liber" },
-  { id: 3, denumire: "F3", capacitate: 1000, unitate: "L", status: "liber" },
-  { id: 4, denumire: "F4", capacitate: 1000, unitate: "L", status: "liber" },
-  { id: 5, denumire: "F5", capacitate: 2000, unitate: "L", status: "liber" },
-  { id: 6, denumire: "F6", capacitate: 2000, unitate: "L", status: "liber" },
-];
-
-// === 🔹 REȚETE CURENTU’ ===
 const reteteBereInitiale = [
   {
     id: 1,
-    nume: "USB Amper Ale",
-    stil: "American Pale Ale",
-    abv: 5.2,
-    volum: 1000,
-    descriere:
-      "O bere echilibrată, cu note fructate de citrice și un finish curat.",
+    denumire: "ADAPTOR LA SITUATIE - CB 01",
+    tip: "Blondă",
+    concentratieMust: "12 ±0.50°Plato",
+    concentratieAlcool: "5 ±0.5% vol",
+    image: "/adaptor.png",
+    durata: 0,
+    rezultat: { cantitate: 1000, unitate: "litri" },
     ingrediente: [
-      "Malț Pale Ale",
-      "Hamei Citra",
-      "Drojdie US-05",
-      "Apă filtrată",
-    ],
+      { denumire: "Malt Pale Ale", cantitate: 400, unitate: "kg", tip: "malt" },
+      { denumire: "Zahar brun", cantitate: 20, unitate: "kg", tip: "aditiv" },
+      { denumire: "Drojdie BE 256", cantitate: 0.5, unitate: "kg", tip: "drojdie" },
+      { denumire: "Drojdie F2", cantitate: 0.5, unitate: "kg", tip: "drojdie" },
+      { denumire: "Hamei Bitter", cantitate: 1, unitate: "kg", tip: "hamei" },
+      { denumire: "Hamei Aroma", cantitate: 0.8, unitate: "kg", tip: "hamei" },
+      { denumire: "Irish Moss", cantitate: 0.3, unitate: "kg", tip: "aditiv" }
+    ]
   },
   {
     id: 2,
-    nume: "Întrerupător de Muncă",
-    stil: "IPA",
-    abv: 6.4,
-    volum: 1000,
-    descriere:
-      "IPA intens aromată, cu amăreală echilibrată și accente tropicale.",
+    denumire: "INTRERUPATOR DE MUNCA - CB 02",
+    tip: "IPA",
+    concentratieMust: "16 - 20,5 ±1°Plato",
+    concentratieAlcool: "7 - 9,5 ±1 %vol",
+    image: "/intrerupator.png",
+    durata: 7,
+    rezultat: { cantitate: 1000, unitate: "litri" },
     ingrediente: [
-      "Malț Pale Ale",
-      "Hamei Mosaic",
-      "Hamei Citra",
-      "Drojdie US-05",
-    ],
+      { denumire: "Malt Pale Ale", cantitate: 372, unitate: "kg", tip: "malt" },
+      { denumire: "Drojdie BE 256", cantitate: 0.5, unitate: "kg", tip: "drojdie" },
+      { denumire: "Drojdie F2", cantitate: 0.4, unitate: "kg", tip: "drojdie" },
+      { denumire: "Hamei Bitter", cantitate: 1.15, unitate: "kg", tip: "hamei" },
+      { denumire: "Hamei Aroma", cantitate: 2.4, unitate: "kg", tip: "hamei" },
+      { denumire: "Irish Moss", cantitate: 0.3, unitate: "kg", tip: "aditiv" }
+    ]
   },
   {
     id: 3,
-    nume: "Adaptor la Situație",
-    stil: "Pilsner",
-    abv: 4.8,
-    volum: 1000,
-    descriere: "Berea de relaxare totală – limpede, ușoară și clasică.",
-    ingrediente: ["Malț Pilsner", "Hamei Saaz", "Drojdie S-23", "Apă filtrată"],
-  },
+    denumire: "USB AMPER ALE - CB 03",
+    tip: "Pale Ale",
+    concentratieMust: "13.8 ± 0.50°Plato",
+    concentratieAlcool: "6 ± 0.50 %vol",
+    image: "/usb-amper-ale.png",
+    durata: 0,
+    rezultat: { cantitate: 1000, unitate: "litri" },
+    ingrediente: [
+      { denumire: "Malt", cantitate: 300, unitate: "kg", tip: "malt" },
+      { denumire: "Drojdie Fermentis U.S 05", cantitate: 0.5, unitate: "kg", tip: "drojdie" },
+      { denumire: "Hamei Bitter", cantitate: 0.7, unitate: "kg", tip: "hamei" },
+      { denumire: "Hamei Aroma", cantitate: 2.4, unitate: "kg", tip: "hamei" },
+      { denumire: "Irish Moss", cantitate: 0.3, unitate: "kg", tip: "aditiv" }
+    ]
+  }
 ];
 
-// === 🔹 STRUCTURA COMPLETĂ ===
+const fermentatoareInitiale = [
+  { id: 1, nume: "Fermentator 1", capacitate: 1000, ocupat: false, reteta: null, cantitate: 0, dataInceput: null, imagine: "/Imagini/fermentator.png" },
+  { id: 2, nume: "Fermentator 2", capacitate: 1000, ocupat: false, reteta: null, cantitate: 0, dataInceput: null, imagine: "/Imagini/fermentator.png" },
+  { id: 3, nume: "Fermentator 3", capacitate: 1000, ocupat: false, reteta: null, cantitate: 0, dataInceput: null, imagine: "/Imagini/fermentator.png" },
+  { id: 4, nume: "Fermentator 4", capacitate: 1000, ocupat: false, reteta: null, cantitate: 0, dataInceput: null, imagine: "/Imagini/fermentator.png" },
+  { id: 5, nume: "Fermentator 5", capacitate: 2000, ocupat: false, reteta: null, cantitate: 0, dataInceput: null, imagine: "/Imagini/fermentator.png" },
+  { id: 6, nume: "Fermentator 6", capacitate: 2000, ocupat: false, reteta: null, cantitate: 0, dataInceput: null, imagine: "/Imagini/fermentator.png" }
+];
+
 const defaultData = {
-  materiiPrime: materiiPrimeInitiale,
-  materialeAmbalare: materialeAmbalareInitiale,
+  materiiPrime: [], // Vor fi populate sau default
+  materialeAmbalare: [],
   fermentatoare: fermentatoareInitiale,
   reteteBere: reteteBereInitiale,
   loturiAmbalate: [],
@@ -284,87 +94,209 @@ const defaultData = {
   rebuturi: [],
 };
 
-// === 🔹 INIȚIALIZARE BAZĂ DE DATE ===
+// === 🔹 SYSTEM BACKUP ===
+function performBackup() {
+  try {
+    if (!existsSync(backupsDir)) {
+      mkdirSync(backupsDir, { recursive: true });
+    }
+
+    if (existsSync(dbPath)) {
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      const backupFile = join(backupsDir, `db-${timestamp}.json`);
+      copyFileSync(dbPath, backupFile);
+      console.log(`[🛡️] Backup creat: ${backupFile}`);
+
+      const files = readdirSync(backupsDir)
+        .map(f => ({ name: f, path: join(backupsDir, f), time: statSync(join(backupsDir, f)).mtime.getTime() }))
+        .sort((a, b) => b.time - a.time); // Newest first
+
+      if (files.length > 30) {
+        files.slice(30).forEach(file => {
+          try {
+            unlinkSync(file.path);
+          } catch (e) {
+            console.error(`Eroare stergere backup vechi: ${e.message}`);
+          }
+        });
+      }
+    }
+  } catch (error) {
+    console.error(`[⚠️] Eroare la crearea backup-ului: ${error.message}`);
+  }
+}
+
+// === 🔹 HELPERS ===
+function normalizeName(name) {
+  return name
+    .toLowerCase()
+    .replace(/\./g, "")
+    .replace(/-/g, "")
+    .replace(/fermentis|drojdie|us|u\.s|be|w|s|f|04|05|256|2|34\/70/g, "") // remove common yeast prefixes/suffixes to find base type if needed
+    .replace(/\s+/g, "")
+    .trim();
+}
+
+// === 🔹 MIGRARE DATE VECHI ===
+function migrateOldData(key, oldFileName, oldKey) {
+  const oldPath = join(dbDir, oldFileName);
+  if (existsSync(oldPath)) {
+    try {
+      const content = readFileSync(oldPath, 'utf8');
+      const json = JSON.parse(content);
+      if (json && json[oldKey] && Array.isArray(json[oldKey]) && json[oldKey].length > 0) {
+        console.log(`[🔄] Migrare: Preluat ${json[oldKey].length} inregistrari din ${oldFileName}`);
+        return json[oldKey];
+      }
+    } catch (e) {
+      console.error(`[⚠️] Eroare la citirea ${oldFileName}: ${e.message}`);
+    }
+  }
+  return null;
+}
+
+// === 🔹 INIT DB ===
 const adapter = new JSONFile(dbPath);
 const db = new Low(adapter, defaultData);
 
 export async function initializeDb() {
+  performBackup();
   await db.read();
 
-  if (!db.data) {
-    db.data = defaultData;
-    await db.write();
-    console.log(
-      "[✓] Baza de date creată cu valori implicite (inclusiv rețete)."
-    );
-  } else {
-    let modified = false;
+  let modified = false;
 
-    // Completează lipsurile
-    for (const key of Object.keys(defaultData)) {
-      if (!db.data[key]) {
-        db.data[key] = defaultData[key];
+  // Dacă DB este gol sau nou, încercăm migrarea datelor vechi
+  if (!db.data) {
+    db.data = { ...defaultData };
+    modified = true;
+  }
+
+  // --- MIGRARE ---
+  // Doar dacă listele sunt goale în DB-ul current, încercăm să le populăm din fișiere vechi
+
+  // 1. Materii Prime
+  if (!db.data.materiiPrime || db.data.materiiPrime.length === 0) {
+    const oldData = migrateOldData('materiiPrime', 'ingrediente.json', 'materiiPrime');
+    if (oldData) {
+      db.data.materiiPrime = oldData;
+      modified = true;
+    }
+  }
+
+  // 2. Fermentatoare (păstrăm default-ul nostru dacă structura veche e dubioasă, dar încercăm)
+  // Fermentatoarele vechi aveau "ocupat" deci sunt ok.
+  if (!db.data.fermentatoare || db.data.fermentatoare.length === 0) {
+    const oldData = migrateOldData('fermentatoare', 'fermentatoare.json', 'fermentatoare');
+    if (oldData) {
+      // Verificăm dacă structura e compatibilă
+      if (oldData[0] && oldData[0].nume) {
+        db.data.fermentatoare = oldData;
         modified = true;
       }
     }
+  }
 
-    // ✅ Adaugă automat rețetele dacă lipsesc sau sunt goale
-    if (!db.data.reteteBere || db.data.reteteBere.length === 0) {
-      db.data.reteteBere = [
-        {
-          id: 1,
-          nume: "USB Amper Ale",
-          stil: "American Pale Ale",
-          abv: 5.2,
-          volum: 1000,
-          descriere:
-            "O bere echilibrată, cu note fructate de citrice și un finish curat.",
-          ingrediente: [
-            "Malț Pale Ale",
-            "Hamei Citra",
-            "Drojdie US-05",
-            "Apă filtrată",
-          ],
-        },
-        {
-          id: 2,
-          nume: "Întrerupător de Muncă",
-          stil: "IPA",
-          abv: 6.4,
-          volum: 1000,
-          descriere:
-            "IPA intens aromată, cu amăreală echilibrată și accente tropicale.",
-          ingrediente: [
-            "Malț Pale Ale",
-            "Hamei Mosaic",
-            "Hamei Citra",
-            "Drojdie US-05",
-          ],
-        },
-        {
-          id: 3,
-          nume: "Adaptor la Situație",
-          stil: "Pilsner",
-          abv: 4.8,
-          volum: 1000,
-          descriere: "Berea de relaxare totală – limpede, ușoară și clasică.",
-          ingrediente: [
-            "Malț Pilsner",
-            "Hamei Saaz",
-            "Drojdie S-23",
-            "Apă filtrată",
-          ],
-        },
-      ];
+  // 3. Rețete
+  if (!db.data.reteteBere || db.data.reteteBere.length === 0) {
+    const oldData = migrateOldData('reteteBere', 'reteteBere.json', 'retete');
+    if (oldData) {
+      db.data.reteteBere = oldData;
       modified = true;
-      console.log("[✓] Rețetele implicite au fost adăugate automat.");
+    } else {
+      // Fallback la default corect
+      db.data.reteteBere = reteteBereInitiale;
+      modified = true;
     }
+  }
 
-    if (modified) {
-      await db.write();
+  // 4. Loturi Ambalate
+  if (!db.data.loturiAmbalate || db.data.loturiAmbalate.length === 0) {
+    const oldData = migrateOldData('loturiAmbalate', 'loturiAmbalate.json', 'loturi');
+    if (oldData) {
+      db.data.loturiAmbalate = oldData;
+      modified = true;
     }
+  }
 
-    console.log("[✓] Baza de date verificată și completă.");
+  // 5. Materiale Ambalare
+  if (!db.data.materialeAmbalare || db.data.materialeAmbalare.length === 0) {
+    const oldData = migrateOldData('materialeAmbalare', 'materialeAmbalare.json', 'materialeAmbalare');
+    if (oldData) {
+      db.data.materialeAmbalare = oldData;
+      modified = true;
+    }
+  }
+
+  // 6. Ieșiri Bere
+  if (!db.data.iesiriBere || db.data.iesiriBere.length === 0) {
+    const oldData = migrateOldData('iesiriBere', 'iesiriBere.json', 'iesiri');
+    if (oldData) {
+      db.data.iesiriBere = oldData;
+      modified = true;
+    }
+  }
+
+  // Finalizare default
+  if (!db.data.fermentatoare || db.data.fermentatoare.length === 0) {
+    db.data.fermentatoare = fermentatoareInitiale;
+    modified = true;
+  }
+  if (!db.data.reteteBere || db.data.reteteBere.length === 0) {
+    db.data.reteteBere = reteteBereInitiale;
+    modified = true;
+  }
+
+  // 7. MIGRARE: Leagă ingredientele din rețete de ID-urile din stoc (Fuzzy Match)
+  // Aceasta rulează de fiecare dată pentru a prinde ingredientele noi sau corectate
+  if (db.data.reteteBere && db.data.materiiPrime) {
+    let reteteModified = false;
+    db.data.reteteBere.forEach(reteta => {
+      if (reteta.ingrediente) {
+        reteta.ingrediente.forEach(ing => {
+          // Dacă ingredientul nu are ID, încercăm să-l găsim
+          if (!ing.id) {
+            // 1. Încercare potrivire exactă
+            let match = db.data.materiiPrime.find(mp => mp.denumire === ing.denumire);
+
+            // 2. Dacă nu, încercare normalizată simplă
+            if (!match) {
+              match = db.data.materiiPrime.find(mp =>
+                normalizeName(mp.denumire) === normalizeName(ing.denumire)
+              );
+            }
+
+            // 3. Fallback specific pentru Drojdii (care au nume complicate in retete)
+            if (!match && ing.tip === 'drojdie') {
+              // Caută ceva ce conține codul din denumirea ingredientului
+              const codes = ["US-05", "US 05", "BE-256", "BE 256", "S-23", "S 23", "F2"];
+              const foundCode = codes.find(c => ing.denumire.includes(c) || ing.denumire.includes(c.replace("-", " ")));
+
+              if (foundCode) {
+                const cleanCode = foundCode.replace("-", "").replace(" ", "");
+                match = db.data.materiiPrime.find(mp => mp.denumire.replace("-", "").replace(" ", "").includes(cleanCode));
+              }
+            }
+
+            if (match) {
+              ing.id = match.id;
+              reteteModified = true;
+              console.log(`[🔗] Link creat: Rețeta '${reteta.denumire}' -> Ing '${ing.denumire}' legat de Stoc ID ${match.id} (${match.denumire})`);
+            } else {
+              console.warn(`[⚠️] Warning: Nu s-a găsit stoc pentru ingredientul '${ing.denumire}' din rețeta '${reteta.denumire}'`);
+            }
+          }
+        });
+      }
+    });
+
+    if (reteteModified) {
+      modified = true;
+    }
+  }
+
+  if (modified) {
+    await db.write();
+    console.log("[✓] Baza de date consolidată și salvată.");
   }
 }
 

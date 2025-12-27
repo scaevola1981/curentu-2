@@ -115,7 +115,8 @@ const Productie = () => {
 
   // --- Verifică stoc ---
   // --- Verifică stoc ---
-  const verificaStoc = useCallback(() => {
+  // --- Verifică stoc (BACKEND) ---
+  const verificaStoc = useCallback(async () => {
     if (!selectedReteta || !selectedFermentator || !cantitateProdusa) {
       setError("Completați toți pașii înainte de verificare!");
       return;
@@ -128,182 +129,87 @@ const Productie = () => {
         `Cantitatea depășește capacitatea fermentatorului (${selectedFermentator.capacitate}L)!`
       );
 
-    const factor = cant / selectedReteta.rezultat.cantitate;
+    try {
+      const res = await fetch(`${API_URL}/productie/check`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          retetaId: selectedReteta.id,
+          cantitate: cant,
+        }),
+      });
 
-    const consum = selectedReteta.ingrediente.map((ing) => {
-      let c = Number((ing.cantitate * factor).toFixed(2));
-      let unit = ing.unitate;
-
-      // Conversii pentru unități
-      if (ing.tip === "drojdie") {
-        if (unit === "kg") {
-          c = Number((c * 1000).toFixed(2)); // Convert kg to g
-          unit = "g";
-        }
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Eroare server");
       }
 
-      return {
-        denumire: ing.denumire,
-        cantitate: c,
-        unitate: unit,
-        tip: ing.tip,
-      };
-    });
+      const { canProduce, missing, details } = await res.json();
 
-    console.log("Consum calculat:", consum); // DEBUG
-    console.log("Stoc disponibil:", stocMateriale); // DEBUG
+      // Mapping pentru UI
+      const consum = details.map((d) => ({
+        denumire: d.nume,
+        cantitate: d.necesarOriginal,
+        unitate: d.unitateNecesar,
+        disponibil: d.disponibilOriginal, // Adăugăm info pt UI
+        unitateStoc: d.unitateStoc
+      }));
 
-    const insuf = consum
-      .map((i) => {
-        // Caută în stoc după denumire și unitate
-        let stoc = stocMateriale.find(
-          (m) =>
-            normalizeName(m.denumire) === normalizeName(i.denumire) &&
-            m.unitate === i.unitate
-        );
+      const insuf = missing.map((m) => ({
+        denumire: m.nume,
+        cantitateNecesara: m.necesar,
+        cantitateDisponibila: m.disponibil,
+        unitate: m.unitate,
+      }));
 
-        // Dacă nu găsește, încercă să găsească cu unități diferite pentru drojdie
-        if (!stoc && i.tip === "drojdie") {
-          if (i.unitate === "g") {
-            // Caută drojdie în kg și convertește
-            stoc = stocMateriale.find(
-              (m) =>
-                normalizeName(m.denumire) === normalizeName(i.denumire) &&
-                m.unitate === "kg"
-            );
+      setConsumMateriale(consum);
+      setMaterialeInsuficiente(insuf);
+      setCanProduce(canProduce);
+      setStocVerificat(true);
 
-            if (stoc) {
-              // Convertim stocul din kg în grame pentru comparație
-              const stocInGrame = stoc.cantitate * 1000;
-              if (stocInGrame < i.cantitate) {
-                return {
-                  denumire: i.denumire,
-                  cantitateNecesara: i.cantitate,
-                  cantitateDisponibila: stocInGrame,
-                  unitate: i.unitate,
-                  unitateStoc: "kg",
-                  conversie: true,
-                };
-              }
-              // Dacă e suficient, returnăm null (nu e insuficient)
-              return null;
-            }
-          } else if (i.unitate === "kg") {
-            // Caută drojdie în grame și convertește
-            stoc = stocMateriale.find(
-              (m) => m.denumire === i.denumire && m.unitate === "g"
-            );
-            if (stoc) {
-              // Convertim stocul din grame în kg pentru comparație
-              const stocInKg = stoc.cantitate / 1000;
-              if (stocInKg < i.cantitate) {
-                return {
-                  denumire: i.denumire,
-                  cantitateNecesara: i.cantitate,
-                  cantitateDisponibila: stocInKg,
-                  unitate: i.unitate,
-                  unitateStoc: "g",
-                  conversie: true,
-                };
-              }
-              return null;
-            }
-          }
-        }
-
-        // Verificare normală
-        if (!stoc) {
-          return {
-            denumire: i.denumire,
-            cantitateNecesara: i.cantitate,
-            cantitateDisponibila: 0,
-            unitate: i.unitate,
-            unitateStoc: "none",
-          };
-        }
-
-        if (stoc.cantitate < i.cantitate) {
-          return {
-            denumire: i.denumire,
-            cantitateNecesara: i.cantitate,
-            cantitateDisponibila: stoc.cantitate,
-            unitate: i.unitate,
-            unitateStoc: stoc.unitate,
-          };
-        }
-
-        return null;
-      })
-      .filter(Boolean);
-
-    console.log("Materiale insuficiente:", insuf); // DEBUG
-
-    setConsumMateriale(consum);
-    setMaterialeInsuficiente(insuf);
-    setCanProduce(insuf.length === 0);
-    setStocVerificat(true);
-
-    if (insuf.length > 0) {
-      setError(`Materiale insuficiente: ${insuf.length} ingrediente`);
-    } else {
-      setError("");
+      if (!canProduce) {
+        setError(`Materiale insuficiente: ${missing.length} ingrediente`);
+      } else {
+        setError("");
+      }
+    } catch (err) {
+      setError("Eroare la verificarea stocului: " + err.message);
     }
-  }, [selectedReteta, selectedFermentator, cantitateProdusa, stocMateriale]);
+  }, [selectedReteta, selectedFermentator, cantitateProdusa]);
 
-  // --- Confirmare producție ---
+  // --- Confirmare producție (BACKEND) ---
   const confirmaProductia = useCallback(async () => {
     if (!canProduce)
       return setError("Nu se poate produce: ingrediente insuficiente.");
 
     try {
-      for (const ing of consumMateriale) {
-        const stoc = stocMateriale.find(
-          (m) =>
-            normalizeName(m.denumire) === normalizeName(ing.denumire) &&
-            m.unitate === ing.unitate
-        );
-
-        if (stoc) {
-          await fetch(`${API_URL}/materii-prime/${stoc.id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              ...stoc,
-              cantitate: Number((stoc.cantitate - ing.cantitate).toFixed(2)),
-            }),
-          });
-        }
-      }
-
-      const updatedFermentator = {
-        ...selectedFermentator,
-        ocupat: true,
-        reteta: selectedReteta.denumire,
-        cantitate: parseInt(cantitateProdusa),
-        dataInceput: new Date().toISOString(),
-      };
-
-      await fetch(`${API_URL}/fermentatoare/${selectedFermentator.id}`, {
-        method: "PUT",
+      const res = await fetch(`${API_URL}/productie/confirm`, {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedFermentator),
+        body: JSON.stringify({
+          retetaId: selectedReteta.id,
+          fermentatorId: selectedFermentator.id,
+          cantitate: parseInt(cantitateProdusa),
+        }),
       });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Eroare la confirmare");
+      }
 
       setSuccess("Producție confirmată și transferată în fermentator!");
       setError("");
       resetTot();
-      await Promise.all([loadMateriale(), loadFermentatoare()]);
+      await loadFermentatoare(); // Reload fermenters state
     } catch (err) {
       setError("Eroare la confirmarea producției: " + err.message);
     }
   }, [
     canProduce,
-    consumMateriale,
     selectedFermentator,
     selectedReteta,
     cantitateProdusa,
-    stocMateriale,
-    loadMateriale,
     loadFermentatoare,
   ]);
 
@@ -340,9 +246,9 @@ const Productie = () => {
   // --- Init ---
   useEffect(() => {
     loadRetete();
-    loadMateriale();
     loadFermentatoare();
-  }, [loadRetete, loadMateriale, loadFermentatoare]);
+    // Nu mai încărcăm tot stocul pe client (loadMateriale removed)
+  }, [loadRetete, loadFermentatoare]);
 
   return (
     <>
@@ -375,9 +281,7 @@ const Productie = () => {
             {fermentatoare.map((f) => (
               <div
                 key={f.id}
-                className={`${styles.fermentatorCard} ${
-                  f.ocupat ? styles.ocupat : styles.liber
-                }`}
+                className={`${f.ocupat ? styles.ocupat : styles.liber} ${styles.fermentatorCard}`}
                 style={{
                   backgroundImage: `url(${f.imagine})`,
                   backgroundSize: "cover",
@@ -419,14 +323,10 @@ const Productie = () => {
               retete.map((r) => (
                 <div
                   key={r.id}
-                  className={`${styles.retetaCard} ${
-                    selectedReteta?.id === r.id ? styles.selected : ""
-                  }`}
+                  className={`${selectedReteta?.id === r.id ? styles.selected : ""} ${styles.retetaCard}`}
                   onClick={() => selectReteta(r)}
                   style={{
-                    backgroundImage: `url(${
-                      retetaImages[r.denumire] || "/Imagini/adaptor.png"
-                    })`,
+                    backgroundImage: `url(${retetaImages[r.denumire] || "/Imagini/adaptor.png"})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                   }}
@@ -455,11 +355,7 @@ const Productie = () => {
                 .map((f) => (
                   <div
                     key={f.id}
-                    className={`${styles.fermentatorSelectCard} ${
-                      selectedFermentator?.id === f.id
-                        ? styles.selectedFermentator
-                        : ""
-                    }`}
+                    className={`${selectedFermentator?.id === f.id ? styles.selectedFermentator : ""} ${styles.fermentatorSelectCard}`}
                     onClick={() => selectFermentator(f)}
                     style={{
                       backgroundImage: `url(${f.imagine})`,
@@ -509,13 +405,9 @@ const Productie = () => {
                 <h3>Materiale Necesare:</h3>
                 <ul className={styles.materialeList}>
                   {consumMateriale.map((i, idx) => {
+                    // Verificăm dacă e în lista de insuficiente
                     const esteInsuficient = materialeInsuficiente.find(
                       (m) => m.denumire === i.denumire
-                    );
-                    const stoc = stocMateriale.find(
-                      (m) =>
-                        normalizeName(m.denumire) ===
-                          normalizeName(i.denumire) && m.unitate === i.unitate
                     );
 
                     return (
@@ -541,7 +433,7 @@ const Productie = () => {
                             <span className={styles.disponibil}>
                               Disponibil:{" "}
                               <strong>
-                                {stoc ? stoc.cantitate : 0} {i.unitate}
+                                {i.disponibil} {i.unitateStoc || i.unitate}
                               </strong>
                             </span>
                           </div>

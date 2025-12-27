@@ -43,6 +43,10 @@ import {
   exportaIesiriCSV,
   getIesiriPerioada,
 } from "./Stocare/iesiriBere.mjs";
+import { checkStock, confirmProduction } from "./Stocare/productie.mjs";
+
+
+import { initializeDb } from "./Stocare/db.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -578,8 +582,7 @@ app.get("/api/iesiri-bere/export/csv", async (req, res) => {
     res.setHeader("Content-Type", "text/csv; charset=utf-8");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename=iesiri-bere-${
-        new Date().toISOString().split("T")[0]
+      `attachment; filename=iesiri-bere-${new Date().toISOString().split("T")[0]
       }.csv`
     );
     res.send("\uFEFF" + csvData);
@@ -662,6 +665,37 @@ app.delete("/api/rebuturi/:id", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`✅ Serverul rulează pe http://localhost:${PORT}`);
+initializeDb().then(() => {
+
+  // --- 🍺 ENDPOINTS PRODUCȚIE (LOGICĂ NOUĂ BACKEND) ---
+
+  app.post("/api/productie/check", async (req, res) => {
+    try {
+      const { retetaId, cantitate } = req.body;
+      if (!retetaId || !cantitate) return res.status(400).json({ error: "Lipsesc parametri (retetaId, cantitate)" });
+
+      const result = await checkStock(retetaId, cantitate);
+      res.json(result);
+    } catch (error) {
+      console.error("Eroare verificare stoc:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/productie/confirm", async (req, res) => {
+    try {
+      const { retetaId, fermentatorId, cantitate } = req.body;
+      if (!retetaId || !fermentatorId || !cantitate) return res.status(400).json({ error: "Date incomplete" });
+
+      const result = await confirmProduction(retetaId, fermentatorId, cantitate);
+      res.json(result);
+    } catch (error) {
+      console.error("Eroare confirmare producție:", error);
+      res.status(400).json({ error: error.message }); // 400 pt erori de logică (stoc insuficient)
+    }
+  });
+
+  app.listen(PORT, () => {
+    console.log(`✅ Serverul rulează pe http://localhost:${PORT}`);
+  });
 });

@@ -1,67 +1,5 @@
 
-import { Low } from "lowdb";
-import { JSONFile } from "lowdb/node";
-import path, { dirname } from "path";
-import { fileURLToPath } from "url";
-import { existsSync, mkdirSync } from "fs";
-import { homedir } from "os";
-import process from "process";
-import { DATA_PATH } from './config.mjs';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
-function getDbPath() {
-  const isDev = process.env.NODE_ENV === "development";
-
-  if (isDev) {
-    return path.join(DATA_PATH, "db.json");
-  } else {
-    const dbDir = path.join(homedir(), "Documents", "CurentuApp");
-
-    if (!existsSync(dbDir)) {
-      mkdirSync(dbDir, { recursive: true });
-    }
-
-    return path.join(DATA_PATH, 'db.json');
-  }
-}
-
-export const materialeInitiale = [
-  // ... (lista ta de materialeInitiale rămâne neschimbată)
-  {
-    id: 1,
-    denumire: "Malt",
-    tip: "malt",
-    cantitate: 0,
-    unitate: "kg",
-    producator: "Generic Malt",
-    codProdus: "MALT-001",
-    lot: "",
-    subcategorie: "",
-  },
-  // ... (restul materialelor)
-];
-
-const defaultData = { materiiPrime: materialeInitiale };
-const adapter = new JSONFile(getDbPath());
-const db = new Low(adapter, defaultData);
-
-(async () => {
-  await db.read();
-  if (!db.data || !db.data.materiiPrime) {
-    db.data = defaultData;
-    await db.write();
-  }
-})();
-
-export async function initializeDatabase() {
-  await db.read();
-  if (!db.data || !db.data.materiiPrime || db.data.materiiPrime.length === 0) {
-    db.data = defaultData;
-    await db.write();
-    console.log("Baza de date inițializată cu materiale default");
-  }
-}
+import { db } from "./db.mjs";
 
 export async function getMateriiPrime() {
   try {
@@ -92,17 +30,8 @@ export async function adaugaSauSuplimenteazaMaterial(material) {
         (materii[existingMaterialIndex].cantitate + material.cantitate).toFixed(2)
       );
     } else {
-      const initialMaterial = materialeInitiale.find(
-        (m) =>
-          m.denumire === material.denumire &&
-          m.unitate === material.unitate &&
-          m.producator === material.producator &&
-          m.codProdus === material.codProdus
-      );
-
-      const newId = initialMaterial
-        ? initialMaterial.id
-        : materii.length > 0
+      // Calculăm ID nou
+      const newId = materii.length > 0
         ? Math.max(...materii.map((m) => parseInt(m.id))) + 1
         : 1;
 
@@ -165,5 +94,3 @@ export async function stergeToateMaterialele() {
     return false;
   }
 }
-
-initializeDatabase().catch(console.error);
