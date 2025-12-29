@@ -835,37 +835,51 @@ app.delete("/api/rebuturi/:id", async (req, res) => {
 });
 
 console.log("[SERVER] 🚀 Starting database initialization...");
-initializeDb().then(() => {
+// --- 🍺 ENDPOINTS PRODUCȚIE (LOGICĂ NOUĂ BACKEND) ---
 
-  // --- 🍺 ENDPOINTS PRODUCȚIE (LOGICĂ NOUĂ BACKEND) ---
+app.post("/api/productie/check", async (req, res) => {
+  try {
+    const { retetaId, cantitate } = req.body;
+    if (!retetaId || !cantitate) return res.status(400).json({ error: "Lipsesc parametri (retetaId, cantitate)" });
 
-  app.post("/api/productie/check", async (req, res) => {
-    try {
-      const { retetaId, cantitate } = req.body;
-      if (!retetaId || !cantitate) return res.status(400).json({ error: "Lipsesc parametri (retetaId, cantitate)" });
+    const result = await checkStock(retetaId, cantitate);
+    res.json(result);
+  } catch (error) {
+    console.error("Eroare verificare stoc:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
-      const result = await checkStock(retetaId, cantitate);
-      res.json(result);
-    } catch (error) {
-      console.error("Eroare verificare stoc:", error);
-      res.status(500).json({ error: error.message });
-    }
-  });
+app.post("/api/productie/confirm", async (req, res) => {
+  try {
+    const { retetaId, fermentatorId, cantitate } = req.body;
+    if (!retetaId || !fermentatorId || !cantitate) return res.status(400).json({ error: "Date incomplete" });
 
-  app.post("/api/productie/confirm", async (req, res) => {
-    try {
-      const { retetaId, fermentatorId, cantitate } = req.body;
-      if (!retetaId || !fermentatorId || !cantitate) return res.status(400).json({ error: "Date incomplete" });
+    const result = await confirmProduction(retetaId, fermentatorId, cantitate);
+    res.json(result);
+  } catch (error) {
+    console.error("Eroare confirmare producție:", error);
+    res.status(400).json({ error: error.message }); // 400 pt erori de logică (stoc insuficient)
+  }
+});
 
-      const result = await confirmProduction(retetaId, fermentatorId, cantitate);
-      res.json(result);
-    } catch (error) {
-      console.error("Eroare confirmare producție:", error);
-      res.status(400).json({ error: error.message }); // 400 pt erori de logică (stoc insuficient)
-    }
-  });
+// Export a Promise that resolves ONLY when Express is actually listening
+export const serverReady = new Promise((resolve, reject) => {
+  initializeDb()
+    .then(() => {
+      const server = app.listen(PORT, "127.0.0.1", (err) => {
+        if (err) {
+          console.error("[SERVER] ❌ Failed to start:", err);
+          reject(err);
+        } else {
+          console.log(`✅ Server READY on http://127.0.0.1:${PORT}`);
+          resolve(server);
+        }
+      });
 
-  app.listen(PORT, "127.0.0.1", () => {
-    console.log(`✅ Serverul rulează pe http://127.0.0.1:${PORT} (Securizat: Localhost Only)`);
-  });
-}).catch((err) => { console.error("[SERVER] 💥 FATAL:", err); });
+      setTimeout(() => {
+        reject(new Error("Server startup timeout after 10s"));
+      }, 10000);
+    })
+    .catch(reject);
+});
