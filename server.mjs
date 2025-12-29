@@ -80,41 +80,68 @@ if (isDev) {
   storagePath = path.join(process.env.USER_DATA_PATH, "Stocare");
   console.log(`[SERVER] 🔒 PROD MODE - Using secure storage: ${storagePath}`);
 
+  // Creăm folderul dacă nu există
   if (!existsSync(storagePath)) {
-    try {
-      // Creăm folderul Stocare în AppData
-      const fs = await import("fs");
-      fs.mkdirSync(storagePath, { recursive: true });
-      console.log(`[SERVER] 📁 Created Main Storage Directory: ${storagePath}`);
+    const fs = await import("fs");
+    fs.mkdirSync(storagePath, { recursive: true });
+    console.log(`[SERVER] 📁 Created Main Storage Directory: ${storagePath}`);
+  }
 
-      // COPIEM DB INITIAL SAU MIGRAM DATE VECHI
-      const templateDb = path.join(__dirname, "Stocare", "db.json");
-      const targetDb = path.join(storagePath, "db.json");
+  // Verificăm dacă db.json există
+  const targetDb = path.join(storagePath, "db.json");
 
-      if (!fs.existsSync(targetDb)) {
-        // 1. Încercăm migrare din Documents (Legacy v1.3.1)
-        try {
-          const os = await import("os");
-          const legacyDb = path.join(os.homedir(), "Documents", "CurentuApp", "db.json");
+  if (!existsSync(targetDb)) {
+    const fs = await import("fs");
+    console.log(`[INIT] 🆕 db.json lipsă în ${storagePath}`);
 
-          if (fs.existsSync(legacyDb)) {
-            console.log(`[INIT] 🔄 DETECTAT DATE VECHI (Legacy): ${legacyDb}`);
-            console.log(`[INIT] 🔄 Migrare automată către: ${targetDb}`);
-            fs.copyFileSync(legacyDb, targetDb);
-          } else if (fs.existsSync(templateDb)) {
-            // 2. Fallback: Template
-            console.log(`[INIT] ✨ DB Nou -> Copiere Template.`);
-            fs.copyFileSync(templateDb, targetDb);
-          }
-        } catch (migErr) {
-          console.error("[INIT] ⚠️ Eroare migrare:", migErr);
-          // Fallback last resort
-          if (fs.existsSync(templateDb)) fs.copyFileSync(templateDb, targetDb);
-        }
-      }
-    } catch (e) {
-      console.error("[INIT] 💥 Eroare la inițializare stocare:", e);
+    // Determinăm path-ul către template db.json
+    // În packaged app, trebuie să fie în app.asar.unpacked
+    let templateDb;
+
+    // Check if running from asar
+    if (__dirname.includes('app.asar')) {
+      // Packaged mode - use app.asar.unpacked
+      const unpackedPath = __dirname.replace('app.asar', 'app.asar.unpacked');
+      templateDb = path.join(unpackedPath, "Stocare", "db.json");
+      console.log(`[INIT] 📦 Packaged mode - template path: ${templateDb}`);
+    } else {
+      // Development mode
+      templateDb = path.join(__dirname, "Stocare", "db.json");
+      console.log(`[INIT] 🔧 Dev mode - template path: ${templateDb}`);
     }
+
+    // 1. Încercăm migrare din Documents (Legacy v1.3.1)
+    try {
+      const os = await import("os");
+      const legacyDb = path.join(os.homedir(), "Documents", "CurentuApp", "db.json");
+
+      if (fs.existsSync(legacyDb)) {
+        console.log(`[INIT] 🔄 DETECTAT DATE VECHI (Legacy): ${legacyDb}`);
+        console.log(`[INIT] 🔄 Migrare automată către: ${targetDb}`);
+        fs.copyFileSync(legacyDb, targetDb);
+        console.log(`[INIT] ✅ Migrare completă!`);
+      } else if (fs.existsSync(templateDb)) {
+        // 2. Fallback: Template
+        console.log(`[INIT] ✨ DB Nou -> Copiere Template din: ${templateDb}`);
+        fs.copyFileSync(templateDb, targetDb);
+        console.log(`[INIT] ✅ Template copiat cu succes!`);
+      } else {
+        console.error(`[INIT] ❌ EROARE CRITICĂ: Template db.json nu există la: ${templateDb}`);
+        console.error(`[INIT] ❌ __dirname: ${__dirname}`);
+        throw new Error(`Template database not found at ${templateDb}`);
+      }
+    } catch (migErr) {
+      console.error("[INIT] ⚠️ Eroare migrare:", migErr);
+      // Last resort fallback
+      if (fs.existsSync(templateDb)) {
+        console.log(`[INIT] 🔄 Ultima încercare: copiere forțată template`);
+        fs.copyFileSync(templateDb, targetDb);
+      } else {
+        throw new Error(`Cannot initialize database - template not found`);
+      }
+    }
+  } else {
+    console.log(`[INIT] ✅ db.json exists at: ${targetDb}`);
   }
 }
 
