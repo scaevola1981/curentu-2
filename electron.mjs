@@ -117,9 +117,12 @@ async function startServer() {
   }
 
   try {
+    log("🚀 [ELECTRON] Starting server initialization...");
+
     const serverPath = app.isPackaged
       ? path.join(process.resourcesPath, "app.asar.unpacked", "server.mjs")
       : path.join(__dirname, "server.mjs");
+
     log(`🔍 Server path: ${serverPath}`);
     log(`🔍 File exists: ${existsSync(serverPath)}`);
 
@@ -133,20 +136,26 @@ async function startServer() {
     const serverUrl = pathToFileURL(serverPath);
     log(`🔍 Server URL: ${serverUrl.href}`);
 
-    // Importăm serverul în FUNDAL - nu așteptăm
-    import(serverUrl.href)
-      .then(() => {
-        log("✅ Server importat cu succes!");
-        log("⏳ Serverul pornește în fundal...");
-      })
-      .catch((err) => {
-        log(`❌ Eroare import server: ${err.message}`);
-      });
+    // CRITICAL: Wrap import in try-catch să vedem exact ce eroare dă
+    log("⏳ Attempting to import server.mjs...");
+
+    try {
+      await import(serverUrl.href);
+      log("✅ Server module loaded successfully!");
+      log("⏳ Server should be initializing now...");
+    } catch (importErr) {
+      log(`❌ CRITICAL: Failed to import server.mjs: ${importErr.message}`);
+      log(`❌ Stack: ${importErr.stack}`);
+      console.error("❌ Server import error:", importErr);
+      return false;
+    }
 
     // Returnăm IMEDIAT - nu așteptăm serverul
     return true;
   } catch (err) {
     log(`❌ Eroare: ${err.message}`);
+    log(`❌ Stack: ${err.stack}`);
+    console.error("❌ StartServer error:", err);
     return false;
   }
 }
