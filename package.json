@@ -34,7 +34,13 @@
     },
     "asarUnpack": [
       "server.mjs",
-      "Stocare/**/*",
+      "Stocare/db.mjs",
+      "Stocare/db.json",
+      "Stocare/ingrediente.mjs",
+      "Stocare/ambalare.mjs",
+      "Stocare/fermentatoare.mjs",
+      "Stocare/retete.mjs",
+      "Stocare/productie.mjs",
       "dist/Imagini/**/*",
       "node_modules/**/*"
     ],
