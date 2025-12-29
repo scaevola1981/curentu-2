@@ -190,6 +190,13 @@ async function createWindow() {
     mainWindow.show();
   });
 
+  // 🔧 DEV TOOLS: F12 pentru deschidere consolă (chiar și în production)
+  mainWindow.webContents.on("before-input-event", (event, input) => {
+    if (input.key === "F12") {
+      mainWindow.webContents.toggleDevTools();
+    }
+  });
+
   // Încărcăm UI-ul
   // În production (asar), dist/** e inclus în app.asar la calea __dirname/dist
   // În development, dist e în aceeași locație
