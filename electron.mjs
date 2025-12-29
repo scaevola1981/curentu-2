@@ -1,5 +1,4 @@
 import { app, BrowserWindow, ipcMain, Menu } from "electron";
-import { createRequire } from "module";
 import path from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 import { existsSync } from "fs";
@@ -9,98 +8,13 @@ import { existsSync } from "fs";
 // ==========================================
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const require = createRequire(import.meta.url);
-const { autoUpdater } = require("electron-updater");
 
 let mainWindow = null;
 
 app.commandLine.appendSwitch("disable-gpu-sandbox");
 app.commandLine.appendSwitch("disable-software-rasterizer");
 
-// ==========================================
-// 🌐 AUTO-UPDATER
-// ==========================================
-autoUpdater.autoDownload = true;
-autoUpdater.autoInstallOnAppQuit = false;
-
-function setupAutoUpdater() {
-  console.log("🔍 Verific update-uri...");
-
-  // FORCE DEV UPDATES (User Request)
-  if (!app.isPackaged) {
-    autoUpdater.forceDevUpdateConfig = true;
-    console.log("⚠️ Dev Mode: Force Update Config ENABLED");
-  }
-
-  autoUpdater.on("update-available", (info) => {
-    console.log("📦 Update disponibil:", info.version);
-    mainWindow?.webContents.send("update_available", {
-      version: info.version,
-      releaseDate: info.releaseDate
-    });
-  });
-
-  autoUpdater.on("download-progress", (progressObj) => {
-    console.log(`⬇️ Progres descărcare: ${Math.round(progressObj.percent)}%`);
-    mainWindow?.webContents.send("download_progress", {
-      percent: Math.round(progressObj.percent),
-      transferred: progressObj.transferred,
-      total: progressObj.total,
-      bytesPerSecond: progressObj.bytesPerSecond
-    });
-  });
-
-  autoUpdater.on("update-downloaded", (info) => {
-    console.log("✅ Update descărcat:", info.version);
-    mainWindow?.webContents.send("update_ready", {
-      version: info.version
-    });
-  });
-
-  autoUpdater.on("error", (err) => {
-    console.error("❌ AutoUpdater Error:", err);
-    mainWindow?.webContents.send("update_error", err.message);
-  });
-
-  autoUpdater.on("checking-for-update", () => {
-    console.log("🔍 Verificare update-uri în curs...");
-  });
-
-  autoUpdater.on("update-not-available", (info) => {
-    console.log("✓ Nu există update-uri disponibile. Versiune curentă:", info.version);
-    mainWindow?.webContents.send("update_not_available", info);
-  });
-
-  // DISABLED: Prevents 404 errors on Mac when update server unavailable
-  // autoUpdater.checkForUpdatesAndNotify();
-  console.log("⚠️ Auto-update checking is DISABLED for production stability");
-}
-
-ipcMain.on("install_update", () => {
-  console.log("🛠 Instalare update...");
-  autoUpdater.quitAndInstall();
-});
-
-// =============================
-// 🔥 TEST UPDATER (DEV ONLY)
-// =============================
-ipcMain.on("test-update", (_, type) => {
-  if (!mainWindow) return;
-
-  console.log("⚡ Test updater trigger:", type);
-
-  switch (type) {
-    case "available":
-      mainWindow.webContents.send("update_available");
-      break;
-    case "ready":
-      mainWindow.webContents.send("update_ready");
-      break;
-    case "error":
-      mainWindow.webContents.send("update_error", "Eroare simulată");
-      break;
-  }
-});
+// Auto-updater removed to simplify application and prevent 404 errors
 
 // ==========================================
 // 🟦 SERVER EXPRESS
