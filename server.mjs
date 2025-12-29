@@ -3,7 +3,8 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import { existsSync } from "fs";
+import { existsSync, mkdirSync, copyFileSync, writeFileSync } from "fs";
+import os from "os";
 
 import {
   getMateriiPrime,
@@ -82,8 +83,7 @@ if (isDev) {
 
   // Creăm folderul dacă nu există
   if (!existsSync(storagePath)) {
-    const fs = await import("fs");
-    fs.mkdirSync(storagePath, { recursive: true });
+    mkdirSync(storagePath, { recursive: true });
     console.log(`[SERVER] 📁 Created Main Storage Directory: ${storagePath}`);
   }
 
@@ -91,7 +91,6 @@ if (isDev) {
   const targetDb = path.join(storagePath, "db.json");
 
   if (!existsSync(targetDb)) {
-    const fs = await import("fs");
     console.log(`[INIT] 🆕 db.json lipsă în ${storagePath}`);
 
     // Determinăm path-ul către template db.json
@@ -112,18 +111,17 @@ if (isDev) {
 
     // 1. Încercăm migrare din Documents (Legacy v1.3.1)
     try {
-      const os = await import("os");
       const legacyDb = path.join(os.homedir(), "Documents", "CurentuApp", "db.json");
 
-      if (fs.existsSync(legacyDb)) {
+      if (existsSync(legacyDb)) {
         console.log(`[INIT] 🔄 DETECTAT DATE VECHI (Legacy): ${legacyDb}`);
         console.log(`[INIT] 🔄 Migrare automată către: ${targetDb}`);
-        fs.copyFileSync(legacyDb, targetDb);
+        copyFileSync(legacyDb, targetDb);
         console.log(`[INIT] ✅ Migrare completă!`);
-      } else if (fs.existsSync(templateDb)) {
+      } else if (existsSync(templateDb)) {
         // 2. Fallback: Template
         console.log(`[INIT] ✨ DB Nou -> Copiere Template din: ${templateDb}`);
-        fs.copyFileSync(templateDb, targetDb);
+        copyFileSync(templateDb, targetDb);
         console.log(`[INIT] ✅ Template copiat cu succes!`);
       } else {
         console.error(`[INIT] ❌ EROARE CRITICĂ: Template db.json nu există la: ${templateDb}`);
@@ -140,16 +138,16 @@ if (isDev) {
           istoric: []
         };
 
-        fs.writeFileSync(targetDb, JSON.stringify(emptyDb, null, 2), 'utf8');
+        writeFileSync(targetDb, JSON.stringify(emptyDb, null, 2), 'utf8');
         console.log(`[INIT] ✅ Database gol creat cu succes la: ${targetDb}`);
         console.log(`[INIT] ⚠️  Datele vor fi goale - utilizatorul trebuie să adauge manual`);
       }
     } catch (migErr) {
       console.error("[INIT] ⚠️ Eroare migrare:", migErr);
       // Last resort fallback
-      if (fs.existsSync(templateDb)) {
+      if (existsSync(templateDb)) {
         console.log(`[INIT] 🔄 Ultima încercare: copiere forțată template`);
-        fs.copyFileSync(templateDb, targetDb);
+        copyFileSync(templateDb, targetDb);
       } else {
         // ULTIMATE FALLBACK: Create empty database
         console.log(`[INIT] 🆘 ULTIMATE FALLBACK: Creăm database gol...`);
@@ -161,7 +159,7 @@ if (isDev) {
           lotProductie: [],
           istoric: []
         };
-        fs.writeFileSync(targetDb, JSON.stringify(emptyDb, null, 2), 'utf8');
+        writeFileSync(targetDb, JSON.stringify(emptyDb, null, 2), 'utf8');
         console.log(`[INIT] ✅ Database gol creat (fallback)!`);
       }
     }
