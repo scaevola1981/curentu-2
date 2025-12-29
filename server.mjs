@@ -48,6 +48,17 @@ import { checkStock, confirmProduction } from "./Stocare/productie.mjs";
 
 import { initializeDb } from "./Stocare/db.mjs";
 
+// === 🛡️ GLOBAL ERROR HANDLERS ===
+process.on('uncaughtException', (err) => {
+  console.error('[SERVER] 💥 UNCAUGHT EXCEPTION:', err);
+  console.error(err.stack);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[SERVER] 💥 UNHANDLED REJECTION at:', promise, 'reason:', reason);
+});
+
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -111,6 +122,9 @@ if (isDev) {
 const imagePath = existsSync(path.join(__dirname, "dist", "Imagini"))
   ? path.join(__dirname, "dist", "Imagini")
   : path.join(__dirname, "public", "Imagini");
+
+console.log(`[SERVER] 📊 Database path: ${storagePath}/db.json`);
+console.log(`[SERVER] 🖼️  Image path: ${imagePath}`);
 
 const app = express();
 const PORT = 3001;
@@ -770,6 +784,7 @@ app.delete("/api/rebuturi/:id", async (req, res) => {
   }
 });
 
+console.log("[SERVER] 🚀 Starting database initialization...");
 initializeDb().then(() => {
 
   // --- 🍺 ENDPOINTS PRODUCȚIE (LOGICĂ NOUĂ BACKEND) ---
@@ -803,4 +818,4 @@ initializeDb().then(() => {
   app.listen(PORT, "127.0.0.1", () => {
     console.log(`✅ Serverul rulează pe http://127.0.0.1:${PORT} (Securizat: Localhost Only)`);
   });
-});
+}).catch((err) => { console.error("[SERVER] 💥 FATAL:", err); });
