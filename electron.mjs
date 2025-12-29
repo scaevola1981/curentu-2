@@ -188,11 +188,21 @@ async function createWindow() {
   // Afișăm fereastra când e gata
   mainWindow.once("ready-to-show", () => {
     mainWindow.show();
+
+    // 🔧 DEBUGGING: Deschide DevTools AUTOMAT în production
+    // TODO: Remove this after debugging is complete
+    console.log("🔍 Opening DevTools for debugging...");
+    mainWindow.webContents.openDevTools();
   });
 
-  // 🔧 DEV TOOLS: F12 pentru deschidere consolă (chiar și în production)
+  // 🔧 DEV TOOLS: Multiple shortcuts pentru deschidere consolă
   mainWindow.webContents.on("before-input-event", (event, input) => {
-    if (input.key === "F12") {
+    // F12, Ctrl+Shift+I, sau Ctrl+Shift+J
+    if (
+      input.key === "F12" ||
+      (input.control && input.shift && input.key === "I") ||
+      (input.control && input.shift && input.key === "J")
+    ) {
       mainWindow.webContents.toggleDevTools();
     }
   });
