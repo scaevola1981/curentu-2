@@ -128,7 +128,21 @@ if (isDev) {
       } else {
         console.error(`[INIT] ❌ EROARE CRITICĂ: Template db.json nu există la: ${templateDb}`);
         console.error(`[INIT] ❌ __dirname: ${__dirname}`);
-        throw new Error(`Template database not found at ${templateDb}`);
+
+        // 🆘 LAST RESORT: Creăm un db.json GOL cu structură validă
+        console.log(`[INIT] 🆘 Creăm database gol cu structură default...`);
+        const emptyDb = {
+          materiiPrime: [],
+          materialeAmbalare: [],
+          fermentatoare: [],
+          reteteBere: [],
+          lotProductie: [],
+          istoric: []
+        };
+
+        fs.writeFileSync(targetDb, JSON.stringify(emptyDb, null, 2), 'utf8');
+        console.log(`[INIT] ✅ Database gol creat cu succes la: ${targetDb}`);
+        console.log(`[INIT] ⚠️  Datele vor fi goale - utilizatorul trebuie să adauge manual`);
       }
     } catch (migErr) {
       console.error("[INIT] ⚠️ Eroare migrare:", migErr);
@@ -137,7 +151,18 @@ if (isDev) {
         console.log(`[INIT] 🔄 Ultima încercare: copiere forțată template`);
         fs.copyFileSync(templateDb, targetDb);
       } else {
-        throw new Error(`Cannot initialize database - template not found`);
+        // ULTIMATE FALLBACK: Create empty database
+        console.log(`[INIT] 🆘 ULTIMATE FALLBACK: Creăm database gol...`);
+        const emptyDb = {
+          materiiPrime: [],
+          materialeAmbalare: [],
+          fermentatoare: [],
+          reteteBere: [],
+          lotProductie: [],
+          istoric: []
+        };
+        fs.writeFileSync(targetDb, JSON.stringify(emptyDb, null, 2), 'utf8');
+        console.log(`[INIT] ✅ Database gol creat (fallback)!`);
       }
     }
   } else {
