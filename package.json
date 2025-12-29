@@ -41,6 +41,7 @@
       "Stocare/fermentatoare.mjs",
       "Stocare/retete.mjs",
       "Stocare/productie.mjs",
+      "Stocare/lotur.mjs",
       "dist/Imagini/**/*",
       "node_modules/**/*"
     ],
