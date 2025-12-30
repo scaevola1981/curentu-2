@@ -1,7 +1,8 @@
 import { app, BrowserWindow, ipcMain, Menu } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
-import { existsSync } from "fs";
+import { existsSync, appendFileSync } from "fs";
+import { fork } from "child_process";
 
 // ==========================================
 // 🧩 CONFIG DE BAZĂ
@@ -24,13 +25,11 @@ app.commandLine.appendSwitch("disable-software-rasterizer");
 let serverProcess = null;
 
 async function startServer() {
-  const fs = require("fs");
-  const { fork } = require("child_process");
   const logPath = path.join(app.getPath("userData"), "server-debug.log");
 
   function log(msg) {
     const timestamp = new Date().toISOString();
-    fs.appendFileSync(logPath, `[${timestamp}] ${msg}\n`);
+    appendFileSync(logPath, `[${timestamp}] ${msg}\n`);
     console.log(msg);
   }
 
