@@ -176,9 +176,6 @@ async function createWindow() {
     await mainWindow.loadURL("http://localhost:5173");
   }
 
-  // Pornim auto-updater când UI-ul e încărcat
-  setupAutoUpdater();
-
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
