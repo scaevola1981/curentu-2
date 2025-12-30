@@ -24,6 +24,36 @@ app.commandLine.appendSwitch("disable-software-rasterizer");
 // Variabilă globală pentru proces server
 let serverProcess = null;
 
+// Helper function to wait for server to be ready
+async function waitForServer(log, maxAttempts = 30, delayMs = 500) {
+  const http = await import('http');
+
+  for (let i = 0; i < maxAttempts; i++) {
+    try {
+      await new Promise((resolve, reject) => {
+        const req = http.get('http://127.0.0.1:3001/health', (res) => {
+          if (res.statusCode === 200) {
+            resolve();
+          } else {
+            reject(new Error(`Health check failed: ${res.statusCode}`));
+          }
+        });
+        req.on('error', reject);
+        req.setTimeout(1000);
+      });
+
+      log(`✅ Server is ready and responding! (attempt ${i + 1})`);
+      return true;
+    } catch (err) {
+      log(`⏳ Waiting for server... attempt ${i + 1}/${maxAttempts}`);
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+    }
+  }
+
+  return false;
+}
+
+
 async function startServer() {
   const logPath = path.join(app.getPath("userData"), "server-debug.log");
 
@@ -86,10 +116,16 @@ async function startServer() {
       log(`⚠️ Server process exited with code ${code}, signal ${signal}`);
     });
 
-    // Wait a bit to ensure server starts
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // Active health check instead of fixed timeout
+    log("⏳ Waiting for server to be ready...");
+    const serverReady = await waitForServer(log);
 
-    log("✅ Server process started successfully!");
+    if (!serverReady) {
+      log("❌ Server failed to respond after maximum attempts");
+      return false;
+    }
+
+    log("✅ Server process started and verified ready!");
     return true;
   } catch (err) {
     log(`❌ Eroare: ${err.message}`);

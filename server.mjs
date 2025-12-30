@@ -239,6 +239,18 @@ app.use("/static", protectStatic, express.static(storagePath));
 app.use("/Imagini", express.static(imagePath)); // ✅ Serve images
 app.use(express.json());
 
+// ==========================================
+// 🏥 HEALTH CHECK ENDPOINT
+// ==========================================
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    port: PORT
+  });
+});
+
+
 function valideazaMaterial(material) {
   const erori = [];
   if (
