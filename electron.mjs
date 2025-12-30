@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain, Menu } from "electron";
 import path from "path";
-import { fileURLToPath, pathToFileURL } from "url";
+import { fileURLToPath } from "url";
 import { existsSync } from "fs";
 
 // ==========================================
@@ -20,8 +20,12 @@ app.commandLine.appendSwitch("disable-software-rasterizer");
 // 🟦 SERVER EXPRESS
 // ==========================================
 
+// Variabilă globală pentru proces server
+let serverProcess = null;
+
 async function startServer() {
   const fs = require("fs");
+  const { fork } = require("child_process");
   const logPath = path.join(app.getPath("userData"), "server-debug.log");
 
   function log(msg) {
@@ -45,26 +49,48 @@ async function startServer() {
       return false;
     }
 
-    log("✅ server.mjs găsit, pornire în fundal...");
+    log("✅ server.mjs găsit, pornire ca child process...");
 
-    const serverUrl = pathToFileURL(serverPath);
-    log(`🔍 Server URL: ${serverUrl.href}`);
+    // SOLUTION: Fork server.mjs as child process instead of importing
+    // This avoids ESM module resolution issues in ASAR
+    const env = {
+      ...process.env,
+      USER_DATA_PATH: app.getPath("userData"),
+      NODE_ENV: app.isPackaged ? "production" : "development",
+    };
 
-    // CRITICAL: Wrap import in try-catch să vedem exact ce eroare dă
-    log("⏳ Attempting to import server.mjs...");
+    log(`🔍 Forking server with USER_DATA_PATH: ${env.USER_DATA_PATH}`);
 
-    try {
-      await import(serverUrl.href);
-      log("✅ Server module loaded successfully!");
-      log("⏳ Server should be initializing now...");
-    } catch (importErr) {
-      log(`❌ CRITICAL: Failed to import server.mjs: ${importErr.message}`);
-      log(`❌ Stack: ${importErr.stack}`);
-      console.error("❌ Server import error:", importErr);
-      return false;
-    }
+    serverProcess = fork(serverPath, [], {
+      env,
+      stdio: ["pipe", "pipe", "pipe", "ipc"],
+      execArgv: [], // Clear execArgv to avoid issues
+    });
 
-    // Returnăm IMEDIAT - nu așteptăm serverul
+    // Log server output
+    serverProcess.stdout.on("data", (data) => {
+      const msg = data.toString().trim();
+      log(`[SERVER] ${msg}`);
+    });
+
+    serverProcess.stderr.on("data", (data) => {
+      const msg = data.toString().trim();
+      log(`[SERVER ERROR] ${msg}`);
+    });
+
+    serverProcess.on("error", (err) => {
+      log(`❌ Server process error: ${err.message}`);
+      console.error("❌ Server process error:", err);
+    });
+
+    serverProcess.on("exit", (code, signal) => {
+      log(`⚠️ Server process exited with code ${code}, signal ${signal}`);
+    });
+
+    // Wait a bit to ensure server starts
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    log("✅ Server process started successfully!");
     return true;
   } catch (err) {
     log(`❌ Eroare: ${err.message}`);
@@ -175,6 +201,11 @@ ipcMain.handle("check-for-updates", async () => {
 });
 
 app.on("window-all-closed", () => {
+  // Kill server process when app closes
+  if (serverProcess) {
+    serverProcess.kill();
+  }
+
   if (process.platform !== "darwin") {
     app.quit();
   }
