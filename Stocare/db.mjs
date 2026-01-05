@@ -102,8 +102,27 @@ const fermentatoareInitiale = [
   { id: 6, nume: "Fermentator 6", capacitate: 2000, ocupat: false, reteta: null, cantitate: 0, dataInceput: null, imagine: "/Imagini/fermentator.png" }
 ];
 
+const materiiPrimeInitiale = [
+  // MALT
+  { id: 1, denumire: "Malt Pale Ale", cantitate: 1000, unitate: "kg", tip: "malt", producator: "Generic", codProdus: "MALT-01", lot: "INIT-001" },
+  { id: 2, denumire: "Malt", cantitate: 500, unitate: "kg", tip: "malt", producator: "Generic", codProdus: "MALT-02", lot: "INIT-002" },
+
+  // DROJDIE
+  { id: 3, denumire: "Drojdie BE 256", cantitate: 5, unitate: "kg", tip: "drojdie", producator: "Fermentis", codProdus: "YEAST-01", lot: "INIT-003" },
+  { id: 4, denumire: "Drojdie F2", cantitate: 5, unitate: "kg", tip: "drojdie", producator: "Fermentis", codProdus: "YEAST-02", lot: "INIT-004" },
+  { id: 5, denumire: "Drojdie Fermentis U.S 05", cantitate: 5, unitate: "kg", tip: "drojdie", producator: "Fermentis", codProdus: "YEAST-03", lot: "INIT-005" },
+
+  // HAMEI
+  { id: 6, denumire: "Hamei Bitter", cantitate: 10, unitate: "kg", tip: "hamei", producator: "Generic", codProdus: "HOPS-01", lot: "INIT-006" },
+  { id: 7, denumire: "Hamei Aroma", cantitate: 10, unitate: "kg", tip: "hamei", producator: "Generic", codProdus: "HOPS-02", lot: "INIT-007" },
+
+  // ADITIVI
+  { id: 8, denumire: "Zahar brun", cantitate: 50, unitate: "kg", tip: "aditiv", producator: "Generic", codProdus: "ADD-01", lot: "INIT-008" },
+  { id: 9, denumire: "Irish Moss", cantitate: 5, unitate: "kg", tip: "aditiv", producator: "Generic", codProdus: "ADD-02", lot: "INIT-009" }
+];
+
 const defaultData = {
-  materiiPrime: [], // Vor fi populate sau default
+  materiiPrime: materiiPrimeInitiale, // Populat cu valori default
   materialeAmbalare: [],
   fermentatoare: fermentatoareInitiale,
   reteteBere: reteteBereInitiale,

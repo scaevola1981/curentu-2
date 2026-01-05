@@ -64,6 +64,22 @@ async function startServer() {
   }
 
   try {
+    // 🧹 LOG ROTATION: Rename old log if exists
+    if (existsSync(logPath)) {
+      const oldLogPath = path.join(app.getPath("userData"), "server-debug.old.log");
+      try {
+        if (existsSync(oldLogPath)) {
+          // Optional: delete very old log or just overwrite
+          // fs.unlinkSync(oldLogPath); 
+        }
+        // Rename current to old (overwrite)
+        import('fs').then(fs => fs.renameSync(logPath, oldLogPath));
+        console.log(`[ELECTRON] 🔄 Log rotated: server-debug.log -> server-debug.old.log`);
+      } catch (e) {
+        console.error(`[ELECTRON] ⚠️ Log rotation failed: ${e.message}`);
+      }
+    }
+
     log("🚀 [ELECTRON] Starting server initialization...");
 
     const serverPath = app.isPackaged
