@@ -38,13 +38,13 @@ const Dashboard = () => {
       setError(null);
       try {
         // Materii Prime
-        const materiiRes = await fetch(`${API_URL}/api/materii-prime`);
+        const materiiRes = await fetch(`${API_URL}/api/materii-prime?t=${Date.now()}`);
         if (!materiiRes.ok) throw new Error(`Eroare HTTP: ${materiiRes.status}`);
         const materiiData = await materiiRes.json();
         const totalQuantity = materiiData.reduce((sum, m) => sum + parseFloat(m.cantitate || 0), 0);
 
         // Productions (Full Fermentors)
-        const fermentatoareRes = await fetch(`${API_URL}/api/fermentatoare`);
+        const fermentatoareRes = await fetch(`${API_URL}/api/fermentatoare?t=${Date.now()}`);
         if (!fermentatoareRes.ok) throw new Error(`Eroare HTTP: ${fermentatoareRes.status}`);
         const fermentatoareData = await fermentatoareRes.json();
         const fullFermentors = fermentatoareData.filter(f => f.ocupat);
@@ -53,16 +53,16 @@ const Dashboard = () => {
         const ambalareData = fermentatoareData.filter(f => f.ocupat);
 
         // Depozitare (Stored Stock)
-        const depozitareRes = await fetch(`${API_URL}/api/loturi-ambalate`);
+        const depozitareRes = await fetch(`${API_URL}/api/loturi-ambalate?t=${Date.now()}`);
         if (!depozitareRes.ok) throw new Error(`Eroare HTTP: ${depozitareRes.status}`);
         const depozitareData = await depozitareRes.json();
         const totalStock = depozitareData.reduce((sum, l) => sum + parseFloat(l.cantitate || 0), 0);
 
         // Rebuturi - Folosim datele reale
-        const rebuturiRes = await fetch(`${API_URL}/api/rebuturi`);
+        const rebuturiRes = await fetch(`${API_URL}/api/rebuturi?t=${Date.now()}`);
         if (!rebuturiRes.ok) throw new Error(`Eroare HTTP: ${rebuturiRes.status}`);
         const rebuturiData = await rebuturiRes.json();
-        
+
         const totalRebuturi = rebuturiData.reduce((sum, r) => sum + parseFloat(r.cantitate || 0), 0);
         const totalCapace = rebuturiData.reduce((sum, r) => sum + (r.materiale?.capace || 0), 0);
         const totalEtichete = rebuturiData.reduce((sum, r) => sum + (r.materiale?.etichete || 0), 0);
@@ -75,8 +75,8 @@ const Dashboard = () => {
           productions: { fullFermentors },
           ambalare: { readyLots: ambalareData },
           depozitare: { lots: depozitareData, totalStock },
-          rebuturi: { 
-            items: rebuturiData, 
+          rebuturi: {
+            items: rebuturiData,
             totalQuantity: totalRebuturi,
             totalCapace,
             totalEtichete,
@@ -147,8 +147,8 @@ const Dashboard = () => {
             <div className={styles.errorIcon}>⚠️</div>
             <h3>Eroare la încărcarea datelor</h3>
             <p>{error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
+            <button
+              onClick={() => window.location.reload()}
               className={styles.reloadButton}
             >
               Reîncarcă
@@ -170,7 +170,7 @@ const Dashboard = () => {
             <span className={styles.time}>{currentTime} EEST</span>
           </div>
         </div>
-        
+
         {/* 🔹 Cardurile originale (păstrate integral) */}
         <div className={styles.cardContainer}>
           {/* Materii Prime */}

@@ -94,7 +94,7 @@ const Rebuturi = () => {
   // Încarcă datele
   const loadRebuturi = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/rebuturi`);
+      const res = await fetch(`${API_URL}/api/rebuturi?t=${Date.now()}`);
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
 
       const rebuturiData = await res.json();

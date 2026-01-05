@@ -35,7 +35,7 @@ const Ambalare = () => {
   // Data loading functions
   const loadMateriale = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/materiale-ambalare`);
+      const res = await fetch(`${API_URL}/materiale-ambalare?t=${Date.now()}`);
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const data = await res.json();
       setMateriale(data);
@@ -46,7 +46,7 @@ const Ambalare = () => {
 
   const loadFermentatoare = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/fermentatoare`);
+      const res = await fetch(`${API_URL}/fermentatoare?t=${Date.now()}`);
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const data = await res.json();
       setFermentatoare(data.filter((f) => f.ocupat && f.cantitate > 0));

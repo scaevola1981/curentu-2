@@ -33,7 +33,7 @@ const MateriiPrime = () => {
   const loadMaterials = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch(API_URL);
+      const res = await fetch(`${API_URL}?t=${Date.now()}`);
       const data = await res.json();
       setMaterii(data);
     } catch (err) {
@@ -259,8 +259,8 @@ const MateriiPrime = () => {
                 editMode === "add"
                   ? "Cantitate de adăugat *"
                   : editMode === "remove"
-                  ? "Cantitate de folosit *"
-                  : "Cantitate *"
+                    ? "Cantitate de folosit *"
+                    : "Cantitate *"
               }
               value={nouMaterial.cantitate}
               onChange={handleInputChange}
@@ -295,8 +295,8 @@ const MateriiPrime = () => {
               {editMode === "add"
                 ? "Adaugă la stoc"
                 : editMode === "remove"
-                ? "Scade din stoc"
-                : "Adaugă Material"}
+                  ? "Scade din stoc"
+                  : "Adaugă Material"}
             </button>
 
             {editMode && (
@@ -346,14 +346,14 @@ const MateriiPrime = () => {
                 >
                   + Adaugă
                 </button>
-                 <div className={styles.cardActions}>
-                {/* <button className={styles.buttonAdd} onClick={() => startAdding(m)}>+ Adaugă</button> */}
-                {/* <button className={styles.buttonRemove} onClick={() => startRemoving(m)}>Folosește</button> */}
-              </div>
+                <div className={styles.cardActions}>
+                  {/* <button className={styles.buttonAdd} onClick={() => startAdding(m)}>+ Adaugă</button> */}
+                  {/* <button className={styles.buttonRemove} onClick={() => startRemoving(m)}>Folosește</button> */}
+                </div>
 
               </div>
 
-             
+
             </div>
           ))}
         </div>

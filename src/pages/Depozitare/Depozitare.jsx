@@ -29,7 +29,7 @@ const Depozitare = () => {
 
   const loadData = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/loturi-ambalate`);
+      const res = await fetch(`${API_URL}/api/loturi-ambalate?t=${Date.now()}`);
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const loturiAmbalate = await res.json();
 
@@ -114,7 +114,7 @@ const Depozitare = () => {
 
   const loadIesiri = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/iesiri-bere`);
+      const res = await fetch(`${API_URL}/api/iesiri-bere?t=${Date.now()}`);
       if (res.ok) {
         const iesiriData = await res.json();
         setIesiri(iesiriData);
@@ -236,9 +236,8 @@ const Depozitare = () => {
         return;
       }
       cantitateScoasaNum = parsedUnits * litriPerKeg;
-      unitatiMesaj = `${parsedUnits} keg${
-        parsedUnits === 1 ? "" : "uri"
-      } (${cantitateScoasaNum.toFixed(2)}L)`;
+      unitatiMesaj = `${parsedUnits} keg${parsedUnits === 1 ? "" : "uri"
+        } (${cantitateScoasaNum.toFixed(2)}L)`;
       totalUnitatiScoase = parsedUnits;
     } else {
       cantitateScoasaNum = parsedUnits;
@@ -353,14 +352,13 @@ const Depozitare = () => {
   const downloadStocPDF = () => {
     const latexContent = `
 ${loturi
-  .map(
-    (lot) => `
-${lot.reteta} & ${lot.cantitate} & ${lot.ambalaj} & ${lot.numarUnitati} & ${
-      lot.detalii
-    } & ${new Date(lot.dataAmbalare).toLocaleDateString("ro-RO")} \\\\
+        .map(
+          (lot) => `
+${lot.reteta} & ${lot.cantitate} & ${lot.ambalaj} & ${lot.numarUnitati} & ${lot.detalii
+            } & ${new Date(lot.dataAmbalare).toLocaleDateString("ro-RO")} \\\\
 `
-  )
-  .join("")}
+        )
+        .join("")}
     `;
     downloadFile(
       latexContent,
@@ -393,24 +391,21 @@ ${lot.reteta} & ${lot.cantitate} & ${lot.ambalaj} & ${lot.numarUnitati} & ${
 \\midrule
 \\endhead
 ${iesiri
-  .map(
-    (iesire) => `
-  ${iesire.reteta} & ${iesire.cantitate} & ${
-      iesire.numarUnitatiScoase || ""
-    } & ${iesire.ambalaj} & ${iesire.motiv} & ${
-      iesire.detaliiIesire || ""
-    } & ${new Date(iesire.dataIesire).toLocaleDateString("ro-RO")} & ${
-      iesire.lotId
-    } \\\\
+        .map(
+          (iesire) => `
+  ${iesire.reteta} & ${iesire.cantitate} & ${iesire.numarUnitatiScoase || ""
+            } & ${iesire.ambalaj} & ${iesire.motiv} & ${iesire.detaliiIesire || ""
+            } & ${new Date(iesire.dataIesire).toLocaleDateString("ro-RO")} & ${iesire.lotId
+            } \\\\
 `
-  )
-  .join("")}
+        )
+        .join("")}
 \\bottomrule
 \\end{longtable}
 \\section*{Sumar Total}
 Total litri ieșiți: ${iesiri
-      .reduce((total, iesire) => total + parseFloat(iesire.cantitate), 0)
-      .toFixed(2)}L
+        .reduce((total, iesire) => total + parseFloat(iesire.cantitate), 0)
+        .toFixed(2)}L
 \\end{document}
     `;
     downloadFile(
@@ -477,17 +472,15 @@ Total litri ieșiți: ${iesiri
         <h1 className={styles.title}>Gestionare Depozitare</h1>
         <div className={styles.tabNavigation}>
           <button
-            className={`${styles.tabButton} ${
-              activeTab === "stoc" ? styles.activeTab : ""
-            }`}
+            className={`${styles.tabButton} ${activeTab === "stoc" ? styles.activeTab : ""
+              }`}
             onClick={() => setActiveTab("stoc")}
           >
             Stoc Curent
           </button>
           <button
-            className={`${styles.tabButton} ${
-              activeTab === "iesiri" ? styles.activeTab : ""
-            }`}
+            className={`${styles.tabButton} ${activeTab === "iesiri" ? styles.activeTab : ""
+              }`}
             onClick={() => setActiveTab("iesiri")}
           >
             Istoric Ieșiri ({iesiri.length})
@@ -544,8 +537,8 @@ Total litri ieșiți: ${iesiri
                     <div className={styles.cardActions}>
                       <div className={styles.inputsGroup}>
                         {lot.packagingType === "sticle" &&
-                        lot.bottleSize &&
-                        lot.boxType ? (
+                          lot.bottleSize &&
+                          lot.boxType ? (
                           <>
                             <input
                               type="number"
@@ -712,8 +705,8 @@ Total litri ieșiți: ${iesiri
                           {iesire.ambalaj === "sticle"
                             ? "sticle"
                             : iesire.ambalaj === "keguri"
-                            ? "keguri"
-                            : "litri"}
+                              ? "keguri"
+                              : "litri"}
                         </span>
                       </div>
                       <div className={styles.cardRow}>

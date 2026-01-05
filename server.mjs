@@ -196,6 +196,7 @@ app.use((req, res, next) => {
   next();
 });
 
+
 // Middleware to protect sensitive files in /static
 const protectStatic = (req, res, next) => {
   const forbiddenExtensions = [".json", ".env", ".log"];
@@ -217,6 +218,15 @@ const protectStatic = (req, res, next) => {
 
   next();
 };
+
+// Middleware to prevent caching
+app.use((req, res, next) => {
+  res.header("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  res.header("Pragma", "no-cache");
+  res.header("Expires", "0");
+  res.header("Surrogate-Control", "no-store");
+  next();
+});
 
 // Middleware to require confirmation for DELETE operations
 const requireDeleteConfirmation = (req, res, next) => {

@@ -40,7 +40,7 @@ const Productie = () => {
   // --- Load Data ---
   const loadRetete = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/retete-bere`);
+      const res = await fetch(`${API_URL}/retete-bere?t=${Date.now()}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setRetete(Array.isArray(data) ? data : []);
@@ -51,7 +51,7 @@ const Productie = () => {
 
   const loadFermentatoare = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/fermentatoare`);
+      const res = await fetch(`${API_URL}/fermentatoare?t=${Date.now()}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setFermentatoare(data);
