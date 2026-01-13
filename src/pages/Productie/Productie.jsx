@@ -265,7 +265,7 @@ const Productie = () => {
                     <>
                       <p><strong>Rețetă:</strong> {f.reteta}</p>
                       <p><strong>Cantitate:</strong> {f.cantitate}L</p>
-                      <p><strong>Data:</strong> {new Date(f.dataInceput).toLocaleDateString()}</p>
+                      <p><strong>Data:</strong> {new Date(f.dataInceput).toLocaleString('ro-RO', { dateStyle: 'short', timeStyle: 'short' })}</p>
                     </>
                   ) : (
                     <p className={styles.statusLiber}>Disponibil</p>

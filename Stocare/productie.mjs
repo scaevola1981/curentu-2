@@ -137,7 +137,14 @@ export async function confirmProduction(retetaId, fermentatorId, cantitateDorita
     fermentator.ocupat = true;
     fermentator.reteta = reteta.denumire;
     fermentator.cantitate = Number(cantitateDorita);
-    fermentator.dataInceput = new Date().toISOString();
+    // Round to nearest 30 minutes
+    const now = new Date();
+    const minutes = now.getMinutes();
+    const roundedMinutes = Math.round(minutes / 30) * 30;
+    now.setMinutes(roundedMinutes);
+    now.setSeconds(0);
+    now.setMilliseconds(0);
+    fermentator.dataInceput = now.toISOString();
 
     // 5. Salvează tot odată
     await db.write();

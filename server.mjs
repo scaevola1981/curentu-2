@@ -1,30 +1,85 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 import { dirname } from "path";
-import { existsSync, mkdirSync, copyFileSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, copyFileSync, writeFileSync, readFileSync } from "fs";
 import os from "os";
 
-import {
+// ==========================================
+// 🔧 PATH CONFIGURATION & DYNAMIC IMPORTS
+// ==========================================
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Constants
+const PORT = 3001;
+let stocarePath;
+let isDev = !process.env.USER_DATA_PATH || process.env.NODE_ENV === 'development';
+
+// 1. Determine Module Path (Where the .mjs files are)
+// In production (packaged), these are in app.asar.unpacked
+let modulesPath;
+
+if (isDev) {
+  modulesPath = path.join(__dirname, "Stocare");
+  console.log(`[SERVER] 🔧 DEV MODE - Modules path: ${modulesPath}`);
+} else {
+  // PROD: Use process.resourcesPath to find app.asar.unpacked
+  // Usually: resources/app.asar.unpacked/dist/Stocare OR resources/app.asar.unpacked/Stocare
+  // We'll check both to be safe, defaulting to the dist one if it exists (Electron Builder common)
+  const unpackedBase = path.join(process.resourcesPath, 'app.asar.unpacked');
+  const distStocare = path.join(unpackedBase, 'dist', 'Stocare');
+  const rootStocare = path.join(unpackedBase, 'Stocare');
+
+  if (existsSync(distStocare)) {
+    modulesPath = distStocare;
+  } else if (existsSync(rootStocare)) {
+    modulesPath = rootStocare;
+  } else {
+    // Fallback for some configs
+    modulesPath = path.join(process.resourcesPath, 'Stocare');
+  }
+  console.log(`[SERVER] 📦 PROD MODE - Modules path determined: ${modulesPath}`);
+}
+
+// 2. Dynamic Import Helper
+const importModule = async (filename) => {
+  const modulePath = path.join(modulesPath, filename);
+  // URL normalization is CRITICAL for Windows (file:///C:/...)
+  const moduleUrl = pathToFileURL(modulePath).href;
+  try {
+    return await import(moduleUrl);
+  } catch (err) {
+    console.error(`[SERVER] 💥 Failed to import ${filename} from ${moduleUrl}`, err);
+    throw err;
+  }
+};
+
+// 3. Load Modules
+console.log("[SERVER] ⏳ Loading modules...");
+const {
   getMateriiPrime,
   adaugaSauSuplimenteazaMaterial,
   actualizeazaMaterial,
   stergeMaterial,
   stergeToateMaterialele,
-} from "./Stocare/ingrediente.mjs";
-import {
+} = await importModule("ingrediente.mjs");
+
+const {
   getFermentatoare,
   updateFermentator,
-} from "./Stocare/fermentatoare.mjs";
-import {
+} = await importModule("fermentatoare.mjs");
+
+const {
   adaugaLot,
   obtineLoturi,
   actualizeazaLot,
   stergeLot,
   obtineLotDupaId,
-} from "./Stocare/loturiAmbalate.mjs";
-import {
+} = await importModule("loturiAmbalate.mjs");
+
+const {
   getMaterialeAmbalare,
   adaugaMaterialAmbalare,
   actualizeazaMaterialAmbalare,
@@ -32,9 +87,11 @@ import {
   stergeToateMaterialeleAmbalare,
   exportaMaterialeAmbalare,
   getMaterialePentruLot,
-} from "./Stocare/materialeAmbalare.mjs";
-import { getReteteBere } from "./Stocare/reteteBere.mjs";
-import {
+} = await importModule("materialeAmbalare.mjs");
+
+const { getReteteBere } = await importModule("reteteBere.mjs");
+
+const {
   getIesiriBere,
   adaugaIesireBere,
   getIesiriPentruLot,
@@ -43,13 +100,17 @@ import {
   stergeIesireBere,
   exportaIesiriCSV,
   getIesiriPerioada,
-} from "./Stocare/iesiriBere.mjs";
-import { checkStock, confirmProduction } from "./Stocare/productie.mjs";
+} = await importModule("iesiriBere.mjs");
+
+const { checkStock, confirmProduction } = await importModule("productie.mjs");
+const { initializeDb } = await importModule("db.mjs");
+
+console.log("[SERVER] ✅ All modules loaded successfully!");
 
 
-import { initializeDb } from "./Stocare/db.mjs";
-
-// === 🛡️ GLOBAL ERROR HANDLERS ===
+// ==========================================
+// 🛡️ GLOBAL ERROR HANDLERS
+// ==========================================
 process.on('uncaughtException', (err) => {
   console.error('[SERVER] 💥 UNCAUGHT EXCEPTION:', err);
   console.error(err.stack);
@@ -60,130 +121,123 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// ==========================================
+// 📂 STORAGE & DB INIT
+// ==========================================
 
-// Determinăm calea de stocare (Writable)
-// Determinăm calea de stocare (Writable)
+// Determinăm calea de stocare pentru DB (Writable)
 let storagePath;
 
-// Check if running in development mode
-// Dev mode = USER_DATA_PATH not set OR explicitly in development environment
-const isDev = !process.env.USER_DATA_PATH || process.env.NODE_ENV === 'development';
-
 if (isDev) {
-  // DEV MODE: Use local Stocare folder directly
   storagePath = path.join(__dirname, "Stocare");
-  console.log(`[SERVER] 🔧 DEV MODE - Using local storage: ${storagePath}`);
-  console.log(`[SERVER] 📂 Data will be read from ./Stocare folder`);
+  console.log(`[SERVER] 🔧 DEV MODE - Storage path: ${storagePath}`);
 } else {
-  // PRODUCTION MODE: Use USER_DATA_PATH
   storagePath = path.join(process.env.USER_DATA_PATH, "Stocare");
   console.log(`[SERVER] 🔒 PROD MODE - Using secure storage: ${storagePath}`);
 
-  // Creăm folderul dacă nu există
   if (!existsSync(storagePath)) {
     mkdirSync(storagePath, { recursive: true });
     console.log(`[SERVER] 📁 Created Main Storage Directory: ${storagePath}`);
   }
+}
 
-  // Verificăm dacă db.json există
-  const targetDb = path.join(storagePath, "db.json");
+// Default Data Config
+const DEFAULT_INGREDIENTS = [
+  {
+    "id": 1,
+    "denumire": "Malt",
+    "tip": "malt",
+    "cantitate": 1000,
+    "unitate": "kg",
+    "producator": "Generic Malt",
+    "codProdus": "MALT-001",
+    "lot": "",
+    "subcategorie": ""
+  },
+  {
+    "id": 2,
+    "denumire": "Hamei Bitter",
+    "tip": "hamei",
+    "cantitate": 50,
+    "unitate": "kg",
+    "producator": "Generic Hops",
+    "codProdus": "HAMEI-001",
+    "lot": "",
+    "subcategorie": ""
+  },
+  {
+    "id": 3,
+    "denumire": "Drojdie US-05",
+    "tip": "drojdie",
+    "cantitate": 10,
+    "unitate": "kg",
+    "producator": "Fermentis",
+    "codProdus": "DROJDIE-001",
+    "lot": "",
+    "subcategorie": ""
+  }
+];
 
-  if (!existsSync(targetDb)) {
-    console.log(`[INIT] 🆕 db.json lipsă în ${storagePath}`);
+// Initialize DB Logic
+const targetDb = path.join(storagePath, "db.json");
 
-    // Determinăm path-ul către template db.json
-    // În packaged app, trebuie să fie în app.asar.unpacked
-    let templateDb;
+// Ensure DB exists and populate if empty
+if (!existsSync(targetDb)) {
+  console.log(`[INIT] 🆕 db.json missing at ${targetDb}`);
 
-    // Check if running from asar
-    if (__dirname.includes('app.asar')) {
-      // Packaged mode - use app.asar.unpacked
-      const unpackedPath = __dirname.replace('app.asar', 'app.asar.unpacked');
-      templateDb = path.join(unpackedPath, "Stocare", "db.json");
-      console.log(`[INIT] 📦 Packaged mode - template path: ${templateDb}`);
-    } else {
-      // Development mode
-      templateDb = path.join(__dirname, "Stocare", "db.json");
-      console.log(`[INIT] 🔧 Dev mode - template path: ${templateDb}`);
-    }
+  // Try to find a template
+  let templateDb = path.join(modulesPath, "db.json");
 
-    // 1. Încercăm migrare din Documents (Legacy v1.3.1)
-    try {
-      const legacyDb = path.join(os.homedir(), "Documents", "CurentuApp", "db.json");
-
-      if (existsSync(legacyDb)) {
-        console.log(`[INIT] 🔄 DETECTAT DATE VECHI (Legacy): ${legacyDb}`);
-        console.log(`[INIT] 🔄 Migrare automată către: ${targetDb}`);
-        copyFileSync(legacyDb, targetDb);
-        console.log(`[INIT] ✅ Migrare completă!`);
-      } else if (existsSync(templateDb)) {
-        // 2. Fallback: Template
-        console.log(`[INIT] ✨ DB Nou -> Copiere Template din: ${templateDb}`);
-        copyFileSync(templateDb, targetDb);
-        console.log(`[INIT] ✅ Template copiat cu succes!`);
-      } else {
-        console.error(`[INIT] ❌ EROARE CRITICĂ: Template db.json nu există la: ${templateDb}`);
-        console.error(`[INIT] ❌ __dirname: ${__dirname}`);
-
-        // 🆘 LAST RESORT: Creăm un db.json GOL cu structură validă
-        console.log(`[INIT] 🆘 Creăm database gol cu structură default...`);
-        const emptyDb = {
-          materiiPrime: [],
-          materialeAmbalare: [],
-          fermentatoare: [],
-          reteteBere: [],
-          lotProductie: [],
-          istoric: []
-        };
-
-        writeFileSync(targetDb, JSON.stringify(emptyDb, null, 2), 'utf8');
-        console.log(`[INIT] ✅ Database gol creat cu succes la: ${targetDb}`);
-        console.log(`[INIT] ⚠️  Datele vor fi goale - utilizatorul trebuie să adauge manual`);
-      }
-    } catch (migErr) {
-      console.error("[INIT] ⚠️ Eroare migrare:", migErr);
-      // Last resort fallback
-      if (existsSync(templateDb)) {
-        console.log(`[INIT] 🔄 Ultima încercare: copiere forțată template`);
-        copyFileSync(templateDb, targetDb);
-      } else {
-        // ULTIMATE FALLBACK: Create empty database
-        console.log(`[INIT] 🆘 ULTIMATE FALLBACK: Creăm database gol...`);
-        const emptyDb = {
-          materiiPrime: [],
-          materialeAmbalare: [],
-          fermentatoare: [],
-          reteteBere: [],
-          lotProductie: [],
-          istoric: []
-        };
-        writeFileSync(targetDb, JSON.stringify(emptyDb, null, 2), 'utf8');
-        console.log(`[INIT] ✅ Database gol creat (fallback)!`);
-      }
-    }
+  if (existsSync(templateDb)) {
+    console.log(`[INIT] 📄 Found template at ${templateDb}, copying...`);
+    copyFileSync(templateDb, targetDb);
   } else {
-    console.log(`[INIT] ✅ db.json exists at: ${targetDb}`);
+    console.log(`[INIT] ⚠️ Template not found. Creating fresh DB with defaults.`);
+    const emptyDb = {
+      materiiPrime: DEFAULT_INGREDIENTS,
+      materialeAmbalare: [],
+      fermentatoare: [],
+      reteteBere: [],
+      lotProductie: [],
+      istoric: []
+    };
+    writeFileSync(targetDb, JSON.stringify(emptyDb, null, 2), 'utf8');
+    console.log(`[INIT] ✅ Created fresh DB with default ingredients.`);
+  }
+} else {
+  // DB Exists - Check if empty and force populate materials if needed
+  try {
+    const dbContent = JSON.parse(readFileSync(targetDb, 'utf8'));
+    if (!dbContent.materiiPrime || dbContent.materiiPrime.length === 0) {
+      console.log(`[INIT] 📭 db.json exists but 'materiiPrime' is empty. Injecting defaults...`);
+      dbContent.materiiPrime = DEFAULT_INGREDIENTS;
+      writeFileSync(targetDb, JSON.stringify(dbContent, null, 2), 'utf8');
+      console.log(`[INIT] ✅ Injected default ingredients successfully.`);
+    }
+  } catch (e) {
+    console.error(`[INIT] ❌ Error checking/populating existing DB:`, e);
   }
 }
+
 
 // Determine image path (Unpacked logic)
 const imagePath = existsSync(path.join(__dirname, "dist", "Imagini"))
   ? path.join(__dirname, "dist", "Imagini")
   : path.join(__dirname, "public", "Imagini");
 
-console.log(`[SERVER] 📊 Database path: ${storagePath}/db.json`);
+console.log(`[SERVER] 📊 Database path: ${targetDb}`);
 console.log(`[SERVER] 🖼️  Image path: ${imagePath}`);
 
+
 const app = express();
-const PORT = 3001;
+
 
 app.disable("x-powered-by");
 
+// Updated CORS to allow all origins (fixes file:// issues)
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "*", // ✅ Allow all origins including file://
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Confirm-Delete"],
   })
@@ -192,7 +246,7 @@ app.use(
 // Middleware for basic security headers
 app.use((req, res, next) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
-  res.setHeader("X-Frame-Options", "DENY");
+  // res.setHeader("X-Frame-Options", "DENY"); // Can interfere with some Electron setups, optional
   next();
 });
 
@@ -800,108 +854,39 @@ app.get("/api/rebuturi", async (req, res) => {
           if (unitati >= 24 && unitati % 24 === 0) return 24;
           if (unitati >= 20 && unitati % 20 === 0) return 20;
           if (unitati >= 12 && unitati % 12 === 0) return 12;
-          return 6;
+          if (unitati >= 6 && unitati % 6 === 0) return 6;
+          return null;
         })();
 
-        const materiale = {
-          capace: iesire.ambalaj === "sticle" ? unitati : 0,
-          etichete: iesire.ambalaj === "sticle" ? unitati : 0,
-          sticle: iesire.ambalaj === "sticle" ? unitati : 0,
-          cutii: iesire.ambalaj === "sticle" ? Math.ceil(unitati / boxSize) : 0,
-          keguri: iesire.ambalaj === "keguri" ? unitati : 0,
-        };
+        // Dacă nu avem boxSize, putem folosi logica din calcul cutii din front-end
+        // Sau pur și simplu returnam 0
+        const cutii = boxSize ? Math.ceil(unitati / boxSize) : 0;
 
         return {
           ...iesire,
-          materiale,
-          boxType: boxSize,
+          packagingType: lot?.packagingType || "N/A",
+          bottleSize: lot?.bottleSize || "N/A",
+          boxType: boxSize ? `Cutie ${boxSize} sticle` : "N/A",
+          cutiiPierdute: cutii, // adaugăm câmpul calculat
         };
       })
     );
 
     res.json(rebuturiCuMateriale);
   } catch (error) {
-    console.error(
-      "Eroare la obținerea rebuturilor:",
-      error.message,
-      error.stack
-    );
-    res.status(500).json({ error: "Eroare la preluarea rebuturilor" });
+    console.error("Eroare la obținerea rebuturilor:", error);
+    res.status(500).json({ error: "Eroare la preluarea datelor" });
   }
 });
 
-// Ștergere rebut individual
+app.listen(PORT, "0.0.0.0", async () => {
+  console.log(`[SERVER] 🚀 Server running at http://localhost:${PORT}`);
+  console.log(`[SERVER] 📂 Storage Directory Is: ${storagePath}`);
 
-app.delete("/api/rebuturi/:id", async (req, res) => {
+  // Call init here to ensure it happens after module load
   try {
-    const { id } = req.params;
-
-    const iesiri = await getIesiriBere();
-    const rebut = iesiri.find((i) => i.id == id);
-
-    if (!rebut) {
-      return res.status(404).json({ error: "Rebutul nu a fost găsit" });
-    }
-
-    const deleted = await stergeIesireBere(parseInt(id));
-
-    if (!deleted) {
-      return res.status(500).json({ error: "Eroare la ștergerea rebutului" });
-    }
-
-    res.json({ success: true, message: "Rebut șters cu succes" });
-  } catch (err) {
-    console.error("Eroare la ștergerea rebutului:", err);
-    res.status(500).json({ error: "Eroare internă la ștergere" });
+    await initializeDb();
+  } catch (e) {
+    console.error("[SERVER] Failed to run initializeDb:", e);
   }
-});
-
-console.log("[SERVER] 🚀 Starting database initialization...");
-// --- 🍺 ENDPOINTS PRODUCȚIE (LOGICĂ NOUĂ BACKEND) ---
-
-app.post("/api/productie/check", async (req, res) => {
-  try {
-    const { retetaId, cantitate } = req.body;
-    if (!retetaId || !cantitate) return res.status(400).json({ error: "Lipsesc parametri (retetaId, cantitate)" });
-
-    const result = await checkStock(retetaId, cantitate);
-    res.json(result);
-  } catch (error) {
-    console.error("Eroare verificare stoc:", error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.post("/api/productie/confirm", async (req, res) => {
-  try {
-    const { retetaId, fermentatorId, cantitate } = req.body;
-    if (!retetaId || !fermentatorId || !cantitate) return res.status(400).json({ error: "Date incomplete" });
-
-    const result = await confirmProduction(retetaId, fermentatorId, cantitate);
-    res.json(result);
-  } catch (error) {
-    console.error("Eroare confirmare producție:", error);
-    res.status(400).json({ error: error.message }); // 400 pt erori de logică (stoc insuficient)
-  }
-});
-
-// Export a Promise that resolves ONLY when Express is actually listening
-export const serverReady = new Promise((resolve, reject) => {
-  initializeDb()
-    .then(() => {
-      const server = app.listen(PORT, "127.0.0.1", (err) => {
-        if (err) {
-          console.error("[SERVER] ❌ Failed to start:", err);
-          reject(err);
-        } else {
-          console.log(`✅ Server READY on http://127.0.0.1:${PORT}`);
-          resolve(server);
-        }
-      });
-
-      setTimeout(() => {
-        reject(new Error("Server startup timeout after 10s"));
-      }, 10000);
-    })
-    .catch(reject);
 });
