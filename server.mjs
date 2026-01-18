@@ -7,106 +7,175 @@ import { existsSync, mkdirSync, copyFileSync, writeFileSync, readFileSync } from
 import os from "os";
 
 // ==========================================
-// 🔧 PATH CONFIGURATION & DYNAMIC IMPORTS
+// 🔧 PATH CONFIGURATION
 // ==========================================
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Constants
 const PORT = 3001;
-let stocarePath;
 let isDev = !process.env.USER_DATA_PATH || process.env.NODE_ENV === 'development';
 
-// 1. Determine Module Path (Where the .mjs files are)
-// In production (packaged), these are in app.asar.unpacked
+console.log(`[SERVER] 🚀 Starting in ${isDev ? 'DEVELOPMENT' : 'PRODUCTION'} mode`);
+
+// ==========================================
+// 📂 STORAGE PATHS - FIXED FOR WINDOWS
+// ==========================================
+let storagePath;
 let modulesPath;
 
 if (isDev) {
-  modulesPath = path.join(__dirname, "Stocare");
-  console.log(`[SERVER] 🔧 DEV MODE - Modules path: ${modulesPath}`);
+  storagePath = path.join(__dirname, "Stocare");
+  modulesPath = storagePath;
+  console.log(`[SERVER] 🔧 DEV MODE - Storage: ${storagePath}`);
 } else {
-  // PROD: Use process.resourcesPath to find app.asar.unpacked
-  // Usually: resources/app.asar.unpacked/dist/Stocare OR resources/app.asar.unpacked/Stocare
-  // We'll check both to be safe, defaulting to the dist one if it exists (Electron Builder common)
-  const unpackedBase = path.join(process.resourcesPath, 'app.asar.unpacked');
-  const distStocare = path.join(unpackedBase, 'dist', 'Stocare');
-  const rootStocare = path.join(unpackedBase, 'Stocare');
+  // PRODUCTION: Force use %APPDATA%/curentu-app/Stocare
+  storagePath = path.join(process.env.USER_DATA_PATH, "Stocare");
 
-  if (existsSync(distStocare)) {
-    modulesPath = distStocare;
-  } else if (existsSync(rootStocare)) {
-    modulesPath = rootStocare;
-  } else {
-    // Fallback for some configs
-    modulesPath = path.join(process.resourcesPath, 'Stocare');
-  }
-  console.log(`[SERVER] 📦 PROD MODE - Modules path determined: ${modulesPath}`);
+  // Modules are in app.asar.unpacked
+  const unpackedBase = path.join(process.resourcesPath, 'app.asar.unpacked');
+  const possiblePaths = [
+    path.join(unpackedBase, 'Stocare'),
+    path.join(unpackedBase, 'dist', 'Stocare'),
+    path.join(process.resourcesPath, 'Stocare')
+  ];
+
+  modulesPath = possiblePaths.find(p => existsSync(p)) || possiblePaths[0];
+  console.log(`[SERVER] 📦 PROD MODE - Storage: ${storagePath}`);
+  console.log(`[SERVER] 📦 PROD MODE - Modules: ${modulesPath}`);
 }
 
-// 2. Dynamic Import Helper
-const importModule = async (filename) => {
-  const modulePath = path.join(modulesPath, filename);
-  // URL normalization is CRITICAL for Windows (file:///C:/...)
-  const moduleUrl = pathToFileURL(modulePath).href;
-  try {
-    return await import(moduleUrl);
-  } catch (err) {
-    console.error(`[SERVER] 💥 Failed to import ${filename} from ${moduleUrl}`, err);
-    throw err;
-  }
+// Ensure storage directory exists
+if (!existsSync(storagePath)) {
+  mkdirSync(storagePath, { recursive: true });
+  console.log(`[SERVER] 📁 Created storage directory: ${storagePath}`);
+}
+
+const dbPath = path.join(storagePath, "db.json");
+const backupsDir = path.join(storagePath, "backups");
+
+// ==========================================
+// 🗄️ INLINE DATABASE OPERATIONS
+// ==========================================
+
+// Default data structures
+const DEFAULT_DATA = {
+  materiiPrime: [
+    { id: 1, denumire: "Malt Pale Ale", cantitate: 1000, unitate: "kg", tip: "malt", producator: "Generic", codProdus: "MALT-01", lot: "INIT-001" },
+    { id: 2, denumire: "Malt", cantitate: 500, unitate: "kg", tip: "malt", producator: "Generic", codProdus: "MALT-02", lot: "INIT-002" },
+    { id: 3, denumire: "Drojdie BE 256", cantitate: 5, unitate: "kg", tip: "drojdie", producator: "Fermentis", codProdus: "YEAST-01", lot: "INIT-003" },
+    { id: 4, denumire: "Drojdie F2", cantitate: 5, unitate: "kg", tip: "drojdie", producator: "Fermentis", codProdus: "YEAST-02", lot: "INIT-004" },
+    { id: 5, denumire: "Drojdie Fermentis U.S 05", cantitate: 5, unitate: "kg", tip: "drojdie", producator: "Fermentis", codProdus: "YEAST-03", lot: "INIT-005" },
+    { id: 6, denumire: "Hamei Bitter", cantitate: 10, unitate: "kg", tip: "hamei", producator: "Generic", codProdus: "HOPS-01", lot: "INIT-006" },
+    { id: 7, denumire: "Hamei Aroma", cantitate: 10, unitate: "kg", tip: "hamei", producator: "Generic", codProdus: "HOPS-02", lot: "INIT-007" },
+    { id: 8, denumire: "Zahar brun", cantitate: 50, unitate: "kg", tip: "aditiv", producator: "Generic", codProdus: "ADD-01", lot: "INIT-008" },
+    { id: 9, denumire: "Irish Moss", cantitate: 5, unitate: "kg", tip: "aditiv", producator: "Generic", codProdus: "ADD-02", lot: "INIT-009" }
+  ],
+  materialeAmbalare: [],
+  fermentatoare: [
+    { id: 1, nume: "Fermentator 1", capacitate: 1000, ocupat: false, reteta: null, cantitate: 0, dataInceput: null, imagine: "/Imagini/fermentator.png" },
+    { id: 2, nume: "Fermentator 2", capacitate: 1000, ocupat: false, reteta: null, cantitate: 0, dataInceput: null, imagine: "/Imagini/fermentator.png" },
+    { id: 3, nume: "Fermentator 3", capacitate: 1000, ocupat: false, reteta: null, cantitate: 0, dataInceput: null, imagine: "/Imagini/fermentator.png" },
+    { id: 4, nume: "Fermentator 4", capacitate: 1000, ocupat: false, reteta: null, cantitate: 0, dataInceput: null, imagine: "/Imagini/fermentator.png" },
+    { id: 5, nume: "Fermentator 5", capacitate: 2000, ocupat: false, reteta: null, cantitate: 0, dataInceput: null, imagine: "/Imagini/fermentator.png" },
+    { id: 6, nume: "Fermentator 6", capacitate: 2000, ocupat: false, reteta: null, cantitate: 0, dataInceput: null, imagine: "/Imagini/fermentator.png" }
+  ],
+  reteteBere: [
+    {
+      id: 1, denumire: "ADAPTOR LA SITUATIE - CB 01", tip: "Blondă",
+      concentratieMust: "12 ±0.50°Plato", concentratieAlcool: "5 ±0.5% vol",
+      image: "/adaptor.png", durata: 0, rezultat: { cantitate: 1000, unitate: "litri" },
+      ingrediente: [
+        { denumire: "Malt Pale Ale", cantitate: 400, unitate: "kg", tip: "malt", id: 1 },
+        { denumire: "Zahar brun", cantitate: 20, unitate: "kg", tip: "aditiv", id: 8 },
+        { denumire: "Drojdie BE 256", cantitate: 0.5, unitate: "kg", tip: "drojdie", id: 3 },
+        { denumire: "Drojdie F2", cantitate: 0.5, unitate: "kg", tip: "drojdie", id: 4 },
+        { denumire: "Hamei Bitter", cantitate: 1, unitate: "kg", tip: "hamei", id: 6 },
+        { denumire: "Hamei Aroma", cantitate: 0.8, unitate: "kg", tip: "hamei", id: 7 },
+        { denumire: "Irish Moss", cantitate: 0.3, unitate: "kg", tip: "aditiv", id: 9 }
+      ]
+    },
+    {
+      id: 2, denumire: "INTRERUPATOR DE MUNCA - CB 02", tip: "IPA",
+      concentratieMust: "16 - 20,5 ±1°Plato", concentratieAlcool: "7 - 9,5 ±1 %vol",
+      image: "/intrerupator.png", durata: 7, rezultat: { cantitate: 1000, unitate: "litri" },
+      ingrediente: [
+        { denumire: "Malt Pale Ale", cantitate: 372, unitate: "kg", tip: "malt", id: 1 },
+        { denumire: "Drojdie BE 256", cantitate: 0.5, unitate: "kg", tip: "drojdie", id: 3 },
+        { denumire: "Drojdie F2", cantitate: 0.4, unitate: "kg", tip: "drojdie", id: 4 },
+        { denumire: "Hamei Bitter", cantitate: 1.15, unitate: "kg", tip: "hamei", id: 6 },
+        { denumire: "Hamei Aroma", cantitate: 2.4, unitate: "kg", tip: "hamei", id: 7 },
+        { denumire: "Irish Moss", cantitate: 0.3, unitate: "kg", tip: "aditiv", id: 9 }
+      ]
+    },
+    {
+      id: 3, denumire: "USB AMPER ALE - CB 03", tip: "Pale Ale",
+      concentratieMust: "13.8 ± 0.50°Plato", concentratieAlcool: "6 ± 0.50 %vol",
+      image: "/usb-amper-ale.png", durata: 0, rezultat: { cantitate: 1000, unitate: "litri" },
+      ingrediente: [
+        { denumire: "Malt", cantitate: 300, unitate: "kg", tip: "malt", id: 2 },
+        { denumire: "Drojdie Fermentis U.S 05", cantitate: 0.5, unitate: "kg", tip: "drojdie", id: 5 },
+        { denumire: "Hamei Bitter", cantitate: 0.7, unitate: "kg", tip: "hamei", id: 6 },
+        { denumire: "Hamei Aroma", cantitate: 2.4, unitate: "kg", tip: "hamei", id: 7 },
+        { denumire: "Irish Moss", cantitate: 0.3, unitate: "kg", tip: "aditiv", id: 9 }
+      ]
+    }
+  ],
+  loturiAmbalate: [],
+  iesiriBere: [],
+  rebuturi: []
 };
 
-// 3. Load Modules
-console.log("[SERVER] ⏳ Loading modules...");
-const {
-  getMateriiPrime,
-  adaugaSauSuplimenteazaMaterial,
-  actualizeazaMaterial,
-  stergeMaterial,
-  stergeToateMaterialele,
-} = await importModule("ingrediente.mjs");
+// Database helper functions
+function readDb() {
+  try {
+    if (!existsSync(dbPath)) {
+      writeFileSync(dbPath, JSON.stringify(DEFAULT_DATA, null, 2), 'utf8');
+      console.log(`[DB] Created new database at ${dbPath}`);
+      return { ...DEFAULT_DATA };
+    }
+    const content = readFileSync(dbPath, 'utf8');
+    const data = JSON.parse(content);
 
-const {
-  getFermentatoare,
-  updateFermentator,
-} = await importModule("fermentatoare.mjs");
+    // Ensure all required fields exist
+    const merged = { ...DEFAULT_DATA, ...data };
+    if (!merged.materiiPrime || merged.materiiPrime.length === 0) {
+      merged.materiiPrime = DEFAULT_DATA.materiiPrime;
+    }
+    if (!merged.fermentatoare || merged.fermentatoare.length === 0) {
+      merged.fermentatoare = DEFAULT_DATA.fermentatoare;
+    }
+    if (!merged.reteteBere || merged.reteteBere.length === 0) {
+      merged.reteteBere = DEFAULT_DATA.reteteBere;
+    }
+    return merged;
+  } catch (err) {
+    console.error(`[DB] Error reading database:`, err);
+    return { ...DEFAULT_DATA };
+  }
+}
 
-const {
-  adaugaLot,
-  obtineLoturi,
-  actualizeazaLot,
-  stergeLot,
-  obtineLotDupaId,
-} = await importModule("loturiAmbalate.mjs");
+function writeDb(data) {
+  try {
+    // Create backup
+    if (!existsSync(backupsDir)) mkdirSync(backupsDir, { recursive: true });
+    if (existsSync(dbPath)) {
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      const backupFile = path.join(backupsDir, `db-${timestamp}.json`);
+      copyFileSync(dbPath, backupFile);
+    }
 
-const {
-  getMaterialeAmbalare,
-  adaugaMaterialAmbalare,
-  actualizeazaMaterialAmbalare,
-  stergeMaterialAmbalare,
-  stergeToateMaterialeleAmbalare,
-  exportaMaterialeAmbalare,
-  getMaterialePentruLot,
-} = await importModule("materialeAmbalare.mjs");
+    writeFileSync(dbPath, JSON.stringify(data, null, 2), 'utf8');
+    return true;
+  } catch (err) {
+    console.error(`[DB] Error writing database:`, err);
+    return false;
+  }
+}
 
-const { getReteteBere } = await importModule("reteteBere.mjs");
-
-const {
-  getIesiriBere,
-  adaugaIesireBere,
-  getIesiriPentruLot,
-  getSumarIesiriPeRetete,
-  getStatisticiIesiri,
-  stergeIesireBere,
-  exportaIesiriCSV,
-  getIesiriPerioada,
-} = await importModule("iesiriBere.mjs");
-
-const { checkStock, confirmProduction } = await importModule("productie.mjs");
-const { initializeDb } = await importModule("db.mjs");
-
-console.log("[SERVER] ✅ All modules loaded successfully!");
-
+// Initialize database
+console.log(`[SERVER] 📊 Database path: ${dbPath}`);
+let dbData = readDb();
+console.log(`[SERVER] ✅ Database loaded with ${dbData.materiiPrime?.length || 0} ingredients`);
 
 // ==========================================
 // 🛡️ GLOBAL ERROR HANDLERS
@@ -120,773 +189,487 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('[SERVER] 💥 UNHANDLED REJECTION at:', promise, 'reason:', reason);
 });
 
-
 // ==========================================
-// 📂 STORAGE & DB INIT
+// 🌐 EXPRESS APP SETUP
 // ==========================================
-
-// Determinăm calea de stocare pentru DB (Writable)
-let storagePath;
-
-if (isDev) {
-  storagePath = path.join(__dirname, "Stocare");
-  console.log(`[SERVER] 🔧 DEV MODE - Storage path: ${storagePath}`);
-} else {
-  storagePath = path.join(process.env.USER_DATA_PATH, "Stocare");
-  console.log(`[SERVER] 🔒 PROD MODE - Using secure storage: ${storagePath}`);
-
-  if (!existsSync(storagePath)) {
-    mkdirSync(storagePath, { recursive: true });
-    console.log(`[SERVER] 📁 Created Main Storage Directory: ${storagePath}`);
-  }
-}
-
-// Default Data Config
-const DEFAULT_INGREDIENTS = [
-  {
-    "id": 1,
-    "denumire": "Malt",
-    "tip": "malt",
-    "cantitate": 1000,
-    "unitate": "kg",
-    "producator": "Generic Malt",
-    "codProdus": "MALT-001",
-    "lot": "",
-    "subcategorie": ""
-  },
-  {
-    "id": 2,
-    "denumire": "Hamei Bitter",
-    "tip": "hamei",
-    "cantitate": 50,
-    "unitate": "kg",
-    "producator": "Generic Hops",
-    "codProdus": "HAMEI-001",
-    "lot": "",
-    "subcategorie": ""
-  },
-  {
-    "id": 3,
-    "denumire": "Drojdie US-05",
-    "tip": "drojdie",
-    "cantitate": 10,
-    "unitate": "kg",
-    "producator": "Fermentis",
-    "codProdus": "DROJDIE-001",
-    "lot": "",
-    "subcategorie": ""
-  }
-];
-
-// Initialize DB Logic
-const targetDb = path.join(storagePath, "db.json");
-
-// Ensure DB exists and populate if empty
-if (!existsSync(targetDb)) {
-  console.log(`[INIT] 🆕 db.json missing at ${targetDb}`);
-
-  // Try to find a template
-  let templateDb = path.join(modulesPath, "db.json");
-
-  if (existsSync(templateDb)) {
-    console.log(`[INIT] 📄 Found template at ${templateDb}, copying...`);
-    copyFileSync(templateDb, targetDb);
-  } else {
-    console.log(`[INIT] ⚠️ Template not found. Creating fresh DB with defaults.`);
-    const emptyDb = {
-      materiiPrime: DEFAULT_INGREDIENTS,
-      materialeAmbalare: [],
-      fermentatoare: [],
-      reteteBere: [],
-      lotProductie: [],
-      istoric: []
-    };
-    writeFileSync(targetDb, JSON.stringify(emptyDb, null, 2), 'utf8');
-    console.log(`[INIT] ✅ Created fresh DB with default ingredients.`);
-  }
-} else {
-  // DB Exists - Check if empty and force populate materials if needed
-  try {
-    const dbContent = JSON.parse(readFileSync(targetDb, 'utf8'));
-    if (!dbContent.materiiPrime || dbContent.materiiPrime.length === 0) {
-      console.log(`[INIT] 📭 db.json exists but 'materiiPrime' is empty. Injecting defaults...`);
-      dbContent.materiiPrime = DEFAULT_INGREDIENTS;
-      writeFileSync(targetDb, JSON.stringify(dbContent, null, 2), 'utf8');
-      console.log(`[INIT] ✅ Injected default ingredients successfully.`);
-    }
-  } catch (e) {
-    console.error(`[INIT] ❌ Error checking/populating existing DB:`, e);
-  }
-}
-
-
-// Determine image path (Unpacked logic)
-const imagePath = existsSync(path.join(__dirname, "dist", "Imagini"))
-  ? path.join(__dirname, "dist", "Imagini")
-  : path.join(__dirname, "public", "Imagini");
-
-console.log(`[SERVER] 📊 Database path: ${targetDb}`);
-console.log(`[SERVER] 🖼️  Image path: ${imagePath}`);
-
-
 const app = express();
-
-
 app.disable("x-powered-by");
 
-// Updated CORS to allow all origins (fixes file:// issues)
-app.use(
-  cors({
-    origin: "*", // ✅ Allow all origins including file://
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-Confirm-Delete"],
-  })
-);
+// CORS - Allow everything including file://
+app.use(cors({
+  origin: "*",
+  credentials: false,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Confirm-Delete"],
+}));
 
-// Middleware for basic security headers
+// Security headers
 app.use((req, res, next) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
-  // res.setHeader("X-Frame-Options", "DENY"); // Can interfere with some Electron setups, optional
   next();
 });
 
-
-// Middleware to protect sensitive files in /static
-const protectStatic = (req, res, next) => {
-  const forbiddenExtensions = [".json", ".env", ".log"];
-  const forbiddenDirs = ["/backups", "/.git"];
-
-  const normalizedUrl = req.url.toLowerCase();
-
-  // Block sensitive extensions
-  if (forbiddenExtensions.some(ext => normalizedUrl.endsWith(ext))) {
-    console.warn(`[SECURITY] Blocked access to sensitive file: ${req.url}`);
-    return res.status(403).send("Forbidden");
-  }
-
-  // Block sensitive directories
-  if (forbiddenDirs.some(dir => normalizedUrl.includes(dir))) {
-    console.warn(`[SECURITY] Blocked access to sensitive directory: ${req.url}`);
-    return res.status(403).send("Forbidden");
-  }
-
-  next();
-};
-
-// Middleware to prevent caching
+// Prevent caching
 app.use((req, res, next) => {
   res.header("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
   res.header("Pragma", "no-cache");
   res.header("Expires", "0");
-  res.header("Surrogate-Control", "no-store");
   next();
 });
 
-// Middleware to require confirmation for DELETE operations
-const requireDeleteConfirmation = (req, res, next) => {
-  const confirmHeader = req.headers['x-confirm-delete'];
-
-  if (confirmHeader !== 'true') {
-    console.warn(`[SECURITY] DELETE blocked without confirmation: ${req.method} ${req.url}`);
-    return res.status(403).json({
-      error: "Confirmare necesară",
-      message: "Pentru ștergere, trimiteți header-ul X-Confirm-Delete: true"
-    });
-  }
-
-  console.log(`[SECURITY] DELETE confirmed: ${req.method} ${req.url}`);
-  next();
-};
-
-
-app.use("/static", protectStatic, express.static(storagePath));
-app.use("/Imagini", express.static(imagePath)); // ✅ Serve images
 app.use(express.json());
 
+// Static files
+const imagePath = existsSync(path.join(__dirname, "dist", "Imagini"))
+  ? path.join(__dirname, "dist", "Imagini")
+  : path.join(__dirname, "public", "Imagini");
+app.use("/Imagini", express.static(imagePath));
+console.log(`[SERVER] 🖼️ Image path: ${imagePath}`);
+
 // ==========================================
-// 🏥 HEALTH CHECK ENDPOINT
+// 🏥 HEALTH CHECK
 // ==========================================
 app.get("/health", (req, res) => {
-  res.json({
-    status: "ok",
-    timestamp: new Date().toISOString(),
-    port: PORT
-  });
+  res.json({ status: "ok", timestamp: new Date().toISOString(), port: PORT });
 });
 
+// ==========================================
+// 📦 API ENDPOINTS
+// ==========================================
 
-function valideazaMaterial(material) {
-  const erori = [];
-  if (
-    !material.denumire ||
-    typeof material.denumire !== "string" ||
-    material.denumire.trim() === ""
-  ) {
-    erori.push("Denumirea este obligatorie");
-  }
-  if (material.cantitate === undefined || material.cantitate === null) {
-    erori.push("Cantitatea este obligatorie");
-  } else {
-    const cantitate = parseFloat(material.cantitate);
-    if (isNaN(cantitate) || cantitate <= 0) {
-      erori.push("Cantitatea trebuie să fie un număr pozitiv");
-    }
-  }
-  if (
-    !material.unitate ||
-    typeof material.unitate !== "string" ||
-    material.unitate.trim() === ""
-  ) {
-    erori.push("Unitatea este obligatorie");
-  }
-  return erori;
-}
-
-app.get("/api/materii-prime", async (req, res) => {
+// --- MATERII PRIME ---
+app.get("/api/materii-prime", (req, res) => {
   try {
-    const materii = await getMateriiPrime();
-    console.log("Răspuns GET /api/materii-prime:", materii);
-    res.json(materii);
+    dbData = readDb();
+    res.json(dbData.materiiPrime || []);
   } catch (error) {
-    console.error(
-      "Eroare la preluarea materiilor prime:",
-      error.message,
-      error.stack
-    );
+    console.error("Error getting materii prime:", error);
     res.status(500).json({ error: "Eroare la preluarea datelor" });
   }
 });
 
-app.post("/api/materii-prime", async (req, res) => {
-  const erori = valideazaMaterial(req.body);
-  if (erori.length > 0) {
-    return res.status(400).json({ error: "Date invalide", detalii: erori });
-  }
+app.post("/api/materii-prime", (req, res) => {
   try {
-    const rezultat = await adaugaSauSuplimenteazaMaterial(req.body);
-    if (rezultat) {
-      res.status(201).json({ succes: true });
-    } else {
-      res.status(500).json({ error: "Eroare la salvare" });
-    }
-  } catch (error) {
-    console.error(
-      "Eroare la adăugarea materialului:",
-      error.message,
-      error.stack
+    dbData = readDb();
+    const material = req.body;
+    const existing = dbData.materiiPrime.find(m =>
+      m.denumire === material.denumire && m.unitate === material.unitate
     );
+
+    if (existing) {
+      existing.cantitate = Number((existing.cantitate + Number(material.cantitate)).toFixed(2));
+    } else {
+      const maxId = dbData.materiiPrime.length > 0 ? Math.max(...dbData.materiiPrime.map(m => m.id)) : 0;
+      dbData.materiiPrime.push({ id: maxId + 1, ...material, cantitate: Number(material.cantitate) });
+    }
+
+    writeDb(dbData);
+    res.status(201).json({ succes: true });
+  } catch (error) {
+    console.error("Error adding material:", error);
     res.status(500).json({ error: "Eroare la salvare" });
   }
 });
 
-app.put("/api/materii-prime/:id", async (req, res) => {
-  const erori = valideazaMaterial(req.body);
-  if (erori.length > 0) {
-    return res.status(400).json({ error: "Date invalide", detalii: erori });
-  }
+app.put("/api/materii-prime/:id", (req, res) => {
   try {
-    const rezultat = await actualizeazaMaterial(req.params.id, req.body);
-    if (rezultat) {
-      res.json({ succes: true });
-    } else {
-      res.status(404).json({ error: "Materialul nu a fost găsit" });
-    }
+    dbData = readDb();
+    const id = parseInt(req.params.id);
+    const index = dbData.materiiPrime.findIndex(m => m.id === id);
+    if (index === -1) return res.status(404).json({ error: "Materialul nu a fost găsit" });
+
+    dbData.materiiPrime[index] = { ...dbData.materiiPrime[index], ...req.body, id };
+    writeDb(dbData);
+    res.json({ succes: true });
   } catch (error) {
-    console.error(
-      "Eroare la actualizarea materialului:",
-      error.message,
-      error.stack
-    );
+    console.error("Error updating material:", error);
     res.status(500).json({ error: "Eroare la actualizare" });
   }
 });
 
-app.delete("/api/materii-prime/:id", requireDeleteConfirmation, async (req, res) => {
+app.delete("/api/materii-prime/:id", (req, res) => {
   try {
-    const rezultat = await stergeMaterial(req.params.id);
-    if (rezultat) {
-      res.json({ succes: true });
-    } else {
-      res.status(404).json({ error: "Materialul nu a fost găsit" });
-    }
+    dbData = readDb();
+    const id = parseInt(req.params.id);
+    dbData.materiiPrime = dbData.materiiPrime.filter(m => m.id !== id);
+    writeDb(dbData);
+    res.json({ succes: true });
   } catch (error) {
-    console.error(
-      "Eroare la ștergerea materialului:",
-      error.message,
-      error.stack
-    );
+    console.error("Error deleting material:", error);
     res.status(500).json({ error: "Eroare la ștergere" });
   }
 });
 
-app.delete("/api/materii-prime", requireDeleteConfirmation, async (req, res) => {
+// --- FERMENTATOARE ---
+app.get("/api/fermentatoare", (req, res) => {
   try {
-    const rezultat = await stergeToateMaterialele();
-    if (rezultat) {
-      res.json({ succes: true });
-    } else {
-      res.status(500).json({ error: "Eroare la ștergerea materialelor" });
-    }
+    dbData = readDb();
+    res.json(dbData.fermentatoare || []);
   } catch (error) {
-    console.error(
-      "Eroare la ștergerea tuturor materialelor:",
-      error.message,
-      error.stack
-    );
-    res.status(500).json({ error: "Eroare la ștergerea materialelor" });
-  }
-});
-
-app.get("/api/retete-bere", async (req, res) => {
-  try {
-    const retete = await getReteteBere();
-    console.log("Rețete returnate:", retete);
-    res.json(retete);
-  } catch (error) {
-    console.error("Eroare la obținerea rețetelor:", error);
-    res.status(500).json({ error: "Nu s-au putut încărca rețetele" });
-  }
-});
-
-app.get("/api/fermentatoare", async (req, res) => {
-  try {
-    const fermentatoare = await getFermentatoare();
-    console.log("Răspuns GET /api/fermentatoare:", fermentatoare);
-    if (!fermentatoare || fermentatoare.length === 0) {
-      console.warn("Nu s-au găsit fermentatoare în baza de date");
-    }
-    res.json(fermentatoare);
-  } catch (error) {
-    console.error(
-      "Eroare la preluarea fermentatoarelor:",
-      error.message,
-      error.stack
-    );
+    console.error("Error getting fermentatoare:", error);
     res.status(500).json({ error: "Eroare la preluarea datelor" });
   }
 });
 
-app.put("/api/fermentatoare/:id", async (req, res) => {
+app.put("/api/fermentatoare/:id", (req, res) => {
   try {
+    dbData = readDb();
     const id = parseInt(req.params.id);
-    const dateActualizate = req.body;
-    const rezultat = await updateFermentator(id, dateActualizate);
-    if (rezultat) {
-      res.json({ succes: true });
-    } else {
-      res.status(404).json({ error: "Fermentatorul nu a fost găsit" });
-    }
+    const index = dbData.fermentatoare.findIndex(f => f.id === id);
+    if (index === -1) return res.status(404).json({ error: "Fermentatorul nu a fost găsit" });
+
+    dbData.fermentatoare[index] = { ...dbData.fermentatoare[index], ...req.body, id };
+    writeDb(dbData);
+    res.json({ succes: true });
   } catch (error) {
-    console.error(
-      "Eroare la actualizarea fermentatorului:",
-      error.message,
-      error.stack
-    );
+    console.error("Error updating fermentator:", error);
     res.status(500).json({ error: "Eroare la actualizare" });
   }
 });
 
-app.get("/api/loturi-ambalate", async (req, res) => {
+// --- RETETE BERE ---
+app.get("/api/retete-bere", (req, res) => {
   try {
-    const loturi = await obtineLoturi();
-    res.json(loturi || []);
+    dbData = readDb();
+    res.json(dbData.reteteBere || []);
   } catch (error) {
-    console.error("Eroare la obținerea loturilor ambalate:", error);
+    console.error("Error getting retete:", error);
     res.status(500).json({ error: "Eroare la preluarea datelor" });
   }
 });
 
-app.post("/api/loturi-ambalate", async (req, res) => {
+// --- LOTURI AMBALATE ---
+app.get("/api/loturi-ambalate", (req, res) => {
   try {
-    const lot = req.body;
-    const lotNou = await adaugaLot(lot);
-    res.status(201).json(lotNou);
+    dbData = readDb();
+    res.json(dbData.loturiAmbalate || []);
   } catch (error) {
-    console.error("Eroare la adăugarea lotului ambalat:", error);
+    console.error("Error getting loturi:", error);
+    res.status(500).json({ error: "Eroare la preluarea datelor" });
+  }
+});
+
+app.post("/api/loturi-ambalate", (req, res) => {
+  try {
+    dbData = readDb();
+    const lot = req.body;
+    const maxId = dbData.loturiAmbalate.length > 0 ? Math.max(...dbData.loturiAmbalate.map(l => l.id)) : 0;
+    const newLot = { id: maxId + 1, ...lot, dataCreare: new Date().toISOString() };
+    dbData.loturiAmbalate.push(newLot);
+    writeDb(dbData);
+    res.status(201).json(newLot);
+  } catch (error) {
+    console.error("Error adding lot:", error);
     res.status(500).json({ error: "Eroare la salvare" });
   }
 });
 
-app.get("/api/ambalare/:id", async (req, res) => {
+app.get("/api/ambalare/:id", (req, res) => {
   try {
+    dbData = readDb();
     const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-      return res.status(400).json({ error: "ID invalid" });
-    }
-    const lot = await obtineLotDupaId(id);
-    if (!lot) {
-      return res.status(404).json({ error: "Lotul nu a fost găsit" });
-    }
+    const lot = dbData.loturiAmbalate.find(l => l.id === id);
+    if (!lot) return res.status(404).json({ error: "Lotul nu a fost găsit" });
     res.json(lot);
   } catch (error) {
-    console.error("Eroare la obținerea lotului:", error.message, error.stack);
-    res.status(500).json({ error: "Eroare la obținerea lotului" });
+    console.error("Error getting lot:", error);
+    res.status(500).json({ error: "Eroare la preluarea datelor" });
   }
 });
 
-app.put("/api/ambalare/:id", async (req, res) => {
+app.put("/api/ambalare/:id", (req, res) => {
   try {
+    dbData = readDb();
     const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-      return res.status(400).json({ error: "ID invalid" });
-    }
-    const updatedLot = req.body;
-    const lot = await actualizeazaLot(id, updatedLot);
-    if (!lot) {
-      return res.status(404).json({ error: "Lotul nu a fost găsit" });
-    }
-    res.json(lot);
+    const index = dbData.loturiAmbalate.findIndex(l => l.id === id);
+    if (index === -1) return res.status(404).json({ error: "Lotul nu a fost găsit" });
+
+    dbData.loturiAmbalate[index] = { ...dbData.loturiAmbalate[index], ...req.body, id };
+    writeDb(dbData);
+    res.json(dbData.loturiAmbalate[index]);
   } catch (error) {
-    console.error(
-      "Eroare la actualizarea lotului:",
-      error.message,
-      error.stack
-    );
+    console.error("Error updating lot:", error);
     res.status(500).json({ error: "Eroare la actualizare" });
   }
 });
 
-app.delete("/api/ambalare/:id", async (req, res) => {
+app.delete("/api/ambalare/:id", (req, res) => {
   try {
+    dbData = readDb();
     const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-      return res.status(400).json({ error: "ID invalid" });
-    }
-    console.log(`Caut lotul cu ID: ${id}`);
-    const result = await stergeLot(id);
-    console.log(`Lotul cu ID ${id} a fost șters`);
+    dbData.loturiAmbalate = dbData.loturiAmbalate.filter(l => l.id !== id);
+    writeDb(dbData);
     res.json({ message: "Lot șters cu succes" });
   } catch (error) {
-    console.error("Eroare la ștergerea lotului:", error.message, error.stack);
-    if (error.message === "Lotul nu a fost găsit") {
-      res.status(404).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: "Eroare la ștergere" });
-    }
+    console.error("Error deleting lot:", error);
+    res.status(500).json({ error: "Eroare la ștergere" });
   }
 });
 
-app.get("/api/materiale-ambalare", async (req, res) => {
+// --- MATERIALE AMBALARE ---
+app.get("/api/materiale-ambalare", (req, res) => {
   try {
-    const materiale = await getMaterialeAmbalare();
-    console.log("Materiale ambalare returnate:", materiale);
-    res.json(materiale);
+    dbData = readDb();
+    res.json(dbData.materialeAmbalare || []);
   } catch (error) {
-    console.error(
-      "Eroare la preluarea materialelor de ambalare:",
-      error.message,
-      error.stack
-    );
-    res.status(500).json({ error: "Eroare internă a serverului" });
+    console.error("Error getting materiale ambalare:", error);
+    res.status(500).json({ error: "Eroare la preluarea datelor" });
   }
 });
 
-app.post("/api/materiale-ambalare", async (req, res) => {
-  const erori = valideazaMaterial(req.body);
-  if (erori.length > 0) {
-    return res.status(400).json({ error: "Date invalide", detalii: erori });
-  }
+app.post("/api/materiale-ambalare", (req, res) => {
   try {
-    const materialNou = await adaugaMaterialAmbalare(req.body);
-    res.status(201).json(materialNou);
+    dbData = readDb();
+    const material = req.body;
+    const maxId = dbData.materialeAmbalare.length > 0 ? Math.max(...dbData.materialeAmbalare.map(m => m.id)) : 0;
+    const newMaterial = { id: maxId + 1, ...material, cantitate: Number(material.cantitate) };
+    dbData.materialeAmbalare.push(newMaterial);
+    writeDb(dbData);
+    res.status(201).json(newMaterial);
   } catch (error) {
-    console.error(
-      "Eroare la adăugarea materialului de ambalare:",
-      error.message,
-      error.stack
-    );
+    console.error("Error adding material ambalare:", error);
     res.status(500).json({ error: "Eroare la salvare" });
   }
 });
 
-app.put("/api/materiale-ambalare/:id", async (req, res) => {
-  const erori = valideazaMaterial(req.body);
-  if (erori.length > 0) {
-    return res.status(400).json({ error: "Date invalide", detalii: erori });
-  }
+app.put("/api/materiale-ambalare/:id", (req, res) => {
   try {
-    const materialActualizat = await actualizeazaMaterialAmbalare(
-      req.params.id,
-      req.body
-    );
-    if (materialActualizat) {
-      res.json(materialActualizat);
-    } else {
-      res.status(404).json({ error: "Materialul de ambalare nu a fost găsit" });
-    }
+    dbData = readDb();
+    const id = parseInt(req.params.id);
+    const index = dbData.materialeAmbalare.findIndex(m => m.id === id);
+    if (index === -1) return res.status(404).json({ error: "Materialul nu a fost găsit" });
+
+    dbData.materialeAmbalare[index] = { ...dbData.materialeAmbalare[index], ...req.body, id };
+    writeDb(dbData);
+    res.json(dbData.materialeAmbalare[index]);
   } catch (error) {
-    console.error(
-      "Eroare la actualizarea materialului de ambalare:",
-      error.message,
-      error.stack
-    );
+    console.error("Error updating material ambalare:", error);
     res.status(500).json({ error: "Eroare la actualizare" });
   }
 });
 
-app.delete("/api/materiale-ambalare/:id", async (req, res) => {
+app.delete("/api/materiale-ambalare/:id", (req, res) => {
   try {
-    const materialeActualizate = await stergeMaterialAmbalare(req.params.id);
-    if (materialeActualizate) {
-      res.json(materialeActualizate);
-    } else {
-      res.status(404).json({ error: "Materialul de ambalare nu a fost găsit" });
-    }
+    dbData = readDb();
+    const id = parseInt(req.params.id);
+    dbData.materialeAmbalare = dbData.materialeAmbalare.filter(m => m.id !== id);
+    writeDb(dbData);
+    res.json(dbData.materialeAmbalare);
   } catch (error) {
-    console.error(
-      "Eroare la ștergerea materialului de ambalare:",
-      error.message,
-      error.stack
-    );
+    console.error("Error deleting material ambalare:", error);
     res.status(500).json({ error: "Eroare la ștergere" });
   }
 });
 
-app.delete("/api/materiale-ambalare", async (req, res) => {
+app.get("/api/materiale-ambalare/export", (req, res) => {
   try {
-    const rezultat = await stergeToateMaterialeleAmbalare();
-    if (rezultat) {
-      res.json({ succes: true });
-    } else {
-      res
-        .status(500)
-        .json({ error: "Eroare la ștergerea materialelor de ambalare" });
-    }
-  } catch (error) {
-    console.error(
-      "Eroare la ștergerea tuturor materialelor de ambalare:",
-      error.message,
-      error.stack
-    );
-    res
-      .status(500)
-      .json({ error: "Eroare la ștergerea materialelor de ambalare" });
-  }
-});
-
-app.get("/api/materiale-ambalare/export", async (req, res) => {
-  try {
-    const csvData = await exportaMaterialeAmbalare();
+    dbData = readDb();
+    const materiale = dbData.materialeAmbalare || [];
+    const headers = ["id", "denumire", "cantitate", "unitate", "producator", "codProdus", "lot", "tip", "subcategorie"];
+    const rows = [
+      headers.join(","),
+      ...materiale.map(m => `"${m.id}","${m.denumire}",${m.cantitate},"${m.unitate}","${m.producator || ""}","${m.codProdus || ""}","${m.lot || ""}","${m.tip || ""}","${m.subcategorie || ""}"`)
+    ];
     res.setHeader("Content-Type", "text/csv");
-    res.setHeader(
-      "Content-Disposition",
-      "attachment; filename=materiale-ambalare.csv"
-    );
-    res.send(csvData);
+    res.setHeader("Content-Disposition", "attachment; filename=materiale-ambalare.csv");
+    res.send(rows.join("\n"));
   } catch (error) {
-    console.error(
-      "Eroare la exportarea materialelor de ambalare:",
-      error.message,
-      error.stack
-    );
+    console.error("Error exporting materiale:", error);
     res.status(500).json({ error: "Eroare la export" });
   }
 });
 
-app.get("/api/iesiri-bere", async (req, res) => {
+// --- IESIRI BERE ---
+app.get("/api/iesiri-bere", (req, res) => {
   try {
-    const iesiri = await getIesiriBere();
-    res.json(iesiri);
+    dbData = readDb();
+    res.json(dbData.iesiriBere || []);
   } catch (error) {
-    console.error("Eroare la obținerea ieșirilor:", error);
+    console.error("Error getting iesiri:", error);
     res.status(500).json({ error: "Eroare la preluarea datelor" });
   }
 });
 
-app.post("/api/iesiri-bere", async (req, res) => {
+app.post("/api/iesiri-bere", (req, res) => {
   try {
-    const {
-      lotId,
-      reteta,
-      cantitate,
-      numarUnitatiScoase,
-      ambalaj,
-      motiv,
-      dataIesire,
-      utilizator,
-      observatii,
-      detaliiIesire,
-    } = req.body;
-
-    console.log("Received payload for /api/iesiri-bere:", req.body);
-
-    if (!lotId || !reteta || cantitate === undefined || cantitate === null) {
-      return res.status(400).json({
-        error: "Date invalide. LotId, reteta și cantitatea sunt obligatorii.",
-      });
-    }
-
-    const parsedCantitate = parseFloat(cantitate);
-    if (isNaN(parsedCantitate) || parsedCantitate <= 0) {
-      return res.status(400).json({
-        error: "Cantitatea trebuie să fie un număr pozitiv.",
-      });
-    }
-
-    if (
-      numarUnitatiScoase !== undefined &&
-      (isNaN(parseInt(numarUnitatiScoase)) || parseInt(numarUnitatiScoase) < 0)
-    ) {
-      return res.status(400).json({
-        error: "NumarUnitatiScoase trebuie să fie un număr nenegativ.",
-      });
-    }
-
-    const iesireNoua = await adaugaIesireBere({
-      lotId: lotId.toString(),
-      reteta,
-      cantitate: parsedCantitate,
-      numarUnitatiScoase:
-        numarUnitatiScoase !== undefined
-          ? parseInt(numarUnitatiScoase)
-          : undefined,
-      ambalaj,
-      motiv,
-      dataIesire,
-      utilizator,
-      observatii,
-      detaliiIesire,
-    });
-
-    res.status(201).json({
-      id: iesireNoua.id,
-      message: "Ieșire înregistrată cu succes",
-      data: iesireNoua,
-    });
+    dbData = readDb();
+    const iesire = req.body;
+    const maxId = dbData.iesiriBere.length > 0 ? Math.max(...dbData.iesiriBere.map(i => i.id)) : 0;
+    const newIesire = { id: maxId + 1, ...iesire, dataIesire: iesire.dataIesire || new Date().toISOString() };
+    dbData.iesiriBere.push(newIesire);
+    writeDb(dbData);
+    res.status(201).json({ id: newIesire.id, message: "Ieșire înregistrată", data: newIesire });
   } catch (error) {
-    console.error("Eroare la înregistrarea ieșirii:", error.message);
-    res.status(400).json({ error: error.message });
+    console.error("Error adding iesire:", error);
+    res.status(500).json({ error: "Eroare la salvare" });
   }
 });
 
-app.get("/api/iesiri-bere/lot/:lotId", async (req, res) => {
+app.get("/api/iesiri-bere/lot/:lotId", (req, res) => {
   try {
+    dbData = readDb();
     const { lotId } = req.params;
-    const iesiri = await getIesiriPentruLot(lotId);
+    const iesiri = (dbData.iesiriBere || []).filter(i => i.lotId === lotId || i.lotId === parseInt(lotId));
     res.json(iesiri);
   } catch (error) {
-    console.error("Eroare la obținerea ieșirilor pentru lot:", error);
+    console.error("Error getting iesiri for lot:", error);
     res.status(500).json({ error: "Eroare la preluarea datelor" });
   }
 });
 
-app.get("/api/iesiri-bere/sumar", async (req, res) => {
+app.get("/api/iesiri-bere/sumar", (req, res) => {
   try {
-    const sumar = await getSumarIesiriPeRetete();
+    dbData = readDb();
+    const iesiri = dbData.iesiriBere || [];
+    const sumar = {};
+    iesiri.forEach(i => {
+      if (!sumar[i.reteta]) sumar[i.reteta] = 0;
+      sumar[i.reteta] += parseFloat(i.cantitate) || 0;
+    });
     res.json(sumar);
   } catch (error) {
-    console.error("Eroare la obținerea sumarului:", error);
-    res.status(500).json({ error: "Eroare la calcularea sumarului" });
+    console.error("Error getting sumar:", error);
+    res.status(500).json({ error: "Eroare" });
   }
 });
 
-app.get("/api/iesiri-bere/statistici", async (req, res) => {
+app.get("/api/iesiri-bere/statistici", (req, res) => {
   try {
-    const statistici = await getStatisticiIesiri();
-    res.json(statistici);
+    dbData = readDb();
+    const iesiri = dbData.iesiriBere || [];
+    res.json({
+      total: iesiri.length,
+      totalCantitate: iesiri.reduce((sum, i) => sum + (parseFloat(i.cantitate) || 0), 0)
+    });
   } catch (error) {
-    console.error("Eroare la obținerea statisticilor:", error);
-    res.status(500).json({ error: "Eroare la calcularea statisticilor" });
+    console.error("Error getting statistici:", error);
+    res.status(500).json({ error: "Eroare" });
   }
 });
 
-app.get("/api/iesiri-bere/perioada", async (req, res) => {
+app.delete("/api/iesiri-bere/:id", (req, res) => {
   try {
-    const { dataInceput, dataSfarsit } = req.query;
-    if (!dataInceput || !dataSfarsit) {
-      return res.status(400).json({
-        error: "Parametrii dataInceput și dataSfarsit sunt obligatorii",
-      });
-    }
-    const iesiri = await getIesiriPerioada(dataInceput, dataSfarsit);
-    res.json(iesiri);
+    dbData = readDb();
+    const id = parseInt(req.params.id);
+    dbData.iesiriBere = dbData.iesiriBere.filter(i => i.id !== id);
+    writeDb(dbData);
+    res.json({ succes: true, message: "Ieșire ștearsă cu succes" });
   } catch (error) {
-    console.error("Eroare la obținerea ieșirilor pe perioadă:", error);
-    res.status(500).json({ error: "Eroare la preluarea datelor" });
-  }
-});
-
-app.delete("/api/iesiri-bere/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const rezultat = await stergeIesireBere(parseInt(id));
-    if (rezultat) {
-      res.json({ succes: true, message: "Ieșire ștearsă cu succes" });
-    } else {
-      res.status(404).json({ error: "Ieșirea nu a fost găsită" });
-    }
-  } catch (error) {
-    console.error("Eroare la ștergerea ieșirii:", error);
+    console.error("Error deleting iesire:", error);
     res.status(500).json({ error: "Eroare la ștergere" });
   }
 });
 
-app.get("/api/iesiri-bere/export/csv", async (req, res) => {
+// --- REBUTURI ---
+app.get("/api/rebuturi", (req, res) => {
   try {
-    const csvData = await exportaIesiriCSV();
-    res.setHeader("Content-Type", "text/csv; charset=utf-8");
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename=iesiri-bere-${new Date().toISOString().split("T")[0]
-      }.csv`
-    );
-    res.send("\uFEFF" + csvData);
+    dbData = readDb();
+    const iesiri = dbData.iesiriBere || [];
+    const rebuturi = iesiri.filter(i => i.motiv === "rebut" || i.motiv === "pierdere");
+    res.json(rebuturi);
   } catch (error) {
-    console.error("Eroare la exportarea ieșirilor:", error);
-    res.status(500).json({ error: "Eroare la export" });
-  }
-});
-
-app.get("/api/rebuturi", async (req, res) => {
-  try {
-    const iesiri = await getIesiriBere();
-    const rebuturi = iesiri.filter(
-      (iesire) => iesire.motiv === "rebut" || iesire.motiv === "pierdere"
-    );
-    const rebuturiCuMateriale = await Promise.all(
-      rebuturi.map(async (iesire) => {
-        const lot = await obtineLotDupaId(parseInt(iesire.lotId));
-
-        const unitati = iesire.numarUnitatiScoase || lot?.cantitateSticle || 0;
-
-        // detectare box size
-        const boxSize = (() => {
-          if (unitati >= 24 && unitati % 24 === 0) return 24;
-          if (unitati >= 20 && unitati % 20 === 0) return 20;
-          if (unitati >= 12 && unitati % 12 === 0) return 12;
-          if (unitati >= 6 && unitati % 6 === 0) return 6;
-          return null;
-        })();
-
-        // Dacă nu avem boxSize, putem folosi logica din calcul cutii din front-end
-        // Sau pur și simplu returnam 0
-        const cutii = boxSize ? Math.ceil(unitati / boxSize) : 0;
-
-        return {
-          ...iesire,
-          packagingType: lot?.packagingType || "N/A",
-          bottleSize: lot?.bottleSize || "N/A",
-          boxType: boxSize ? `Cutie ${boxSize} sticle` : "N/A",
-          cutiiPierdute: cutii, // adaugăm câmpul calculat
-        };
-      })
-    );
-
-    res.json(rebuturiCuMateriale);
-  } catch (error) {
-    console.error("Eroare la obținerea rebuturilor:", error);
+    console.error("Error getting rebuturi:", error);
     res.status(500).json({ error: "Eroare la preluarea datelor" });
   }
 });
 
-app.listen(PORT, "0.0.0.0", async () => {
-  console.log(`[SERVER] 🚀 Server running at http://localhost:${PORT}`);
-  console.log(`[SERVER] 📂 Storage Directory Is: ${storagePath}`);
-
-  // Call init here to ensure it happens after module load
+// --- PRODUCTIE ---
+app.post("/api/productie/check", (req, res) => {
   try {
-    await initializeDb();
-  } catch (e) {
-    console.error("[SERVER] Failed to run initializeDb:", e);
+    dbData = readDb();
+    const { retetaId, cantitate } = req.body;
+
+    const reteta = dbData.reteteBere.find(r => r.id === parseInt(retetaId));
+    if (!reteta) return res.status(404).json({ error: "Rețeta nu există" });
+
+    const factor = cantitate / reteta.rezultat.cantitate;
+    const missing = [];
+    const details = [];
+
+    for (const ing of reteta.ingrediente) {
+      const stocItem = dbData.materiiPrime.find(mp => mp.id === ing.id);
+      const necesar = ing.cantitate * factor;
+      const disponibil = stocItem ? stocItem.cantitate : 0;
+      const isEnough = disponibil >= necesar;
+
+      details.push({
+        nume: ing.denumire,
+        necesarOriginal: Number(necesar.toFixed(2)),
+        unitateNecesar: ing.unitate,
+        disponibilOriginal: disponibil,
+        unitateStoc: stocItem ? stocItem.unitate : 'N/A',
+        status: isEnough ? 'OK' : 'MISSING'
+      });
+
+      if (!isEnough) {
+        missing.push({
+          nume: ing.denumire,
+          necesar: Number(necesar.toFixed(2)),
+          unitate: ing.unitate,
+          disponibil,
+          diferenta: Number((necesar - disponibil).toFixed(2))
+        });
+      }
+    }
+
+    res.json({ canProduce: missing.length === 0, missing, details });
+  } catch (error) {
+    console.error("Error checking stock:", error);
+    res.status(500).json({ error: error.message });
   }
+});
+
+app.post("/api/productie/confirm", (req, res) => {
+  try {
+    dbData = readDb();
+    const { retetaId, fermentatorId, cantitate } = req.body;
+
+    const reteta = dbData.reteteBere.find(r => r.id === parseInt(retetaId));
+    if (!reteta) return res.status(404).json({ error: "Rețeta nu există" });
+
+    const fermentatorIndex = dbData.fermentatoare.findIndex(f => f.id === parseInt(fermentatorId));
+    if (fermentatorIndex === -1) return res.status(404).json({ error: "Fermentatorul nu există" });
+    if (dbData.fermentatoare[fermentatorIndex].ocupat) return res.status(400).json({ error: "Fermentatorul este ocupat" });
+
+    const factor = cantitate / reteta.rezultat.cantitate;
+
+    // Consume ingredients
+    for (const ing of reteta.ingrediente) {
+      const stocIndex = dbData.materiiPrime.findIndex(mp => mp.id === ing.id);
+      if (stocIndex !== -1) {
+        const necesar = ing.cantitate * factor;
+        dbData.materiiPrime[stocIndex].cantitate = Number((dbData.materiiPrime[stocIndex].cantitate - necesar).toFixed(3));
+      }
+    }
+
+    // Update fermentator - round time to 30 minutes
+    const now = new Date();
+    const minutes = now.getMinutes();
+    const roundedMinutes = Math.round(minutes / 30) * 30;
+    now.setMinutes(roundedMinutes);
+    now.setSeconds(0);
+    now.setMilliseconds(0);
+
+    dbData.fermentatoare[fermentatorIndex] = {
+      ...dbData.fermentatoare[fermentatorIndex],
+      ocupat: true,
+      reteta: reteta.denumire,
+      cantitate: Number(cantitate),
+      dataInceput: now.toISOString()
+    };
+
+    writeDb(dbData);
+    res.json({ success: true, fermentatorId });
+  } catch (error) {
+    console.error("Error confirming production:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ==========================================
+// 🚀 START SERVER
+// ==========================================
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`[SERVER] 🚀 Server running at http://localhost:${PORT}`);
+  console.log(`[SERVER] 📂 Storage: ${storagePath}`);
 });
