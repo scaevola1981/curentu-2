@@ -1,22 +1,23 @@
-// === db.mjs — Baza de date completă și curată pentru CURENTU’ ===
+// === db.mjs — Baza de date completă și curată pentru CURENTU' ===
 
 import { Low } from "lowdb";
 import { JSONFile } from "lowdb/node";
-import { join } from "path";
+import { join, dirname } from "path";
 import { existsSync, mkdirSync, copyFileSync, readdirSync, statSync, unlinkSync, readFileSync } from "fs";
 import { homedir } from 'os';
+import { fileURLToPath } from 'url';
 
-// === CONFIGURARE CALE ===
 // === CONFIGURARE CALE ===
 // Match server.mjs logic: dev mode uses local, production uses USER_DATA_PATH
 const isDev = !process.env.USER_DATA_PATH || process.env.NODE_ENV === 'development';
 
 let dbDir;
 if (isDev) {
-  // DEV MODE: Use local Stocare relative to project root
-  // We need to go up one level from Stocare/ to get to project root
-  const currentDir = new URL('.', import.meta.url).pathname;
-  dbDir = join(currentDir); // This is already in Stocare folder
+  // DEV MODE: Use local Stocare relative to this file
+  // Use fileURLToPath for cross-platform compatibility (Windows fix)
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  dbDir = __dirname; // This is already in Stocare folder
   console.log(`[DB] 🔧 DEV MODE - Using local path: ${dbDir}`);
 } else {
   // PRODUCTION MODE: Use USER_DATA_PATH
@@ -228,7 +229,12 @@ const db = new Low(adapter, defaultData);
 
 export async function initializeDb() {
   performBackup();
-  await db.read();
+  try {
+    await db.read();
+  } catch (err) {
+    console.error("[DB] ⚠️ Error reading db.json (possibly corrupt or empty), initializing with defaults.", err);
+    db.data = null; // Force default init
+  }
 
   let modified = false;
 
