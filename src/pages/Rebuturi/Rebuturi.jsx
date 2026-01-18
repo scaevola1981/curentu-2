@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import NavBar from "../../Componente/NavBar/NavBar.jsx";
 import styles from "./Rebuturi.module.css";
+import { fetchGetWithRetry } from "../../utils/fetchWithRetry";
 import {
   PieChart,
   Pie,
@@ -91,13 +92,10 @@ const Rebuturi = () => {
     { name: "Keguri", value: totaluri.keguri },
   ];
 
-  // Încarcă datele
+  // Încarcă datele cu retry logic
   const loadRebuturi = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/rebuturi?t=${Date.now()}`);
-      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-
-      const rebuturiData = await res.json();
+      const rebuturiData = await fetchGetWithRetry(`${API_URL}/api/rebuturi`);
       setRebuturi(rebuturiData);
 
       // Calcule totale

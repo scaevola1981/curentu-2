@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styles from './Dashboard.module.css';
 import NavBar from '../../Componente/NavBar/NavBar';
 import ErrorBoundary from '../../Componente/ErrorBoundary';
+import { fetchGetWithRetry } from '../../utils/fetchWithRetry';
 import {
   PieChart,
   Pie,
@@ -32,36 +33,29 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // 🔹 Auto-refresh data every 30 minutes
   useEffect(() => {
     const fetchSummary = async () => {
       setIsLoading(true);
       setError(null);
       try {
-        // Materii Prime
-        const materiiRes = await fetch(`${API_URL}/api/materii-prime?t=${Date.now()}`);
-        if (!materiiRes.ok) throw new Error(`Eroare HTTP: ${materiiRes.status}`);
-        const materiiData = await materiiRes.json();
+        // Materii Prime (cu retry logic)
+        const materiiData = await fetchGetWithRetry(`${API_URL}/api/materii-prime`);
         const totalQuantity = materiiData.reduce((sum, m) => sum + parseFloat(m.cantitate || 0), 0);
 
-        // Productions (Full Fermentors)
-        const fermentatoareRes = await fetch(`${API_URL}/api/fermentatoare?t=${Date.now()}`);
-        if (!fermentatoareRes.ok) throw new Error(`Eroare HTTP: ${fermentatoareRes.status}`);
-        const fermentatoareData = await fermentatoareRes.json();
+        // Productions (Full Fermentors) - cu retry logic
+        const fermentatoareData = await fetchGetWithRetry(`${API_URL}/api/fermentatoare`);
         const fullFermentors = fermentatoareData.filter(f => f.ocupat);
 
         // Ambalare (Occupied Fermentors as Ready Lots)
         const ambalareData = fermentatoareData.filter(f => f.ocupat);
 
-        // Depozitare (Stored Stock)
-        const depozitareRes = await fetch(`${API_URL}/api/loturi-ambalate?t=${Date.now()}`);
-        if (!depozitareRes.ok) throw new Error(`Eroare HTTP: ${depozitareRes.status}`);
-        const depozitareData = await depozitareRes.json();
+        // Depozitare (Stored Stock) - cu retry logic
+        const depozitareData = await fetchGetWithRetry(`${API_URL}/api/loturi-ambalate`);
         const totalStock = depozitareData.reduce((sum, l) => sum + parseFloat(l.cantitate || 0), 0);
 
-        // Rebuturi - Folosim datele reale
-        const rebuturiRes = await fetch(`${API_URL}/api/rebuturi?t=${Date.now()}`);
-        if (!rebuturiRes.ok) throw new Error(`Eroare HTTP: ${rebuturiRes.status}`);
-        const rebuturiData = await rebuturiRes.json();
+        // Rebuturi - cu retry logic
+        const rebuturiData = await fetchGetWithRetry(`${API_URL}/api/rebuturi`);
 
         const totalRebuturi = rebuturiData.reduce((sum, r) => sum + parseFloat(r.cantitate || 0), 0);
         const totalCapace = rebuturiData.reduce((sum, r) => sum + (r.materiale?.capace || 0), 0);
@@ -93,10 +87,25 @@ const Dashboard = () => {
       }
     };
 
+    // Initial fetch
     fetchSummary();
+
+    // Set interval for 30 minutes
+    const intervalId = setInterval(fetchSummary, 30 * 60 * 1000); // 30 minutes
+
+    return () => clearInterval(intervalId);
   }, []);
 
-  const currentTime = new Date().toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Bucharest' });
+  // 🔹 Real-time Clock (Updates every second)
+  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Bucharest' }));
+
+  useEffect(() => {
+    const clockInterval = setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Bucharest' }));
+    }, 1000);
+    return () => clearInterval(clockInterval);
+  }, []);
+
   const currentDate = new Date().toLocaleDateString('ro-RO');
 
   // 🔹 Datele pentru graficul tip pie

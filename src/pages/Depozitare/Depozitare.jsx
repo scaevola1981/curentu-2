@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import NavBar from "../../Componente/NavBar/NavBar.jsx";
 import styles from "./Depozitare.module.css";
+import { fetchGetWithRetry } from "../../utils/fetchWithRetry";
 
 const API_URL = "http://127.0.0.1:3001";
 const LOT_UPDATE_ENDPOINT = "/api/ambalare";
@@ -29,9 +30,7 @@ const Depozitare = () => {
 
   const loadData = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/loturi-ambalate?t=${Date.now()}`);
-      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-      const loturiAmbalate = await res.json();
+      const loturiAmbalate = await fetchGetWithRetry(`${API_URL}/api/loturi-ambalate`);
 
       const loturiTransformate = loturiAmbalate.map((lot) => {
         let numarUnitati = 0;
@@ -114,13 +113,8 @@ const Depozitare = () => {
 
   const loadIesiri = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/iesiri-bere?t=${Date.now()}`);
-      if (res.ok) {
-        const iesiriData = await res.json();
-        setIesiri(iesiriData);
-      } else {
-        setIesiri([]);
-      }
+      const iesiriData = await fetchGetWithRetry(`${API_URL}/api/iesiri-bere`);
+      setIesiri(iesiriData);
     } catch (error) {
       console.error("Eroare la încărcarea ieșirilor:", error);
       setIesiri([]);

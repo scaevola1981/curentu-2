@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import NavBar from "../../Componente/NavBar/NavBar";
 import styles from "./Ambalare.module.css";
 import Modal from "../../Componente/Modal";
+import { fetchGetWithRetry } from "../../utils/fetchWithRetry";
 
 const API_URL = "http://127.0.0.1:3001/api";
 const SERVER_URL = "http://127.0.0.1:3001";
@@ -35,9 +36,7 @@ const Ambalare = () => {
   // Data loading functions
   const loadMateriale = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/materiale-ambalare?t=${Date.now()}`);
-      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-      const data = await res.json();
+      const data = await fetchGetWithRetry(`${API_URL}/materiale-ambalare`);
       setMateriale(data);
     } catch (error) {
       setError(`Eroare la încărcarea materialelor: ${error.message}`);
@@ -46,9 +45,7 @@ const Ambalare = () => {
 
   const loadFermentatoare = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/fermentatoare?t=${Date.now()}`);
-      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-      const data = await res.json();
+      const data = await fetchGetWithRetry(`${API_URL}/fermentatoare`);
       setFermentatoare(data.filter((f) => f.ocupat && f.cantitate > 0));
     } catch (error) {
       setError(`Eroare la încărcarea fermentatoarelor: ${error.message}`);

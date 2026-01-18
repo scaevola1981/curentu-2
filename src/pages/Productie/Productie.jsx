@@ -1,7 +1,9 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import NavBar from "../../Componente/NavBar/NavBar";
 import Modal from "../../Componente/Modal";
 import styles from "./Productie.module.css";
+import { fetchGetWithRetry } from "../../utils/fetchWithRetry";
 
 const retetaImages = {
   "Adaptor la situatie - CB 01": "/Imagini/adaptor.png",
@@ -19,6 +21,7 @@ const API_URL = "http://127.0.0.1:3001/api";
 const SERVER_URL = "http://127.0.0.1:3001";
 
 const Productie = () => {
+  const navigate = useNavigate();
   const [retete, setRetete] = useState([]);
   const [fermentatoare, setFermentatoare] = useState([]);
   const [selectedReteta, setSelectedReteta] = useState(null);
@@ -40,9 +43,7 @@ const Productie = () => {
   // --- Load Data ---
   const loadRetete = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/retete-bere?t=${Date.now()}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
+      const data = await fetchGetWithRetry(`${API_URL}/retete-bere`);
       setRetete(Array.isArray(data) ? data : []);
     } catch (err) {
       setError("Eroare la încărcarea rețetelor: " + err.message);
@@ -51,9 +52,7 @@ const Productie = () => {
 
   const loadFermentatoare = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/fermentatoare?t=${Date.now()}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
+      const data = await fetchGetWithRetry(`${API_URL}/fermentatoare`);
       setFermentatoare(data);
     } catch (err) {
       setError("Eroare la încărcarea fermentatoarelor: " + err.message);
@@ -467,7 +466,7 @@ const Productie = () => {
               <button
                 onClick={() => {
                   confirmaProductia().then(() => {
-                    window.location.href = "/ambalare"; // 🔥 trecere la pasul următor
+                    navigate("/ambalare"); // 🔥 trecere la pasul următor
                   });
                 }}
                 className={styles.buttonConfirm}

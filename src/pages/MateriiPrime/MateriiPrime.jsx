@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./MateriiPrime.module.css";
 import NavBar from "../../Componente/NavBar/NavBar";
+import { fetchGetWithRetry, fetchPutWithRetry, fetchPostWithRetry } from "../../utils/fetchWithRetry";
 
 const UNITATI = ["kg", "g", "l", "ml", "buc", "pachete", "tone", "m", "m²", "m³"];
 const API_URL = "http://127.0.0.1:3001/api/materii-prime";
@@ -33,8 +34,7 @@ const MateriiPrime = () => {
   const loadMaterials = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_URL}?t=${Date.now()}`);
-      const data = await res.json();
+      const data = await fetchGetWithRetry(API_URL);
       setMaterii(data);
     } catch (err) {
       console.error("Eroare la încărcare:", err);
