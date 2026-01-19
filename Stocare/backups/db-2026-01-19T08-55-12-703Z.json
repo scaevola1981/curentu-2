@@ -15,7 +15,7 @@
       "id": 2,
       "denumire": "Malt Pale Ale",
       "tip": "malt",
-      "cantitate": 2018.55,
+      "cantitate": 1826.55,
       "unitate": "kg",
       "producator": "Generic Malt",
       "codProdus": "MALT-002",
@@ -26,7 +26,7 @@
       "id": 3,
       "denumire": "Drojdie F2",
       "tip": "drojdie",
-      "cantitate": 100,
+      "cantitate": 620,
       "unitate": "g",
       "producator": "Fermentis",
       "codProdus": "DROJDIE-002",
@@ -37,7 +37,7 @@
       "id": 4,
       "denumire": "Drojdie U.S 05",
       "tip": "drojdie",
-      "cantitate": 1450,
+      "cantitate": 3450,
       "unitate": "g",
       "producator": "Fermentis",
       "codProdus": "DROJDIE-003",
@@ -48,7 +48,7 @@
       "id": 5,
       "denumire": "Drojdie B.E 256",
       "tip": "drojdie",
-      "cantitate": 870,
+      "cantitate": 2870,
       "unitate": "g",
       "producator": "Fermentis",
       "codProdus": "DROJDIE-004",
@@ -59,7 +59,7 @@
       "id": 6,
       "denumire": "Hamei Bitter",
       "tip": "hamei",
-      "cantitate": 991.43,
+      "cantitate": 990.95,
       "unitate": "kg",
       "producator": "Generic Hops",
       "codProdus": "HAMEI-001",
@@ -70,7 +70,7 @@
       "id": 7,
       "denumire": "Hamei Aroma",
       "tip": "hamei",
-      "cantitate": 983.29,
+      "cantitate": 982.907,
       "unitate": "kg",
       "producator": "Generic Hops",
       "codProdus": "HAMEI-002",
@@ -81,7 +81,7 @@
       "id": 8,
       "denumire": "Irish Moss",
       "tip": "aditiv",
-      "cantitate": 1096.98,
+      "cantitate": 1096.836,
       "unitate": "kg",
       "producator": "Generic Additives",
       "codProdus": "ADITIV-001",
@@ -92,7 +92,7 @@
       "id": 9,
       "denumire": "Zahar brun",
       "tip": "aditiv",
-      "cantitate": 7.14,
+      "cantitate": 997.54,
       "unitate": "kg",
       "producator": "Generic Additives",
       "codProdus": "ADITIV-002",
@@ -106,18 +106,18 @@
       "nume": "Fermentator 1",
       "capacitate": 1000,
       "ocupat": false,
-      "reteta": "USB AMPER ALE - CB 03",
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
       "cantitate": 0,
-      "dataInceput": "2025-11-14T20:00:42.681Z",
+      "dataInceput": "2026-01-18T19:30:00.000Z",
       "imagine": "/Imagini/fermentator.png"
     },
     {
       "id": 2,
       "nume": "Fermentator 2",
       "capacitate": 1000,
-      "ocupat": true,
+      "ocupat": false,
       "reteta": "USB AMPER ALE - CB 03",
-      "cantitate": 300,
+      "cantitate": 0,
       "dataInceput": "2025-11-15T12:18:50.809Z",
       "imagine": "/Imagini/fermentator.png"
     },
@@ -125,9 +125,9 @@
       "id": 3,
       "nume": "Fermentator 3",
       "capacitate": 1000,
-      "ocupat": true,
+      "ocupat": false,
       "reteta": "USB AMPER ALE - CB 03",
-      "cantitate": 435,
+      "cantitate": 0,
       "dataInceput": "2025-11-15T16:46:52.268Z",
       "imagine": "/Imagini/fermentator.png"
     },
@@ -135,20 +135,20 @@
       "id": 4,
       "nume": "Fermentator 4",
       "capacitate": 1000,
-      "ocupat": true,
-      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
-      "cantitate": 234,
-      "dataInceput": "2025-11-15T16:48:24.774Z",
+      "ocupat": false,
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": 0,
+      "dataInceput": "2026-01-14T18:30:00.000Z",
       "imagine": "/Imagini/fermentator.png"
     },
     {
       "id": 5,
       "nume": "Fermentator 5",
       "capacitate": 2000,
-      "ocupat": true,
+      "ocupat": false,
       "reteta": "ADAPTOR LA SITUATIE - CB 01",
-      "cantitate": 123,
-      "dataInceput": "2025-11-15T16:48:40.244Z",
+      "cantitate": 0,
+      "dataInceput": "2026-01-14T19:00:00.000Z",
       "imagine": "/Imagini/fermentator.png"
     },
     {
@@ -663,6 +663,209 @@
       ],
       "dataCreare": "2025-12-27T11:49:00.544Z",
       "dataActualizare": "2025-12-27T11:49:33.452Z"
+    },
+    {
+      "id": 24,
+      "fermentatorId": 5,
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": 123,
+      "unitate": "litri",
+      "dataInceput": "2025-11-15T16:48:40.244Z",
+      "dataAmbalare": "2026-01-14T15:30:59.341Z",
+      "packagingType": "sticle",
+      "bottleSize": "0.33l",
+      "boxType": "6 sticle",
+      "sticlePerCutie": 6,
+      "cantitateSticle": 372,
+      "cantitateCutii": 62,
+      "sticleLibere": 0,
+      "descriereAmbalare": "62 cutii × 6 sticle + 0 libere",
+      "kegSize": null,
+      "materialsUsed": [
+        {
+          "denumire": "Sticle 0.33l",
+          "cantitate": 373,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Capace",
+          "cantitate": 373,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Etichete",
+          "cantitate": 373,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Cutii 6 sticle",
+          "cantitate": 63,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2026-01-14T15:30:59.343Z"
+    },
+    {
+      "id": 25,
+      "fermentatorId": 4,
+      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
+      "cantitate": 234,
+      "unitate": "litri",
+      "dataInceput": "2025-11-15T16:48:24.774Z",
+      "dataAmbalare": "2026-01-14T15:31:36.623Z",
+      "packagingType": "keguri",
+      "bottleSize": null,
+      "boxType": null,
+      "sticlePerCutie": null,
+      "cantitateSticle": null,
+      "cantitateCutii": null,
+      "sticleLibere": null,
+      "descriereAmbalare": null,
+      "kegSize": "Keg 20l",
+      "materialsUsed": [
+        {
+          "denumire": "Keg 20l",
+          "cantitate": 12,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2026-01-14T15:31:36.623Z"
+    },
+    {
+      "id": 26,
+      "fermentatorId": 1,
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": 123,
+      "unitate": "litri",
+      "dataInceput": "2026-01-14T16:30:00.000Z",
+      "dataAmbalare": "2026-01-14T18:48:58.874Z",
+      "packagingType": "keguri",
+      "bottleSize": null,
+      "boxType": null,
+      "sticlePerCutie": null,
+      "cantitateSticle": null,
+      "cantitateCutii": null,
+      "sticleLibere": null,
+      "descriereAmbalare": null,
+      "kegSize": "Keg 40l",
+      "materialsUsed": [
+        {
+          "denumire": "Keg 40l",
+          "cantitate": 4,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2026-01-14T18:48:58.877Z"
+    },
+    {
+      "id": 27,
+      "fermentatorId": 2,
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": 300,
+      "unitate": "litri",
+      "dataInceput": "2025-11-15T12:18:50.809Z",
+      "dataAmbalare": "2026-01-14T18:49:17.481Z",
+      "packagingType": "keguri",
+      "bottleSize": null,
+      "boxType": null,
+      "sticlePerCutie": null,
+      "cantitateSticle": null,
+      "cantitateCutii": null,
+      "sticleLibere": null,
+      "descriereAmbalare": null,
+      "kegSize": "Keg 40l",
+      "materialsUsed": [
+        {
+          "denumire": "Keg 40l",
+          "cantitate": 8,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2026-01-14T18:49:17.484Z"
+    },
+    {
+      "id": 28,
+      "fermentatorId": 3,
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": 0,
+      "unitate": "litri",
+      "dataInceput": "2025-11-15T16:46:52.268Z",
+      "dataAmbalare": "2026-01-14T18:50:14.237Z",
+      "packagingType": "sticle",
+      "bottleSize": "0.33l",
+      "boxType": "6 sticle",
+      "sticlePerCutie": 6,
+      "cantitateSticle": 1318,
+      "cantitateCutii": 219,
+      "sticleLibere": 4,
+      "descriereAmbalare": "219 cutii × 6 sticle + 4 libere",
+      "kegSize": null,
+      "materialsUsed": [
+        {
+          "denumire": "Sticle 0.33l",
+          "cantitate": 1319,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Capace",
+          "cantitate": 1319,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Etichete",
+          "cantitate": 1319,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Cutii 6 sticle",
+          "cantitate": 220,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2026-01-14T18:50:14.241Z",
+      "dataActualizare": "2026-01-14T18:52:45.042Z"
+    },
+    {
+      "id": 29,
+      "fermentatorId": 1,
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": 0.12,
+      "unitate": "litri",
+      "dataInceput": "2026-01-18T19:30:00.000Z",
+      "dataAmbalare": "2026-01-18T19:35:47.027Z",
+      "packagingType": "sticle",
+      "bottleSize": "0.33l",
+      "boxType": "6 sticle",
+      "sticlePerCutie": 6,
+      "cantitateSticle": 336,
+      "cantitateCutii": 56,
+      "sticleLibere": 0,
+      "descriereAmbalare": "56 cutii × 6 sticle + 0 libere",
+      "kegSize": null,
+      "materialsUsed": [
+        {
+          "denumire": "Sticle 0.33l",
+          "cantitate": 337,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Capace",
+          "cantitate": 337,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Etichete",
+          "cantitate": 337,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Cutii 6 sticle",
+          "cantitate": 57,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2026-01-18T19:35:47.031Z",
+      "dataActualizare": "2026-01-18T19:35:59.547Z"
     }
   ],
   "materialeAmbalare": [
@@ -670,7 +873,7 @@
       "id": 1,
       "denumire": "Sticle 0.33l",
       "tip": "sticle",
-      "cantitate": 1012,
+      "cantitate": 3610,
       "unitate": "buc",
       "producator": "Generic Packaging",
       "codProdus": "STICLA-001",
@@ -681,7 +884,7 @@
       "id": 2,
       "denumire": "Cutii 6 sticle",
       "tip": "cutii",
-      "cantitate": 1089,
+      "cantitate": 1686,
       "unitate": "buc",
       "producator": "Generic Packaging",
       "codProdus": "CUTIE-001",
@@ -725,7 +928,7 @@
       "id": 6,
       "denumire": "Keg 20l",
       "tip": "keg",
-      "cantitate": 77,
+      "cantitate": 58,
       "unitate": "buc",
       "producator": "Generic Kegs",
       "codProdus": "KEG-002",
@@ -747,7 +950,7 @@
       "id": 8,
       "denumire": "Keg 40l",
       "tip": "keg",
-      "cantitate": 41,
+      "cantitate": 29,
       "unitate": "buc",
       "producator": "Generic Kegs",
       "codProdus": "KEG-004",
@@ -769,7 +972,7 @@
       "id": 10,
       "denumire": "Etichete",
       "tip": "etichete",
-      "cantitate": 3017,
+      "cantitate": 615,
       "unitate": "buc",
       "producator": "Generic Labels",
       "codProdus": "ETICHETA-001",
@@ -780,7 +983,7 @@
       "id": 11,
       "denumire": "Capace",
       "tip": "capace",
-      "cantitate": 3517,
+      "cantitate": 1115,
       "unitate": "buc",
       "producator": "Generic Caps",
       "codProdus": "CAPAC-001",
@@ -788,203 +991,5 @@
       "subcategorie": ""
     }
   ],
-  "iesiriBere": [
-    {
-      "id": 5,
-      "lotId": "1",
-      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
-      "cantitate": "49.83",
-      "numarUnitatiScoase": 151,
-      "ambalaj": "sticle",
-      "motiv": "vanzare",
-      "dataIesire": "2025-11-12T20:47:13.486Z",
-      "utilizator": "Administrator",
-      "observatii": "",
-      "createdAt": "2025-11-12T20:47:13.492Z"
-    },
-    {
-      "id": 6,
-      "lotId": "2",
-      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
-      "cantitate": "9.90",
-      "numarUnitatiScoase": 30,
-      "ambalaj": "sticle",
-      "motiv": "vanzare",
-      "dataIesire": "2025-11-12T20:47:26.376Z",
-      "utilizator": "Administrator",
-      "observatii": "",
-      "createdAt": "2025-11-12T20:47:26.381Z"
-    },
-    {
-      "id": 9,
-      "lotId": "4",
-      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
-      "cantitate": "9.90",
-      "numarUnitatiScoase": 30,
-      "ambalaj": "sticle",
-      "motiv": "consum_intern",
-      "dataIesire": "2025-11-13T08:16:46.722Z",
-      "utilizator": "Administrator",
-      "observatii": "",
-      "createdAt": "2025-11-13T08:16:46.727Z"
-    },
-    {
-      "id": 10,
-      "lotId": "5",
-      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
-      "cantitate": "9.90",
-      "numarUnitatiScoase": 30,
-      "ambalaj": "sticle",
-      "motiv": "vanzare",
-      "dataIesire": "2025-11-13T08:20:57.849Z",
-      "utilizator": "Administrator",
-      "observatii": "",
-      "createdAt": "2025-11-13T08:20:57.854Z"
-    },
-    {
-      "id": 11,
-      "lotId": "8",
-      "reteta": "ADAPTOR LA SITUATIE - CB 01",
-      "cantitate": "26.73",
-      "numarUnitatiScoase": 81,
-      "ambalaj": "sticle",
-      "motiv": "vanzare",
-      "dataIesire": "2025-11-13T09:16:21.665Z",
-      "utilizator": "Administrator",
-      "observatii": "",
-      "createdAt": "2025-11-13T09:16:21.671Z"
-    },
-    {
-      "id": 13,
-      "lotId": "13",
-      "reteta": "USB AMPER ALE - CB 03",
-      "cantitate": "554.40",
-      "numarUnitatiScoase": 1680,
-      "ambalaj": "sticle",
-      "motiv": "vanzare",
-      "dataIesire": "2025-11-13T09:30:29.764Z",
-      "utilizator": "Administrator",
-      "observatii": "",
-      "createdAt": "2025-11-13T09:30:29.770Z"
-    },
-    {
-      "id": 14,
-      "lotId": "20",
-      "reteta": "USB AMPER ALE - CB 03",
-      "cantitate": "200.00",
-      "numarUnitatiScoase": 5,
-      "ambalaj": "keguri",
-      "motiv": "vanzare",
-      "dataIesire": "2025-11-15T12:22:40.773Z",
-      "utilizator": "Administrator",
-      "observatii": "",
-      "createdAt": "2025-11-15T12:22:40.777Z"
-    },
-    {
-      "id": 16,
-      "lotId": "20",
-      "reteta": "ADAPTOR LA SITUATIE - CB 01",
-      "cantitate": "1386.99",
-      "numarUnitatiScoase": 4203,
-      "ambalaj": "sticle",
-      "motiv": "vanzare",
-      "dataIesire": "2025-11-15T12:29:19.133Z",
-      "utilizator": "Administrator",
-      "observatii": "",
-      "createdAt": "2025-11-15T12:29:19.138Z"
-    },
-    {
-      "id": 17,
-      "lotId": "6",
-      "reteta": "ADAPTOR LA SITUATIE - CB 01",
-      "cantitate": "20.00",
-      "numarUnitatiScoase": 1,
-      "ambalaj": "keguri",
-      "motiv": "rebut",
-      "dataIesire": "2025-11-15T18:31:11.244Z",
-      "utilizator": "Administrator",
-      "observatii": "",
-      "createdAt": "2025-11-15T18:31:11.273Z"
-    },
-    {
-      "id": 18,
-      "lotId": "7",
-      "reteta": "ADAPTOR LA SITUATIE - CB 01",
-      "cantitate": "20.00",
-      "numarUnitatiScoase": 1,
-      "ambalaj": "keguri",
-      "motiv": "rebut",
-      "dataIesire": "2025-11-15T18:31:33.059Z",
-      "utilizator": "Administrator",
-      "observatii": "",
-      "createdAt": "2025-11-15T18:31:33.065Z"
-    },
-    {
-      "id": 19,
-      "lotId": "9",
-      "reteta": "ADAPTOR LA SITUATIE - CB 01",
-      "cantitate": "6.93",
-      "numarUnitatiScoase": 21,
-      "ambalaj": "sticle",
-      "motiv": "rebut",
-      "dataIesire": "2025-11-15T18:31:48.721Z",
-      "utilizator": "Administrator",
-      "observatii": "",
-      "createdAt": "2025-11-15T18:31:48.726Z"
-    },
-    {
-      "id": 20,
-      "lotId": "13",
-      "reteta": "USB AMPER ALE - CB 03",
-      "cantitate": "435.60",
-      "numarUnitatiScoase": 1320,
-      "ambalaj": "sticle",
-      "motiv": "rebut",
-      "dataIesire": "2025-11-15T18:33:37.432Z",
-      "utilizator": "Administrator",
-      "observatii": "",
-      "createdAt": "2025-11-15T18:33:37.438Z"
-    },
-    {
-      "id": 21,
-      "lotId": "10",
-      "reteta": "ADAPTOR LA SITUATIE - CB 01",
-      "cantitate": "599.94",
-      "numarUnitatiScoase": 1818,
-      "ambalaj": "sticle",
-      "motiv": "rebut",
-      "dataIesire": "2025-11-15T19:59:02.117Z",
-      "utilizator": "Administrator",
-      "observatii": "",
-      "createdAt": "2025-11-15T19:59:02.181Z"
-    },
-    {
-      "id": 22,
-      "lotId": "23",
-      "reteta": "ADAPTOR LA SITUATIE - CB 01",
-      "cantitate": "900.00",
-      "numarUnitatiScoase": 90,
-      "ambalaj": "keguri",
-      "motiv": "vanzare",
-      "dataIesire": "2025-12-27T09:23:38.859Z",
-      "utilizator": "Administrator",
-      "observatii": "",
-      "detaliiIesire": "90 keguri (900.00L)",
-      "createdAt": "2025-12-27T09:23:38.863Z"
-    },
-    {
-      "id": 23,
-      "lotId": "23",
-      "reteta": "USB AMPER ALE - CB 03",
-      "cantitate": "440.00",
-      "numarUnitatiScoase": 11,
-      "ambalaj": "keguri",
-      "motiv": "vanzare",
-      "dataIesire": "2025-12-27T11:49:33.440Z",
-      "utilizator": "Administrator",
-      "observatii": "",
-      "detaliiIesire": "11 keguri (440.00L)",
-      "createdAt": "2025-12-27T11:49:33.443Z"
-    }
-  ]
+  "iesiriBere": []
 }

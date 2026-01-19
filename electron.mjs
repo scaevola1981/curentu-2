@@ -63,6 +63,34 @@ async function startServer() {
     console.log(msg);
   }
 
+  // ✅ Prevent double-start (in-memory check)
+  if (serverProcess) {
+    log("⚠️ [ELECTRON] Server process checks indicate it is already running (in-memory). Skipping start.");
+    return true;
+  }
+
+  // ✅ Pre-flight port check: Detect zombie servers from previous runs
+  try {
+    const http = await import('http');
+    await new Promise((resolve, reject) => {
+      const req = http.get('http://127.0.0.1:3001/health', (res) => {
+        if (res.statusCode === 200) {
+          resolve(true);
+        } else {
+          reject(new Error(`Unexpected status: ${res.statusCode}`));
+        }
+      });
+      req.on('error', reject);
+      req.setTimeout(500);
+    });
+    // If we reach here, port 3001 is already responding
+    console.log("[ELECTRON] ⚠️ Pre-flight check: Port 3001 already responding. Assuming zombie server exists. Skipping fork.");
+    return true; // Server already running from previous session
+  } catch (e) {
+    // Port not in use - this is expected, continue to start server
+    console.log("[ELECTRON] ✅ Pre-flight check: Port 3001 is free. Proceeding to start server.");
+  }
+
   try {
     // 🧹 LOG ROTATION: Rename old log if exists
     if (existsSync(logPath)) {
@@ -130,6 +158,7 @@ async function startServer() {
 
     serverProcess.on("exit", (code, signal) => {
       log(`⚠️ Server process exited with code ${code}, signal ${signal}`);
+      serverProcess = null; // ✅ Reset global variable
     });
 
     // Active health check instead of fixed timeout
@@ -189,10 +218,11 @@ async function createWindow() {
   mainWindow.once("ready-to-show", () => {
     mainWindow.show();
 
-    // 🔧 DEBUGGING: Deschide DevTools AUTOMAT în production
-    // TODO: Remove this after debugging is complete
-    console.log("🔍 Opening DevTools for debugging...");
-    mainWindow.webContents.openDevTools();
+    // 🔧 DEBUGGING: Deschide DevTools DOAR în development
+    if (!app.isPackaged) {
+      console.log("🔍 Opening DevTools for development...");
+      mainWindow.webContents.openDevTools();
+    }
   });
 
   // 🔧 DEV TOOLS: Multiple shortcuts pentru deschidere consolă
@@ -248,10 +278,21 @@ ipcMain.handle("check-for-updates", async () => {
   return autoUpdater.checkForUpdates();
 });
 
-app.on("window-all-closed", () => {
-  // Kill server process when app closes
+// ✅ Improved cleanup to prevent EADDRINUSE
+app.on("before-quit", () => {
   if (serverProcess) {
+    console.log("[ELECTRON] 🛑 before-quit: Killing server process...");
     serverProcess.kill();
+    serverProcess = null;
+  }
+});
+
+app.on("window-all-closed", () => {
+  // Kill server process when app closes (Mac behavior compatibility)
+  if (serverProcess) {
+    console.log("[ELECTRON] 🛑 window-all-closed: Killing server process...");
+    serverProcess.kill();
+    serverProcess = null;
   }
 
   if (process.platform !== "darwin") {
@@ -260,7 +301,7 @@ app.on("window-all-closed", () => {
 });
 
 app.on("activate", () => {
-  if (!BrowserWindow.getAllWindows().length) {
+  if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
 });

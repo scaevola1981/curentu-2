@@ -70,7 +70,20 @@ const DEFAULT_DATA = {
     { id: 8, denumire: "Zahar brun", cantitate: 50, unitate: "kg", tip: "aditiv", producator: "Generic", codProdus: "ADD-01", lot: "INIT-008" },
     { id: 9, denumire: "Irish Moss", cantitate: 5, unitate: "kg", tip: "aditiv", producator: "Generic", codProdus: "ADD-02", lot: "INIT-009" }
   ],
-  materialeAmbalare: [],
+  /* COPIAT EXACT DIN materialeAmbalare.json */
+  materialeAmbalare: [
+    { id: 1, denumire: "Sticle 0.33l", tip: "sticle", cantitate: 1012, unitate: "buc", producator: "Generic Packaging", codProdus: "STICLA-001", lot: "", subcategorie: "" },
+    { id: 2, denumire: "Cutii 6 sticle", tip: "cutii", cantitate: 1089, unitate: "buc", producator: "Generic Packaging", codProdus: "CUTIE-001", lot: "", subcategorie: "" },
+    { id: 3, denumire: "Cutii 12 sticle", tip: "cutii", cantitate: 784, unitate: "buc", producator: "Generic Packaging", codProdus: "CUTIE-002", lot: "", subcategorie: "" },
+    { id: 4, denumire: "Cutii 24 sticle", tip: "cutii", cantitate: 635, unitate: "buc", producator: "Generic Packaging", codProdus: "CUTIE-003", lot: "", subcategorie: "" },
+    { id: 5, denumire: "Keg 10l", tip: "keg", cantitate: 19, unitate: "buc", producator: "Generic Kegs", codProdus: "KEG-001", lot: "", subcategorie: "" },
+    { id: 6, denumire: "Keg 20l", tip: "keg", cantitate: 77, unitate: "buc", producator: "Generic Kegs", codProdus: "KEG-002", lot: "", subcategorie: "" },
+    { id: 7, denumire: "Keg 30l", tip: "keg", cantitate: 100, unitate: "buc", producator: "Generic Kegs", codProdus: "KEG-003", lot: "", subcategorie: "" },
+    { id: 8, denumire: "Keg 40l", tip: "keg", cantitate: 64, unitate: "buc", producator: "Generic Kegs", codProdus: "KEG-004", lot: "", subcategorie: "" },
+    { id: 9, denumire: "Keg 50l", tip: "keg", cantitate: 100, unitate: "buc", producator: "Generic Kegs", codProdus: "KEG-005", lot: "", subcategorie: "" },
+    { id: 10, denumire: "Etichete", tip: "etichete", cantitate: 3017, unitate: "buc", producator: "Generic Labels", codProdus: "ETICHETA-001", lot: "", subcategorie: "" },
+    { id: 11, denumire: "Capace", tip: "capace", cantitate: 3517, unitate: "buc", producator: "Generic Caps", codProdus: "CAPAC-001", lot: "", subcategorie: "" }
+  ],
   fermentatoare: [
     { id: 1, nume: "Fermentator 1", capacitate: 1000, ocupat: false, reteta: null, cantitate: 0, dataInceput: null, imagine: "/Imagini/fermentator.png" },
     { id: 2, nume: "Fermentator 2", capacitate: 1000, ocupat: false, reteta: null, cantitate: 0, dataInceput: null, imagine: "/Imagini/fermentator.png" },
@@ -138,12 +151,21 @@ function readDb() {
 
     // Ensure all required fields exist
     const merged = { ...DEFAULT_DATA, ...data };
-    if (!merged.materiiPrime || merged.materiiPrime.length === 0) {
-      merged.materiiPrime = DEFAULT_DATA.materiiPrime;
+    // Helper to ensure defaults exist
+    function ensureDefaults(currentList, defaultList) {
+      if (!Array.isArray(currentList) || currentList.length === 0) return [...defaultList];
+
+      const currentIds = new Set(currentList.map(item => item.id));
+      const missing = defaultList.filter(item => !currentIds.has(item.id));
+      return [...currentList, ...missing];
     }
-    if (!merged.fermentatoare || merged.fermentatoare.length === 0) {
-      merged.fermentatoare = DEFAULT_DATA.fermentatoare;
-    }
+
+    // Merge default data into existing data
+    // CRITICAL FIX: If list is empty in file, FORCE defaults
+    merged.materiiPrime = ensureDefaults(merged.materiiPrime, DEFAULT_DATA.materiiPrime);
+    merged.materialeAmbalare = ensureDefaults(merged.materialeAmbalare, DEFAULT_DATA.materialeAmbalare);
+    merged.fermentatoare = ensureDefaults(merged.fermentatoare, DEFAULT_DATA.fermentatoare);
+    merged.reteteBere = ensureDefaults(merged.reteteBere, DEFAULT_DATA.reteteBere);
     if (!merged.reteteBere || merged.reteteBere.length === 0) {
       merged.reteteBere = DEFAULT_DATA.reteteBere;
     }
@@ -615,7 +637,8 @@ app.post("/api/productie/check", (req, res) => {
     res.json({ canProduce: missing.length === 0, missing, details });
   } catch (error) {
     console.error("Error checking stock:", error);
-    res.status(500).json({ error: error.message });
+    // Explicit JSON error for client handling - Prevents "Unexpected token <"
+    res.status(500).json({ error: error.message, missing: [], details: [] });
   }
 });
 

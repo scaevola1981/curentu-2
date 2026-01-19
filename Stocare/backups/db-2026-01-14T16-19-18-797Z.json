@@ -135,9 +135,9 @@
       "id": 4,
       "nume": "Fermentator 4",
       "capacitate": 1000,
-      "ocupat": true,
+      "ocupat": false,
       "reteta": "INTRERUPATOR DE MUNCA - CB 02",
-      "cantitate": 234,
+      "cantitate": 0,
       "dataInceput": "2025-11-15T16:48:24.774Z",
       "imagine": "/Imagini/fermentator.png"
     },
@@ -145,9 +145,9 @@
       "id": 5,
       "nume": "Fermentator 5",
       "capacitate": 2000,
-      "ocupat": true,
+      "ocupat": false,
       "reteta": "ADAPTOR LA SITUATIE - CB 01",
-      "cantitate": 123,
+      "cantitate": 0,
       "dataInceput": "2025-11-15T16:48:40.244Z",
       "imagine": "/Imagini/fermentator.png"
     },
@@ -663,6 +663,73 @@
       ],
       "dataCreare": "2025-12-27T11:49:00.544Z",
       "dataActualizare": "2025-12-27T11:49:33.452Z"
+    },
+    {
+      "id": 24,
+      "fermentatorId": 5,
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": 123,
+      "unitate": "litri",
+      "dataInceput": "2025-11-15T16:48:40.244Z",
+      "dataAmbalare": "2026-01-14T15:30:59.341Z",
+      "packagingType": "sticle",
+      "bottleSize": "0.33l",
+      "boxType": "6 sticle",
+      "sticlePerCutie": 6,
+      "cantitateSticle": 372,
+      "cantitateCutii": 62,
+      "sticleLibere": 0,
+      "descriereAmbalare": "62 cutii × 6 sticle + 0 libere",
+      "kegSize": null,
+      "materialsUsed": [
+        {
+          "denumire": "Sticle 0.33l",
+          "cantitate": 373,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Capace",
+          "cantitate": 373,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Etichete",
+          "cantitate": 373,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Cutii 6 sticle",
+          "cantitate": 63,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2026-01-14T15:30:59.343Z"
+    },
+    {
+      "id": 25,
+      "fermentatorId": 4,
+      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
+      "cantitate": 234,
+      "unitate": "litri",
+      "dataInceput": "2025-11-15T16:48:24.774Z",
+      "dataAmbalare": "2026-01-14T15:31:36.623Z",
+      "packagingType": "keguri",
+      "bottleSize": null,
+      "boxType": null,
+      "sticlePerCutie": null,
+      "cantitateSticle": null,
+      "cantitateCutii": null,
+      "sticleLibere": null,
+      "descriereAmbalare": null,
+      "kegSize": "Keg 20l",
+      "materialsUsed": [
+        {
+          "denumire": "Keg 20l",
+          "cantitate": 12,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2026-01-14T15:31:36.623Z"
     }
   ],
   "materialeAmbalare": [
@@ -670,7 +737,7 @@
       "id": 1,
       "denumire": "Sticle 0.33l",
       "tip": "sticle",
-      "cantitate": 1012,
+      "cantitate": 639,
       "unitate": "buc",
       "producator": "Generic Packaging",
       "codProdus": "STICLA-001",
@@ -681,7 +748,7 @@
       "id": 2,
       "denumire": "Cutii 6 sticle",
       "tip": "cutii",
-      "cantitate": 1089,
+      "cantitate": 1026,
       "unitate": "buc",
       "producator": "Generic Packaging",
       "codProdus": "CUTIE-001",
@@ -725,7 +792,7 @@
       "id": 6,
       "denumire": "Keg 20l",
       "tip": "keg",
-      "cantitate": 77,
+      "cantitate": 65,
       "unitate": "buc",
       "producator": "Generic Kegs",
       "codProdus": "KEG-002",
@@ -769,7 +836,7 @@
       "id": 10,
       "denumire": "Etichete",
       "tip": "etichete",
-      "cantitate": 3017,
+      "cantitate": 2644,
       "unitate": "buc",
       "producator": "Generic Labels",
       "codProdus": "ETICHETA-001",
@@ -780,7 +847,7 @@
       "id": 11,
       "denumire": "Capace",
       "tip": "capace",
-      "cantitate": 3517,
+      "cantitate": 3144,
       "unitate": "buc",
       "producator": "Generic Caps",
       "codProdus": "CAPAC-001",
