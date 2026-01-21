@@ -27,7 +27,13 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // ============================
   // ℹ️ INFORMAȚII SISTEM
   // ============================
-  platform: process.platform
+  platform: process.platform,
+
+  // ============================
+  // 🔇 STUB METHODS (prevent console errors)
+  // ============================
+  onAutofillEnable: () => { }, // Stub method - not implemented
+  setAddresses: () => { }      // Stub method - not implemented
 });
 
 console.log("🔗 Preload OK (CommonJS)");
