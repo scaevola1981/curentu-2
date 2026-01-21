@@ -16,7 +16,7 @@
       "id": 2,
       "denumire": "Malt Pale Ale",
       "tip": "malt",
-      "cantitate": 1742.15,
+      "cantitate": 1704.95,
       "unitate": "kg",
       "producator": "Generic Malt",
       "codProdus": "MALT-002",
@@ -28,7 +28,7 @@
       "id": 3,
       "denumire": "Drojdie F2",
       "tip": "drojdie",
-      "cantitate": 519.888,
+      "cantitate": 429.888,
       "unitate": "g",
       "producator": "Fermentis",
       "codProdus": "DROJDIE-002",
@@ -64,7 +64,7 @@
       "id": 6,
       "denumire": "Hamei Bitter",
       "tip": "hamei",
-      "cantitate": 990.739,
+      "cantitate": 990.624,
       "unitate": "kg",
       "producator": "Generic Hops",
       "codProdus": "HAMEI-001",
@@ -76,7 +76,7 @@
       "id": 7,
       "denumire": "Hamei Aroma",
       "tip": "hamei",
-      "cantitate": 982.738,
+      "cantitate": 982.498,
       "unitate": "kg",
       "producator": "Generic Hops",
       "codProdus": "HAMEI-002",
@@ -88,7 +88,7 @@
       "id": 8,
       "denumire": "Irish Moss",
       "tip": "aditiv",
-      "cantitate": 1096.773,
+      "cantitate": 1096.743,
       "unitate": "kg",
       "producator": "Generic Additives",
       "codProdus": "ADITIV-001",
@@ -196,7 +196,7 @@
       "id": 17,
       "denumire": "Keg 40l",
       "tip": "keg",
-      "cantitate": 29,
+      "cantitate": 26,
       "unitate": "buc",
       "producator": "Generic Kegs",
       "codProdus": "KEG-004",
@@ -246,9 +246,9 @@
       "id": 1,
       "nume": "Fermentator 1",
       "capacitate": 1000,
-      "ocupat": true,
+      "ocupat": false,
       "reteta": "ADAPTOR LA SITUATIE - CB 01",
-      "cantitate": 100,
+      "cantitate": 0,
       "dataInceput": "2026-01-21T10:30:00.000Z",
       "imagine": "/Imagini/fermentator.png"
     },
@@ -256,10 +256,10 @@
       "id": 2,
       "nume": "Fermentator 2",
       "capacitate": 1000,
-      "ocupat": false,
-      "reteta": "USB AMPER ALE - CB 03",
-      "cantitate": 0,
-      "dataInceput": "2025-11-15T12:18:50.809Z",
+      "ocupat": true,
+      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
+      "cantitate": 90,
+      "dataInceput": "2026-01-21T13:00:00.000Z",
       "imagine": "/Imagini/fermentator.png"
     },
     {
@@ -288,7 +288,7 @@
       "capacitate": 2000,
       "ocupat": false,
       "reteta": "ADAPTOR LA SITUATIE - CB 01",
-      "cantitate": 0,
+      "cantitate": 122.76,
       "dataInceput": "2026-01-14T19:00:00.000Z",
       "imagine": "/Imagini/fermentator.png"
     },
@@ -481,7 +481,7 @@
       "id": 24,
       "fermentatorId": 5,
       "reteta": "ADAPTOR LA SITUATIE - CB 01",
-      "cantitate": 123,
+      "cantitate": 0.24,
       "unitate": "litri",
       "dataInceput": "2025-11-15T16:48:40.244Z",
       "dataAmbalare": "2026-01-14T15:30:59.341Z",
@@ -516,7 +516,8 @@
           "unitate": "buc"
         }
       ],
-      "dataCreare": "2026-01-14T15:30:59.343Z"
+      "dataCreare": "2026-01-14T15:30:59.343Z",
+      "dataActualizare": "2026-01-21T12:51:14.629Z"
     },
     {
       "id": 25,
@@ -679,9 +680,48 @@
       ],
       "dataCreare": "2026-01-18T19:35:47.031Z",
       "dataActualizare": "2026-01-18T19:35:59.547Z"
+    },
+    {
+      "id": 30,
+      "fermentatorId": 1,
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": 100,
+      "unitate": "litri",
+      "dataInceput": "2026-01-21T10:30:00.000Z",
+      "dataAmbalare": "2026-01-21T12:51:01.828Z",
+      "packagingType": "keguri",
+      "bottleSize": null,
+      "boxType": null,
+      "sticlePerCutie": null,
+      "cantitateSticle": null,
+      "cantitateCutii": null,
+      "sticleLibere": null,
+      "descriereAmbalare": null,
+      "kegSize": "Keg 40l",
+      "materialsUsed": [
+        {
+          "denumire": "Keg 40l",
+          "cantitate": 3,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2026-01-21T12:51:01.829Z"
     }
   ],
-  "iesiriBere": [],
+  "iesiriBere": [
+    {
+      "id": 1,
+      "lotId": "24",
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": 122.76,
+      "numarUnitatiScoase": 372,
+      "ambalaj": "sticle",
+      "motiv": "rebut",
+      "dataIesire": "2026-01-21T12:51:14.622Z",
+      "utilizator": "Administrator",
+      "detaliiIesire": "62 cutii a 6 sticle + 0 sticle libere = 372 sticle (122.76L)"
+    }
+  ],
   "rebuturi": [],
   "materiiPrime": [
     {

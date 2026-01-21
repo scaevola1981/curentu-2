@@ -190,70 +190,116 @@ const Rebuturi = () => {
       )}
 
       <div className={styles.container}>
-      </div>
+        <h1 className={styles.title}>Gestionare Rebuturi și Pierderi</h1>
 
-      {/* Materiale */}
-      <div className={styles.materialsGrid}>
-        {["capace", "etichete", "cutii", "sticle", "keguri"].map((key) => (
-          <div key={key} className={styles.materialItem}>
-            <span className={styles.materialLabel}>{key}</span>
-            <span className={styles.materialValue}>
-              {rebut.materiale?.[key] || 0}
-            </span>
+        {/* 🔹 GRID: Grafic Stânga / Totaluri Dreapta */}
+        <div className={styles.topSection}>
+          {/* Grafic Pie */}
+          <div className={styles.chartCard} style={{ minHeight: "350px" }}>
+            <h2>Distribuție Rebuturi</h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  dataKey="value"
+                  label={({ name, value }) =>
+                    value > 0 ? `${name}: ${value}` : null
+                  }
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomTooltip />} />
+                <Legend iconType="circle" />
+              </PieChart>
+            </ResponsiveContainer>
           </div>
-        ))}
-      </div>
-    </div >
-              ))}
-            </div >
 
-  {/* === TOTAL GENERAL === */ }
-  < div className = { styles.totalSection } >
-              <h3>Total General</h3>
-
-              <div className={styles.totalGrid}>
-                {Object.entries(totaluri).map(([key, value]) => (
-                  <div key={key} className={styles.totalItem}>
-                    <span className={styles.totalLabel}>{key}:</span>
-                    <span className={styles.totalValue}>{value}</span>
-                  </div>
-                ))}
-
-                <div className={styles.totalItem}>
-                  <span className={styles.totalLabel}>Total rebuturi:</span>
-                  <span className={styles.totalValue}>{rebuturi.length}</span>
+          {/* Totaluri Card */}
+          <div className={styles.summaryCard}>
+            <h2>TOTAL GENERAL</h2>
+            <div className={styles.totalGrid}>
+              {Object.entries(totaluri).map(([key, value]) => (
+                <div key={key} className={styles.totalItem}>
+                  <span className={styles.totalLabel}>
+                    {key.charAt(0).toUpperCase() + key.slice(1)}:
+                  </span>
+                  <span className={styles.totalValue}>
+                    {key === "litri" ? value.toFixed(2) : value}
+                  </span>
                 </div>
+              ))}
+
+              <div className={styles.totalItem}>
+                <span className={styles.totalLabel}>Total rebuturi:</span>
+                <span className={styles.totalValue}>{rebuturi.length}</span>
               </div>
-            </div >
+            </div>
+          </div>
+        </div>
 
-  {/* === PIE CHART === */ }
-  < div className = { styles.chartContainer } >
-              <h2>Distribuția Rebuturilor</h2>
+        {/* 🔹 LISTA DE REBUTURI (Cards) */}
+        <h2 className={styles.subtitle}>Istoric Rebuturi ({rebuturi.length})</h2>
+        <div className={styles.cardsGrid}>
+          {rebuturi.map((rebut) => (
+            <div key={rebut.id} className={styles.rebutCard}>
+              <div className={styles.cardHeader}>
+                <h3>{rebut.reteta || "Necunoscut"}</h3>
+                <span className={styles.badge}>{rebut.motiv}</span>
+              </div>
 
-              <ResponsiveContainer width="100%" height={350}>
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={130}
-                    dataKey="value"
-                    label={({ name, percent }) =>
-                      `${name} ${(percent * 100).toFixed(1)}%`
-                    }
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            </div >
-          </>
-        )}
-      </div >
+              <div className={styles.cardBody}>
+                <p>
+                  <strong>Cantitate:</strong> {parseFloat(rebut.cantitate).toFixed(2)}L
+                </p>
+                <p>
+                  <strong>Ambalaj:</strong> {rebut.ambalaj}
+                </p>
+                <p>
+                  <strong>Data:</strong>{" "}
+                  {new Date(rebut.dataIesire).toLocaleDateString("ro-RO")}
+                </p>
+                <p className={styles.details}>{rebut.detaliiIesire}</p>
+
+                {rebut.materiale && (
+                  <div className={styles.materialsUsed}>
+                    <strong>Materiale pierdute:</strong>
+                    <ul>
+                      {Object.entries(rebut.materiale).map(([key, val]) =>
+                        val > 0 ? (
+                          <li key={key}>
+                            {key}: {val}
+                          </li>
+                        ) : null
+                      )}
+                    </ul>
+                  </div>
+                )}
+              </div>
+
+              <div className={styles.cardFooter}>
+                <button
+                  className={styles.deleteBtn}
+                  onClick={() => handleDeleteRebut(rebut.id)}
+                >
+                  Șterge Rebut
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {rebuturi.length === 0 && (
+            <p className={styles.emptyMsg}>Nu există rebuturi înregistrate.</p>
+          )}
+        </div>
+      </div>
     </>
   );
 };
