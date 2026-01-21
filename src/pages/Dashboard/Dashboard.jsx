@@ -228,7 +228,7 @@ const Dashboard = () => {
               {summary.productions.fullFermentors.slice(0, 3).map((fermentator) => (
                 <li key={fermentator.id}>
                   <span className={styles.itemName}>{fermentator.nume}</span>
-                  <span className={styles.itemValue}>{fermentator.cantitate}L</span>
+                  <span className={styles.itemValue}>{parseFloat(fermentator.cantitate).toFixed(2)}L</span>
                 </li>
               ))}
             </ul>
@@ -254,7 +254,7 @@ const Dashboard = () => {
               {summary.ambalare.readyLots.slice(0, 3).map((fermentator) => (
                 <li key={fermentator.id}>
                   <span className={styles.itemName}>{fermentator.nume}</span>
-                  <span className={styles.itemValue}>{fermentator.cantitate}L</span>
+                  <span className={styles.itemValue}>{parseFloat(fermentator.cantitate).toFixed(2)}L</span>
                 </li>
               ))}
             </ul>

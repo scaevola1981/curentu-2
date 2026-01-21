@@ -463,8 +463,16 @@ const Ambalare = () => {
       }
 
       // Actualizare fermentator
-      const remainingQuantity =
-        selectedFermentator.cantitate - cantitateDeAmbalatNum;
+      let remainingQuantity = selectedFermentator.cantitate - cantitateDeAmbalatNum;
+
+      // Auto-empty: Dacă rămâne sub 0.5L, considerăm gol
+      if (remainingQuantity < 0.5) {
+        remainingQuantity = 0;
+      }
+
+      // Asigurăm precizia matematică
+      remainingQuantity = parseFloat(remainingQuantity.toFixed(2));
+
       const updatedFermentator = {
         ...selectedFermentator,
         ocupat: remainingQuantity > 0,
