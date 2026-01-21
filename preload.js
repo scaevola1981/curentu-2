@@ -21,6 +21,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   onUpdateNotAvailable: createListener("update_not_available"),
   onDownloadProgress: createListener("download_progress"),
   onUpdateDownloaded: createListener("update_downloaded"),
+  onUpdateReady: createListener("update_downloaded"), // Alias for compatibility
   checkForUpdates: () => ipcRenderer.invoke("check-for-updates"),
   installUpdate: () => ipcRenderer.invoke("install_update"),
 
