@@ -258,7 +258,28 @@ const Depozitare = () => {
       cantitateNoua = parseFloat(cantitateNoua.toFixed(2));
     }
 
-    const parsedLotId = parseInt(lotId);
+
+    // Calculăm materialele aferente cantității scoase
+    let materialeRebut = {
+      capace: 0,
+      etichete: 0,
+      cutii: 0,
+      sticle: 0,
+      keguri: 0
+    };
+
+    if (lot.packagingType === "sticle") {
+      const sticlePerCutie = getSticlePerCutie(lot.boxType);
+      const totalSticleScoase = (parsedUnits * sticlePerCutie) + parsedSticleLibere;
+
+      materialeRebut.capace = totalSticleScoase;
+      materialeRebut.etichete = totalSticleScoase;
+      materialeRebut.sticle = totalSticleScoase;
+      materialeRebut.cutii = parsedUnits; // o cutie per unitate (cutie)
+    } else if (lot.packagingType === "keguri") {
+      materialeRebut.keguri = parsedUnits; // un keg per unitate
+    }
+
     const payload = {
       lotId: parsedLotId.toString(),
       reteta: lot.reteta,
@@ -269,6 +290,7 @@ const Depozitare = () => {
       dataIesire: new Date().toISOString(),
       utilizator: "Administrator",
       detaliiIesire: unitatiMesaj,
+      materiale: materialeRebut, // Adăugăm obiectul de materiale
     };
 
     try {
