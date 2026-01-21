@@ -258,6 +258,7 @@ const Depozitare = () => {
       cantitateNoua = parseFloat(cantitateNoua.toFixed(2));
     }
 
+    const parsedLotId = parseInt(lotId);
 
     // Calculăm materialele aferente cantității scoase
     let materialeRebut = {
