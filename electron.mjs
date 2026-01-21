@@ -78,6 +78,13 @@ autoUpdater.on('update-downloaded', (info) => {
   }
 });
 
+autoUpdater.on('error', (err) => {
+  console.error('❌ Update error:', err);
+  if (mainWindow) {
+    mainWindow.webContents.send('update_error', err.message);
+  }
+});
+
 // ==========================================
 // 🟦 SERVER EXPRESS
 // ==========================================
