@@ -70,6 +70,10 @@ const calculeazaTotaluri = (rebuturi) => {
   }, initial);
 };
 
+import Modal from "../../Componente/Modal";
+
+// ... existing imports ...
+
 const Rebuturi = () => {
   const [rebuturi, setRebuturi] = useState([]);
   const [totaluri, setTotaluri] = useState({
@@ -80,6 +84,24 @@ const Rebuturi = () => {
     sticle: 0,
     keguri: 0,
   });
+
+  // MODAL STATE
+  const [modalState, setModalState] = useState({
+    isOpen: false,
+    type: "info",
+    title: "",
+    message: "",
+    confirmAction: null,
+  });
+
+  const showModal = (type, title, message, confirmAction = null) => {
+    setModalState({ isOpen: true, type, title, message, confirmAction });
+  };
+
+  const closeModal = () => {
+    setModalState((prev) => ({ ...prev, isOpen: false, confirmAction: null }));
+  };
+
   const [error, setError] = useState("");
 
   // Date pentru Pie Chart
@@ -113,103 +135,80 @@ const Rebuturi = () => {
   }, []);
 
   // Șterge rebut individual
-  const handleDeleteRebut = async (id) => {
-    if (!window.confirm("Sigur doriți să ștergeți acest rebut?")) return;
+  // Delete Rebut
+  const handleDeleteRebut = (id) => {
+    showModal(
+      "error",
+      "Confirmare Ștergere Rebut",
+      "Sigur doriți să ștergeți acest rebut?",
+      async () => {
+        try {
+          const res = await fetch(`${API_URL}/api/rebuturi/${id}`, {
+            method: "DELETE",
+          });
 
-    try {
-      const res = await fetch(`${API_URL}/api/rebuturi/${id}`, {
-        method: "DELETE",
-      });
+          if (!res.ok) throw new Error("Eroare la ștergerea rebutului");
 
-      if (!res.ok) throw new Error("Eroare la ștergerea rebutului");
+          // Optimist UI update
+          const listaNoua = rebuturi.filter((r) => r.id !== id);
+          setRebuturi(listaNoua);
 
-      const listaNoua = rebuturi.filter((r) => r.id !== id);
-      setRebuturi(listaNoua);
+          // recalculăm totalurile
+          const rezultate = calculeazaTotaluri(listaNoua);
+          setTotaluri(rezultate);
 
-      // recalculăm totalurile
-      const rezultate = calculeazaTotaluri(listaNoua);
-      setTotaluri(rezultate);
-    } catch (err) {
-      setError(`Eroare la ștergerea rebutului: ${err.message}`);
-    }
+          closeModal();
+          showModal("success", "Succes", "Rebut șters cu succes!");
+        } catch (err) {
+          console.error(err);
+          closeModal();
+          showModal("error", "Eroare", `Eroare la ștergerea rebutului: ${err.message}`);
+        }
+      }
+    );
   };
 
   return (
     <>
       <NavBar />
 
+      {/* 🔹 MODAL COMPONENT */}
+      {modalState.isOpen && (
+        <Modal
+          message={modalState.message}
+          title={modalState.title}
+          type={modalState.type}
+          onClose={closeModal}
+          confirmAction={modalState.confirmAction}
+        />
+      )}
+
+      {error && (
+        <div className={styles.errorContainer}>
+          <p>{error}</p>
+        </div>
+      )}
+
       <div className={styles.container}>
-        {/* EROARE */}
-        {error && (
-          <div className={styles.modal}>
-            <div className={styles.modalContent}>
-              <p>{error}</p>
-              <button className={styles.modalButton} onClick={() => setError("")}>
-                Închide
-              </button>
-            </div>
+      </div>
+
+      {/* Materiale */}
+      <div className={styles.materialsGrid}>
+        {["capace", "etichete", "cutii", "sticle", "keguri"].map((key) => (
+          <div key={key} className={styles.materialItem}>
+            <span className={styles.materialLabel}>{key}</span>
+            <span className={styles.materialValue}>
+              {rebut.materiale?.[key] || 0}
+            </span>
           </div>
-        )}
-
-        <h1 className={styles.title}>Rebuturi și Pierderi</h1>
-
-        {/* Dacă nu există rebuturi */}
-        {rebuturi.length === 0 ? (
-          <p className={styles.noData}>Nu există rebuturi sau pierderi înregistrate.</p>
-        ) : (
-          <>
-            {/* === CARDURI === */}
-            <div className={styles.gridContainer}>
-              {rebuturi.map((rebut) => (
-                <div key={rebut.id} className={styles.lotCard}>
-                  <button
-                    className={styles.deleteCardBtn}
-                    onClick={() => handleDeleteRebut(rebut.id)}
-                  >
-                    ✕
-                  </button>
-
-                  <div className={styles.cardHeader}>
-                    <h2>{rebut.reteta}</h2>
-                    <span className={styles.lotDate}>
-                      {new Date(rebut.dataIesire).toLocaleDateString("ro-RO")}
-                    </span>
-                  </div>
-
-                  <div className={styles.cardSummary}>
-                    <div className={styles.summaryItem}>
-                      <span>Cantitate:</span>
-                      <strong>{parseFloat(rebut.cantitate).toFixed(2)} L</strong>
-                    </div>
-
-                    <div className={styles.summaryItem}>
-                      <span>Ambalaj:</span>
-                      <strong>{rebut.ambalaj}</strong>
-                    </div>
-
-                    <div className={styles.summaryItem}>
-                      <span>Unități:</span>
-                      <strong>{rebut.numarUnitatiScoase}</strong>
-                    </div>
-                  </div>
-
-                  {/* Materiale */}
-                  <div className={styles.materialsGrid}>
-                    {["capace", "etichete", "cutii", "sticle", "keguri"].map((key) => (
-                      <div key={key} className={styles.materialItem}>
-                        <span className={styles.materialLabel}>{key}</span>
-                        <span className={styles.materialValue}>
-                          {rebut.materiale?.[key] || 0}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+        ))}
+      </div>
+    </div >
               ))}
-            </div>
+            </div >
 
-            {/* === TOTAL GENERAL === */}
-            <div className={styles.totalSection}>
+  {/* === TOTAL GENERAL === */ }
+  < div className = { styles.totalSection } >
               <h3>Total General</h3>
 
               <div className={styles.totalGrid}>
@@ -225,10 +224,10 @@ const Rebuturi = () => {
                   <span className={styles.totalValue}>{rebuturi.length}</span>
                 </div>
               </div>
-            </div>
+            </div >
 
-            {/* === PIE CHART === */}
-            <div className={styles.chartContainer}>
+  {/* === PIE CHART === */ }
+  < div className = { styles.chartContainer } >
               <h2>Distribuția Rebuturilor</h2>
 
               <ResponsiveContainer width="100%" height={350}>
@@ -251,10 +250,10 @@ const Rebuturi = () => {
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
-            </div>
+            </div >
           </>
         )}
-      </div>
+      </div >
     </>
   );
 };
