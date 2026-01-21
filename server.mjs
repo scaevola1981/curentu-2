@@ -586,7 +586,39 @@ app.put("/api/ambalare/:id", (req, res) => {
     const index = dbData.loturiAmbalate.findIndex(l => l.id === id);
     if (index === -1) return res.status(404).json({ error: "Lotul nu a fost găsit" });
 
-    dbData.loturiAmbalate[index] = { ...dbData.loturiAmbalate[index], ...req.body, id };
+    const oldLot = dbData.loturiAmbalate[index];
+    const newData = req.body;
+
+    // Update lot data
+    dbData.loturiAmbalate[index] = {
+      ...oldLot,
+      ...newData,
+      id,
+      dataActualizare: new Date().toISOString()
+    };
+
+    // Update fermentator quantity with precision and auto-empty logic
+    const fermentatorId = newData.fermentatorId || oldLot.fermentatorId;
+    const fermentatorIndex = dbData.fermentatoare.findIndex(f => f.id === fermentatorId);
+
+    if (fermentatorIndex !== -1) {
+      const oldCantitate = oldLot.cantitate || 0;
+      const newCantitate = newData.cantitate || 0;
+      const diferenta = Number((oldCantitate - newCantitate).toFixed(2));
+
+      const cantitateRamasa = Number((dbData.fermentatoare[fermentatorIndex].cantitate + diferenta).toFixed(2));
+
+      // Auto-empty logic: If remaining < 0.5L, reset fermentor automatically
+      if (cantitateRamasa < 0.5) {
+        console.log(`[AUTO-EMPTY] Fermentator ${fermentatorId}: ${cantitateRamasa}L < 0.5L → GOL automat`);
+        dbData.fermentatoare[fermentatorIndex].ocupat = false;
+        dbData.fermentatoare[fermentatorIndex].reteta = null;
+        dbData.fermentatoare[fermentatorIndex].cantitate = 0;
+      } else {
+        dbData.fermentatoare[fermentatorIndex].cantitate = cantitateRamasa;
+      }
+    }
+
     writeDb(dbData);
     res.json(dbData.loturiAmbalate[index]);
   } catch (error) {
@@ -957,16 +989,19 @@ app.post("/api/productie/confirm", (req, res) => {
     now.setSeconds(0);
     now.setMilliseconds(0);
 
+    // Apply 10% production loss margin (2000L → 1800L available)
+    const cantitateFinala = Number((cantitate * 0.9).toFixed(2));
+
     dbData.fermentatoare[fermentatorIndex] = {
       ...dbData.fermentatoare[fermentatorIndex],
       ocupat: true,
       reteta: reteta.denumire,
-      cantitate: Number(cantitate),
+      cantitate: cantitateFinala,  // Stored with 10% loss already applied
       dataInceput: now.toISOString()
     };
 
     writeDb(dbData);
-    res.json({ success: true, fermentatorId });
+    res.json({ success: true, fermentatorId, cantitateFinala });
   } catch (error) {
     console.error("Error confirming production:", error);
     res.status(500).json({ error: error.message });

@@ -113,6 +113,22 @@
   font-size: 1rem;
 }
 
+/* FIX: Select dropdown styling for Windows visibility */
+.input select,
+select.input {
+  background: #1a1a2e !important;
+  color: #ffca28 !important;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+}
+
+.input select option,
+select.input option {
+  background: #1a1a2e !important;
+  color: #ffca28 !important;
+  padding: 8px;
+}
+
 /* ==== FORM ==== */
 
 .formRow {

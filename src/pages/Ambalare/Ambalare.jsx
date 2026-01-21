@@ -484,45 +484,85 @@ const Ambalare = () => {
         descriereAmbalare = `${cantitateCutii} cutii × ${sticlePerCutie} sticle + ${sticleLibere} libere`;
       }
 
-      // Creare lot ambalat
-      const lotData = {
-        fermentatorId: selectedFermentator.id,
-        reteta: selectedFermentator.reteta,
-        cantitate: cantitateDeAmbalatNum,
-        unitate: "litri",
-        dataInceput: selectedFermentator.dataInceput,
-        dataAmbalare: new Date().toISOString(),
-        packagingType,
+      // Automatic lot splitting logic for kegs
+      const lotsToCreate = [];
 
-        // --- DOAR PENTRU STICLE ---
-        bottleSize: packagingType === "sticle" ? bottleSize : null,
-        boxType: packagingType === "sticle" ? boxType : null,
-        sticlePerCutie: packagingType === "sticle" ? sticlePerCutie : null,
-        cantitateSticle: packagingType === "sticle" ? cantitateSticle : null,
-        cantitateCutii: packagingType === "sticle" ? cantitateCutii : null,
-        sticleLibere: packagingType === "sticle" ? sticleLibere : null,
-        descriereAmbalare:
-          packagingType === "sticle" ? descriereAmbalare : null,
+      if (packagingType === "keguri") {
+        // Extract keg capacity from size string (e.g., "Keg 40l" → 40)
+        const kegCapacity = parseFloat(kegSize.replace("Keg ", "").replace("l", ""));
+        let remainingVolume = cantitateDeAmbalatNum;
 
-        // --- DOAR PENTRU KEGURI ---
-        kegSize: packagingType === "keguri" ? kegSize : null,
+        // Create multiple lots if volume exceeds keg capacity
+        while (remainingVolume > 0) {
+          const lotVolume = Number(Math.min(remainingVolume, kegCapacity).toFixed(2));
 
-        // --- MATERIALE FOLOSITE ---
-        materialsUsed: ambalareNecesare.map((m) => ({
-          denumire: m.denumire,
-          cantitate: m.cantitate,
-          unitate: m.unitate,
-        })),
-      };
+          const lotData = {
+            fermentatorId: selectedFermentator.id,
+            reteta: selectedFermentator.reteta,
+            cantitate: lotVolume,
+            unitate: "litri",
+            dataInceput: selectedFermentator.dataInceput,
+            dataAmbalare: new Date().toISOString(),
+            packagingType,
+            bottleSize: null,
+            boxType: null,
+            sticlePerCutie: null,
+            cantitateSticle: null,
+            cantitateCutii: null,
+            sticleLibere: null,
+            descriereAmbalare: null,
+            kegSize: kegSize,
+            materialsUsed: [{
+              denumire: kegSize,
+              cantitate: Math.ceil(lotVolume / kegCapacity),
+              unitate: "buc",
+            }],
+          };
 
-      const lotResponse = await fetch(`${API_URL}/loturi-ambalate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(lotData),
-      });
+          lotsToCreate.push(lotData);
+          remainingVolume = Number((remainingVolume - lotVolume).toFixed(2));
+        }
 
-      if (!lotResponse.ok) {
-        throw new Error("Eroare la salvarea lotului");
+        console.log(`[AMBALARE] Auto-split: ${lotsToCreate.length} lot(uri) pentru ${cantitateDeAmbalatNum}L`);
+      } else {
+        // Single lot for bottles
+        const lotData = {
+          fermentatorId: selectedFermentator.id,
+          reteta: selectedFermentator.reteta,
+          cantitate: cantitateDeAmbalatNum,
+          unitate: "litri",
+          dataInceput: selectedFermentator.dataInceput,
+          dataAmbalare: new Date().toISOString(),
+          packagingType,
+          bottleSize: packagingType === "sticle" ? bottleSize : null,
+          boxType: packagingType === "sticle" ? boxType : null,
+          sticlePerCutie: packagingType === "sticle" ? sticlePerCutie : null,
+          cantitateSticle: packagingType === "sticle" ? cantitateSticle : null,
+          cantitateCutii: packagingType === "sticle" ? cantitateCutii : null,
+          sticleLibere: packagingType === "sticle" ? sticleLibere : null,
+          descriereAmbalare: packagingType === "sticle" ? descriereAmbalare : null,
+          kegSize: null,
+          materialsUsed: ambalareNecesare.map((m) => ({
+            denumire: m.denumire,
+            cantitate: m.cantitate,
+            unitate: m.unitate,
+          })),
+        };
+
+        lotsToCreate.push(lotData);
+      }
+
+      // Create all lots in db.json
+      for (const lot of lotsToCreate) {
+        const lotResponse = await fetch(`${API_URL}/loturi-ambalate`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(lot),
+        });
+
+        if (!lotResponse.ok) {
+          throw new Error("Eroare la salvarea lotului");
+        }
       }
 
       // Reîmprospătare date
@@ -536,8 +576,13 @@ const Ambalare = () => {
       setBoxType("");
       setKegSize("");
       setAmbalareInsuficiente([]);
+
+      const lotMsg = lotsToCreate && lotsToCreate.length > 1
+        ? ` (${lotsToCreate.length} loturi create automat)`
+        : "";
+
       setError(
-        `Ambalare realizată cu succes! ${cantitateDeAmbalatNum}L au fost ambalate.${remainingQuantity > 0
+        `Ambalare realizată cu succes! ${cantitateDeAmbalatNum}L au fost ambalate${lotMsg}.${remainingQuantity > 0
           ? ` Au rămas ${remainingQuantity}L în fermentator.`
           : ""
         }`
