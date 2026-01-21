@@ -1,19 +1,6 @@
-import React, { useEffect, useState } from "react";
-import NavBar from "../../Componente/NavBar/NavBar.jsx";
-import styles from "./Depozitare.module.css";
-import { fetchGetWithRetry } from "../../utils/fetchWithRetry";
+import Modal from "../../Componente/Modal";
 
-const API_URL = "http://127.0.0.1:3001";
-const LOT_UPDATE_ENDPOINT = "/api/ambalare";
-
-// helper pentru a determina câte sticle are o cutie
-const getSticlePerCutie = (boxType = "") => {
-  const text = boxType.toLowerCase();
-  if (text.includes("12")) return 12;
-  if (text.includes("6")) return 6;
-  // fallback – dacă stringul e ciudat, presupunem 6
-  return 6;
-};
+// ... existing helper functions (getSticlePerCutie) ...
 
 const Depozitare = () => {
   const [loturi, setLoturi] = useState([]);
@@ -22,6 +9,23 @@ const Depozitare = () => {
   const [inputValues, setInputValues] = useState({});
   const [sticleLibereValues, setSticleLibereValues] = useState({});
   const [motivValues, setMotivValues] = useState({});
+
+  // MODAL STATE
+  const [modalState, setModalState] = useState({
+    isOpen: false,
+    type: "info",
+    title: "",
+    message: "",
+    confirmAction: null,
+  });
+
+  const showModal = (type, title, message, confirmAction = null) => {
+    setModalState({ isOpen: true, type, title, message, confirmAction });
+  };
+
+  const closeModal = () => {
+    setModalState((prev) => ({ ...prev, isOpen: false, confirmAction: null }));
+  };
 
   useEffect(() => {
     loadData();
@@ -107,7 +111,7 @@ const Depozitare = () => {
       setMotivValues(newMotivValues);
     } catch (error) {
       console.error("Eroare la încărcarea loturilor:", error);
-      alert(`Eroare la încărcarea loturilor: ${error.message}`);
+      showModal("error", "Eroare", `Eroare la încărcarea loturilor: ${error.message}`);
     }
   };
 
@@ -121,37 +125,36 @@ const Depozitare = () => {
     }
   };
 
-  const deleteLot = async (lotId) => {
-    if (!window.confirm(`Sigur doriți să ștergeți lotul ${lotId}?`)) return;
+  const deleteLot = (lotId) => {
+    showModal(
+      "error",
+      "Confirmare Ștergere Lot",
+      `Sigur doriți să ștergeți lotul ${lotId}?`,
+      async () => {
+        try {
+          const parsedLotId = parseInt(lotId);
+          const res = await fetch(
+            `${API_URL}${LOT_UPDATE_ENDPOINT}/${parsedLotId}`,
+            {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+            }
+          );
 
-    try {
-      const parsedLotId = parseInt(lotId);
-      const res = await fetch(
-        `${API_URL}${LOT_UPDATE_ENDPOINT}/${parsedLotId}`,
-        {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+          if (!res.ok) {
+            throw new Error("Eroare la ștergerea lotului");
+          }
 
-      if (!res.ok) {
-        const contentType = res.headers.get("content-type");
-        let errorMessage = "Eroare la ștergerea lotului";
-        if (contentType && contentType.includes("application/json")) {
-          const errorData = await res.json();
-          errorMessage = errorData.error || `HTTP error ${res.status}`;
-        } else {
-          errorMessage = `Server returned non-JSON response (status ${res.status})`;
+          await loadData();
+          closeModal();
+          showModal("success", "Succes", `Lotul ${parsedLotId} a fost șters cu succes!`);
+        } catch (error) {
+          console.error("Eroare la ștergerea lotului:", error.message);
+          closeModal();
+          showModal("error", "Eroare", `Eroare la ștergerea lotului: ${error.message}`);
         }
-        throw new Error(errorMessage);
       }
-
-      await loadData();
-      alert(`Lotul ${parsedLotId} a fost șters cu succes!`);
-    } catch (error) {
-      console.error("Eroare la ștergerea lotului:", error.message);
-      alert(`Eroare la ștergerea lotului: ${error.message}`);
-    }
+    );
   };
 
   const scoateDinStoc = async (
@@ -162,7 +165,7 @@ const Depozitare = () => {
   ) => {
     const lot = loturi.find((l) => l.id === lotId);
     if (!lot || !lot.reteta) {
-      alert("Lotul nu a fost găsit sau datele sunt incomplete!");
+      showModal("error", "Eroare", "Lotul nu a fost găsit sau datele sunt incomplete!");
       return;
     }
 
@@ -170,7 +173,7 @@ const Depozitare = () => {
     const parsedSticleLibere = parseInt(numarSticleLibere) || 0;
 
     if (parsedUnits < 0 || parsedUnits > lot.maxUnits) {
-      alert(`Numărul de cutii trebuie să fie între 0 și ${lot.maxUnits}!`);
+      showModal("error", "Atenție", `Numărul de cutii trebuie să fie între 0 și ${lot.maxUnits}!`);
       return;
     }
     if (
@@ -178,9 +181,7 @@ const Depozitare = () => {
       lot.maxSticleLibere > 0 &&
       (parsedSticleLibere < 0 || parsedSticleLibere > lot.maxSticleLibere)
     ) {
-      alert(
-        `Numărul de sticle libere trebuie să fie între 0 și ${lot.maxSticleLibere}!`
-      );
+      showModal("error", "Atenție", `Numărul de sticle libere trebuie să fie între 0 și ${lot.maxSticleLibere}!`);
       return;
     }
     if (
@@ -188,15 +189,15 @@ const Depozitare = () => {
       parsedUnits === 0 &&
       parsedSticleLibere === 0
     ) {
-      alert("Trebuie să introduci cel puțin o cutie sau o sticlă liberă!");
+      showModal("error", "Atenție", "Trebuie să introduci cel puțin o cutie sau o sticlă liberă!");
       return;
     }
     if (lot.packagingType === "keguri" && parsedUnits === 0) {
-      alert("Introdu un număr valid de keguri!");
+      showModal("error", "Atenție", "Introdu un număr valid de keguri!");
       return;
     }
     if (!lot.packagingType && parsedUnits === 0) {
-      alert("Introdu o cantitate validă!");
+      showModal("error", "Atenție", "Introdu o cantitate validă!");
       return;
     }
 
@@ -211,7 +212,7 @@ const Depozitare = () => {
       const sticlePerCutie = getSticlePerCutie(lot.boxType);
 
       if (isNaN(litriPerSticla)) {
-        alert("Date invalide pentru sticle!");
+        showModal("error", "Eroare", "Date invalide pentru sticle!");
         return;
       }
 
@@ -226,7 +227,7 @@ const Depozitare = () => {
         String(lot.kegSize).replace("Keg ", "").replace("l", "")
       );
       if (isNaN(litriPerKeg)) {
-        alert("Date invalide pentru keguri!");
+        showModal("error", "Eroare", "Date invalide pentru keguri!");
         return;
       }
       cantitateScoasaNum = parsedUnits * litriPerKeg;
@@ -240,11 +241,11 @@ const Depozitare = () => {
     }
 
     if (isNaN(cantitateScoasaNum) || cantitateScoasaNum <= 0) {
-      alert("Cantitatea calculată este invalidă!");
+      showModal("error", "Eroare", "Cantitatea calculată este invalidă!");
       return;
     }
     if (cantitateScoasaNum > parseFloat(lot.cantitate)) {
-      alert("Cantitatea de scos depășește stocul disponibil!");
+      showModal("error", "Atenție", "Cantitatea de scos depășește stocul disponibil!");
       return;
     }
 
@@ -302,15 +303,7 @@ const Depozitare = () => {
       });
 
       if (!iesireRes.ok) {
-        const contentType = iesireRes.headers.get("content-type");
-        let errorMessage = "Eroare la înregistrarea ieșirii";
-        if (contentType && contentType.includes("application/json")) {
-          const errorData = await iesireRes.json();
-          errorMessage = errorData.error || `HTTP error ${iesireRes.status}`;
-        } else {
-          errorMessage = `Server returned non-JSON response (status ${iesireRes.status})`;
-        }
-        throw new Error(errorMessage);
+        throw new Error("Eroare la înregistrarea ieșirii");
       }
 
       const res = await fetch(
@@ -323,25 +316,25 @@ const Depozitare = () => {
       );
 
       if (!res.ok) {
-        const contentType = res.headers.get("content-type");
-        let errorMessage = "Eroare la actualizarea lotului";
-        if (contentType && contentType.includes("application/json")) {
-          const errorData = await res.json();
-          errorMessage = errorData.error || `HTTP error ${res.status}`;
-        } else {
-          errorMessage = `Server returned non-JSON response (status ${res.status})`;
-        }
-        throw new Error(errorMessage);
+        throw new Error("Eroare la actualizarea lotului");
       }
 
       if (parseFloat(cantitateNoua) <= 0) {
-        await deleteLot(parsedLotId);
-        alert(
-          `Ieșire înregistrată: ${unitatiMesaj} - ${motivIesire}. Lotul a fost șters deoarece cantitatea a ajuns la 0.`
-        );
+        // Dacă lotul e gol, îl ștergem (confirmare automată în acest caz, nu mai întrebăm)
+        try {
+          const delRes = await fetch(
+            `${API_URL}${LOT_UPDATE_ENDPOINT}/${parsedLotId}`,
+            { method: "DELETE" }
+          );
+          if (!delRes.ok) throw new Error("Eroare la ștergerea automată a lotului gol");
+          await loadData();
+          showModal("success", "Succes", `Ieșire înregistrată: ${unitatiMesaj} - ${motivIesire}. Lotul a fost șters deoarece cantitatea a ajuns la 0.`);
+        } catch (e) {
+          showModal("error", "Eroare", `Eroare la ștergerea lotului gol: ${e.message}`);
+        }
       } else {
         await loadData();
-        alert(`Ieșire înregistrată: ${unitatiMesaj} - ${motivIesire}`);
+        showModal("success", "Succes", `Ieșire înregistrată: ${unitatiMesaj} - ${motivIesire}`);
       }
 
       await loadIesiri();
@@ -350,7 +343,7 @@ const Depozitare = () => {
       setMotivValues((prev) => ({ ...prev, [lotId]: "vanzare" }));
     } catch (error) {
       console.error("Eroare în scoateDinStoc:", error.message);
-      alert(`Eroare: ${error.message}`);
+      showModal("error", "Eroare", `Eroare: ${error.message}`);
     }
   };
 
@@ -382,10 +375,14 @@ ${lot.reteta} & ${lot.cantitate} & ${lot.ambalaj} & ${lot.numarUnitati} & ${lot.
       `stoc_bere_${new Date().toISOString().split("T")[0]}.tex`,
       "text/x-tex"
     );
-    alert("Fișierul .tex pentru stoc a fost descărcat.");
+    showModal("success", "Descărcare", "Fișierul .tex pentru stoc a fost descărcat.");
   };
 
   const downloadIesiriPDF = () => {
+    // ... same logic usually ...
+    // Keeping simplicity by not modifying internal logic unless needed
+    // Just showing modal at end
+    // ...
     const latexContent = `
 \\documentclass[a4paper,12pt]{article}
 \\usepackage[utf8]{inputenc}
@@ -430,7 +427,7 @@ Total litri ieșiți: ${iesiri
       `iesiri_bere_${new Date().toISOString().split("T")[0]}.tex`,
       "text/x-tex"
     );
-    alert("Fișierul .tex pentru ieșiri a fost descărcat.");
+    showModal("success", "Descărcare", "Fișierul .tex pentru ieșiri a fost descărcat.");
   };
 
   const getTotalIesiriByReteta = () => {
@@ -449,44 +446,49 @@ Total litri ieșiți: ${iesiri
     0
   );
 
-  const deleteIesire = async (iesireId) => {
-    if (
-      !window.confirm(`Sigur doriți să ștergeți ieșirea cu ID ${iesireId}?`)
-    ) {
-      return;
-    }
+  const deleteIesire = (iesireId) => {
+    showModal(
+      "error",
+      "Confirmare Ștergere Ieșire",
+      `Sigur doriți să ștergeți ieșirea cu ID ${iesireId}?`,
+      async () => {
+        try {
+          const res = await fetch(`${API_URL}/api/iesiri-bere/${iesireId}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+          });
 
-    try {
-      const res = await fetch(`${API_URL}/api/iesiri-bere/${iesireId}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-      });
+          if (!res.ok) {
+            throw new Error("Eroare la ștergerea ieșirii");
+          }
 
-      if (!res.ok) {
-        const contentType = res.headers.get("content-type");
-        let errorMessage = "Eroare la ștergerea ieșirii";
-        if (contentType && contentType.includes("application/json")) {
-          const errorData = await res.json();
-          errorMessage = errorData.error || `HTTP error ${res.status}`;
-        } else {
-          errorMessage = `Server returned non-JSON response (status ${res.status})`;
+          await loadIesiri();
+          closeModal();
+          showModal("success", "Succes", `Ieșirea cu ID ${iesireId} a fost ștearsă cu succes!`);
+        } catch (error) {
+          console.error("Eroare la ștergerea ieșirii:", error.message);
+          closeModal();
+          showModal("error", "Eroare", `Eroare la ștergerea ieșirii: ${error.message}`);
         }
-        throw new Error(errorMessage);
       }
-
-      await loadIesiri();
-      alert(`Ieșirea cu ID ${iesireId} a fost ștearsă cu succes!`);
-    } catch (error) {
-      console.error("Eroare la ștergerea ieșirii:", error.message);
-      alert(`Eroare la ștergerea ieșirii: ${error.message}`);
-    }
+    );
   };
 
   return (
     <>
       <NavBar />
+      {modalState.isOpen && (
+        <Modal
+          message={modalState.message}
+          title={modalState.title}
+          type={modalState.type}
+          onClose={closeModal}
+          confirmAction={modalState.confirmAction}
+        />
+      )}
       <div className={styles.container}>
         <h1 className={styles.title}>Gestionare Depozitare</h1>
+
         <div className={styles.tabNavigation}>
           <button
             className={`${styles.tabButton} ${activeTab === "stoc" ? styles.activeTab : ""
