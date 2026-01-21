@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain, Menu } from "electron";
+import { autoUpdater } from "electron-updater";
 import path from "path";
 import { fileURLToPath } from "url";
 import { existsSync, appendFileSync } from "fs";
@@ -15,7 +16,66 @@ let mainWindow = null;
 app.commandLine.appendSwitch("disable-gpu-sandbox");
 app.commandLine.appendSwitch("disable-software-rasterizer");
 
-// Auto-updater removed to simplify application and prevent 404 errors
+// ==========================================
+// 🔄 AUTO-UPDATER CONFIGURATION
+// ==========================================
+// Configure logger to write to server debug log
+autoUpdater.logger = {
+  info: (msg) => {
+    const logPath = path.join(app.getPath("userData"), "server-debug.log");
+    appendFileSync(logPath, `[UPDATER INFO] ${msg}\n`);
+    console.log(`[UPDATER] ${msg}`);
+  },
+  warn: (msg) => {
+    const logPath = path.join(app.getPath("userData"), "server-debug.log");
+    appendFileSync(logPath, `[UPDATER WARN] ${msg}\n`);
+    console.warn(`[UPDATER] ${msg}`);
+  },
+  error: (msg) => {
+    const logPath = path.join(app.getPath("userData"), "server-debug.log");
+    appendFileSync(logPath, `[UPDATER ERROR] ${msg}\n`);
+    console.error(`[UPDATER] ${msg}`);
+  },
+  debug: (msg) => {
+    const logPath = path.join(app.getPath("userData"), "server-debug.log");
+    appendFileSync(logPath, `[UPDATER DEBUG] ${msg}\n`);
+    console.debug(`[UPDATER] ${msg}`);
+  }
+};
+
+// Security: Only check for updates in production mode
+autoUpdater.autoDownload = !app.isPackaged ? false : true;
+autoUpdater.autoInstallOnAppQuit = true;
+
+// Auto-updater events
+autoUpdater.on('update-available', (info) => {
+  console.log('🔄 Update available:', info.version);
+  if (mainWindow) {
+    mainWindow.webContents.send('update_available', info);
+  }
+});
+
+autoUpdater.on('update-not-available', (info) => {
+  console.log('✅ App is up to date:', info.version);
+  if (mainWindow) {
+    mainWindow.webContents.send('update_not_available', info);
+  }
+});
+
+autoUpdater.on('download-progress', (progress) => {
+  const msg = `Downloaded ${progress.percent.toFixed(2)}% (${progress.transferred}/${progress.total})`;
+  console.log('📥', msg);
+  if (mainWindow) {
+    mainWindow.webContents.send('download_progress', progress);
+  }
+});
+
+autoUpdater.on('update-downloaded', (info) => {
+  console.log('✅ Update downloaded:', info.version);
+  if (mainWindow) {
+    mainWindow.webContents.send('update_downloaded', info);
+  }
+});
 
 // ==========================================
 // 🟦 SERVER EXPRESS
@@ -261,6 +321,14 @@ async function createWindow() {
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
+
+  // Check for updates automatically after window is created (production only)
+  if (app.isPackaged) {
+    setTimeout(() => {
+      console.log('[UPDATER] Checking for updates...');
+      autoUpdater.checkForUpdatesAndNotify();
+    }, 3000); // Wait 3 seconds for server to stabilize
+  }
 }
 
 // ==========================================
@@ -275,7 +343,16 @@ ipcMain.handle("get-app-version", () => app.getVersion());
 
 ipcMain.handle("check-for-updates", async () => {
   console.log("📢 Manual update check requested");
+  if (!app.isPackaged) {
+    console.log("⚠️ Updates disabled in development mode");
+    return { message: "Updates disabled in development mode" };
+  }
   return autoUpdater.checkForUpdates();
+});
+
+ipcMain.handle("install_update", () => {
+  console.log("📢 Install update requested");
+  autoUpdater.quitAndInstall();
 });
 
 // ✅ Improved cleanup to prevent EADDRINUSE

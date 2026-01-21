@@ -18,22 +18,16 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // 🆕 AUTO-UPDATER
   // ============================
   onUpdateAvailable: createListener("update_available"),
+  onUpdateNotAvailable: createListener("update_not_available"),
   onDownloadProgress: createListener("download_progress"),
-  onUpdateReady: createListener("update_ready"),
-  onUpdateNotAvailable: createListener("update_not_available"), // Missing listener added
-  onUpdateError: createListener("update_error"),
-  installUpdate: () => ipcRenderer.send("install_update"),
+  onUpdateDownloaded: createListener("update_downloaded"),
+  checkForUpdates: () => ipcRenderer.invoke("check-for-updates"),
+  installUpdate: () => ipcRenderer.invoke("install_update"),
 
   // ============================
   // ℹ️ INFORMAȚII SISTEM
   // ============================
-  platform: process.platform,
-
-  // TEST UPDATER 🔥
-  testUpdate: (type) => ipcRenderer.send("test-update", type),
-
-  // REAL UPDATE CHECK
-  checkForUpdates: () => ipcRenderer.invoke("check-for-updates")
+  platform: process.platform
 });
 
 console.log("🔗 Preload OK (CommonJS)");
