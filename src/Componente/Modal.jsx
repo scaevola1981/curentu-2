@@ -1,25 +1,42 @@
 import React from "react";
 import styles from "./Modal.module.css";
 
-const Modal = ({ message, onClose, title = "Atenție", type = "info" }) => {
+const Modal = ({ message, onClose, title = "Atenție", type = "info", confirmAction = null }) => {
   if (!message) return null;
+
+  const handleConfirm = () => {
+    if (confirmAction) {
+      confirmAction();
+    }
+  };
 
   return (
     <div className={styles.overlay}>
       <div
-        className={`${styles.modalBox} ${
-          type === "error"
+        className={`${styles.modalBox} ${type === "error"
             ? styles.error
             : type === "success"
-            ? styles.success
-            : styles.info
-        }`}
+              ? styles.success
+              : styles.info
+          }`}
       >
         <h2 className={styles.title}>{title}</h2>
         <p className={styles.message}>{message}</p>
-        <button className={styles.button} onClick={onClose}>
-          Închide
-        </button>
+
+        {confirmAction ? (
+          <div className={styles.buttonGroup}>
+            <button className={`${styles.button} ${styles.buttonCancel}`} onClick={onClose}>
+              Anulează
+            </button>
+            <button className={`${styles.button} ${styles.buttonConfirm}`} onClick={handleConfirm}>
+              Confirmă
+            </button>
+          </div>
+        ) : (
+          <button className={styles.button} onClick={onClose}>
+            \u00cenchide
+          </button>
+        )}
       </div>
     </div>
   );

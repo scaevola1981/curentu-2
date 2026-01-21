@@ -12,6 +12,9 @@ const Ambalare = () => {
   const [fermentatoare, setFermentatoare] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [modalType, setModalType] = useState("error");
+  const [modalTitle, setModalTitle] = useState("Atenție");
+  const [confirmAction, setConfirmAction] = useState(null);
   const [newMaterial, setNewMaterial] = useState({
     denumire: "",
     cantitate: "",
@@ -202,17 +205,29 @@ const Ambalare = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Sigur doriți să ștergeți acest material?")) return;
+    // Custom confirm modal instead of window.confirm
+    setModalType("error");
+    setModalTitle("CONFIRMARE ȘTERGERE");
+    setError("Sigur doriți să ștergeți acest material?");
+    setConfirmAction(() => async () => {
+      try {
+        const res = await fetch(`${API_URL}/materiale-ambalare/${id}`, {
+          method: "DELETE",
+        });
+        if (!res.ok) throw new Error("Eroare la ștergerea materialului");
+        setMateriale((prev) => prev.filter((m) => m.id !== parseInt(id)));
 
-    try {
-      const res = await fetch(`${API_URL}/materiale-ambalare/${id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error("Eroare la ștergerea materialului");
-      setMateriale((prev) => prev.filter((m) => m.id !== parseInt(id)));
-    } catch (error) {
-      setError(`Eroare la ștergerea materialului: ${error.message}`);
-    }
+        setModalType("success");
+        setModalTitle("SUCCES");
+        setError("Material șters cu succes!");
+      } catch (error) {
+        setModalType("error");
+        setModalTitle("EROARE");
+        setError(`Eroare la ștergerea materialului: ${error.message}`);
+      } finally {
+        setConfirmAction(null);
+      }
+    });
   };
 
   const handleExport = async () => {
@@ -358,6 +373,8 @@ const Ambalare = () => {
     setAmbalareInsuficiente(insuficiente);
 
     if (insuficiente.length > 0) {
+      setModalType("error");
+      setModalTitle("ATENȚIE");
       setError(
         `Materiale insuficiente pentru ${cantitateDeAmbalatNum}L:\n` +
         insuficiente
@@ -368,6 +385,8 @@ const Ambalare = () => {
           .join("\n")
       );
     } else {
+      setModalType("success");
+      setModalTitle("SUCCES");
       setError("Toate materialele necesare sunt disponibile în stoc!");
     }
   };
@@ -607,10 +626,14 @@ const Ambalare = () => {
       <div className={styles.container}>
         {error && (
           <Modal
-            title="Eroare"
+            title={modalTitle}
             message={error}
-            type="error"
-            onClose={() => setError("")}
+            type={modalType}
+            onClose={() => {
+              setError("");
+              setConfirmAction(null);
+            }}
+            confirmAction={confirmAction}
           />
         )}
         <h1 className={styles.titlu}>Materiale și Ambalare</h1>
