@@ -1,16 +1,15 @@
 {
-  "stocMateriale": [
+  "materiiPrime": [
     {
       "id": 1,
       "denumire": "Malt",
       "tip": "malt",
-      "cantitate": 2076.3,
+      "cantitate": 1076,
       "unitate": "kg",
       "producator": "Generic Malt",
       "codProdus": "MALT-001",
       "lot": "",
-      "subcategorie": "",
-      "categorie": "Ingredient"
+      "subcategorie": ""
     },
     {
       "id": 2,
@@ -21,8 +20,7 @@
       "producator": "Generic Malt",
       "codProdus": "MALT-002",
       "lot": "",
-      "subcategorie": "",
-      "categorie": "Ingredient"
+      "subcategorie": ""
     },
     {
       "id": 3,
@@ -33,8 +31,7 @@
       "producator": "Fermentis",
       "codProdus": "DROJDIE-002",
       "lot": "",
-      "subcategorie": "",
-      "categorie": "Ingredient"
+      "subcategorie": ""
     },
     {
       "id": 4,
@@ -45,8 +42,7 @@
       "producator": "Fermentis",
       "codProdus": "DROJDIE-003",
       "lot": "",
-      "subcategorie": "",
-      "categorie": "Ingredient"
+      "subcategorie": ""
     },
     {
       "id": 5,
@@ -57,8 +53,7 @@
       "producator": "Fermentis",
       "codProdus": "DROJDIE-004",
       "lot": "",
-      "subcategorie": "",
-      "categorie": "Ingredient"
+      "subcategorie": ""
     },
     {
       "id": 6,
@@ -69,8 +64,7 @@
       "producator": "Generic Hops",
       "codProdus": "HAMEI-001",
       "lot": "",
-      "subcategorie": "",
-      "categorie": "Ingredient"
+      "subcategorie": ""
     },
     {
       "id": 7,
@@ -81,8 +75,7 @@
       "producator": "Generic Hops",
       "codProdus": "HAMEI-002",
       "lot": "",
-      "subcategorie": "",
-      "categorie": "Ingredient"
+      "subcategorie": ""
     },
     {
       "id": 8,
@@ -93,23 +86,23 @@
       "producator": "Generic Additives",
       "codProdus": "ADITIV-001",
       "lot": "",
-      "subcategorie": "",
-      "categorie": "Ingredient"
+      "subcategorie": ""
     },
     {
       "id": 9,
       "denumire": "Zahar brun",
       "tip": "aditiv",
-      "cantitate": 1095.32,
+      "cantitate": 995.32,
       "unitate": "kg",
       "producator": "Generic Additives",
       "codProdus": "ADITIV-002",
       "lot": "",
-      "subcategorie": "",
-      "categorie": "Ingredient"
-    },
+      "subcategorie": ""
+    }
+  ],
+  "materialeAmbalare": [
     {
-      "id": 10,
+      "id": 1,
       "denumire": "Sticle 0.33l",
       "tip": "sticle",
       "cantitate": 3610,
@@ -117,11 +110,10 @@
       "producator": "Generic Packaging",
       "codProdus": "STICLA-001",
       "lot": "",
-      "subcategorie": "",
-      "categorie": "Ambalaj"
+      "subcategorie": ""
     },
     {
-      "id": 11,
+      "id": 2,
       "denumire": "Cutii 6 sticle",
       "tip": "cutii",
       "cantitate": 1686,
@@ -129,11 +121,10 @@
       "producator": "Generic Packaging",
       "codProdus": "CUTIE-001",
       "lot": "",
-      "subcategorie": "",
-      "categorie": "Ambalaj"
+      "subcategorie": ""
     },
     {
-      "id": 12,
+      "id": 3,
       "denumire": "Cutii 12 sticle",
       "tip": "cutii",
       "cantitate": 784,
@@ -141,11 +132,10 @@
       "producator": "Generic Packaging",
       "codProdus": "CUTIE-002",
       "lot": "",
-      "subcategorie": "",
-      "categorie": "Ambalaj"
+      "subcategorie": ""
     },
     {
-      "id": 13,
+      "id": 4,
       "denumire": "Cutii 24 sticle",
       "tip": "cutii",
       "cantitate": 635,
@@ -153,11 +143,10 @@
       "producator": "Generic Packaging",
       "codProdus": "CUTIE-003",
       "lot": "",
-      "subcategorie": "",
-      "categorie": "Ambalaj"
+      "subcategorie": ""
     },
     {
-      "id": 14,
+      "id": 5,
       "denumire": "Keg 10l",
       "tip": "keg",
       "cantitate": 429,
@@ -165,11 +154,10 @@
       "producator": "Generic Kegs",
       "codProdus": "KEG-001",
       "lot": "",
-      "subcategorie": "",
-      "categorie": "Ambalaj"
+      "subcategorie": ""
     },
     {
-      "id": 15,
+      "id": 6,
       "denumire": "Keg 20l",
       "tip": "keg",
       "cantitate": 58,
@@ -177,11 +165,10 @@
       "producator": "Generic Kegs",
       "codProdus": "KEG-002",
       "lot": "",
-      "subcategorie": "",
-      "categorie": "Ambalaj"
+      "subcategorie": ""
     },
     {
-      "id": 16,
+      "id": 7,
       "denumire": "Keg 30l",
       "tip": "keg",
       "cantitate": 100,
@@ -189,11 +176,10 @@
       "producator": "Generic Kegs",
       "codProdus": "KEG-003",
       "lot": "",
-      "subcategorie": "",
-      "categorie": "Ambalaj"
+      "subcategorie": ""
     },
     {
-      "id": 17,
+      "id": 8,
       "denumire": "Keg 40l",
       "tip": "keg",
       "cantitate": 29,
@@ -201,11 +187,10 @@
       "producator": "Generic Kegs",
       "codProdus": "KEG-004",
       "lot": "",
-      "subcategorie": "",
-      "categorie": "Ambalaj"
+      "subcategorie": ""
     },
     {
-      "id": 18,
+      "id": 9,
       "denumire": "Keg 50l",
       "tip": "keg",
       "cantitate": 100,
@@ -213,11 +198,10 @@
       "producator": "Generic Kegs",
       "codProdus": "KEG-005",
       "lot": "",
-      "subcategorie": "",
-      "categorie": "Ambalaj"
+      "subcategorie": ""
     },
     {
-      "id": 19,
+      "id": 10,
       "denumire": "Etichete",
       "tip": "etichete",
       "cantitate": 615,
@@ -225,11 +209,10 @@
       "producator": "Generic Labels",
       "codProdus": "ETICHETA-001",
       "lot": "",
-      "subcategorie": "",
-      "categorie": "Ambalaj"
+      "subcategorie": ""
     },
     {
-      "id": 20,
+      "id": 11,
       "denumire": "Capace",
       "tip": "capace",
       "cantitate": 1115,
@@ -237,8 +220,7 @@
       "producator": "Generic Caps",
       "codProdus": "CAPAC-001",
       "lot": "",
-      "subcategorie": "",
-      "categorie": "Ambalaj"
+      "subcategorie": ""
     }
   ],
   "fermentatoare": [
@@ -478,6 +460,241 @@
   ],
   "loturiAmbalate": [
     {
+      "id": 16,
+      "fermentatorId": 3,
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": 100,
+      "unitate": "litri",
+      "dataInceput": "2025-11-12T20:19:55.628Z",
+      "dataAmbalare": "2025-11-13T14:09:11.194Z",
+      "packagingType": "keguri",
+      "bottleSize": null,
+      "boxType": null,
+      "kegSize": "Keg 40l",
+      "materialsUsed": [
+        {
+          "denumire": "Keg 40l",
+          "cantitate": 3,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2025-11-13T14:09:11.200Z"
+    },
+    {
+      "id": 17,
+      "fermentatorId": 4,
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": 220,
+      "unitate": "litri",
+      "dataInceput": "2025-11-13T09:21:15.432Z",
+      "dataAmbalare": "2025-11-13T14:09:24.821Z",
+      "packagingType": "keguri",
+      "bottleSize": null,
+      "boxType": null,
+      "kegSize": "Keg 40l",
+      "materialsUsed": [
+        {
+          "denumire": "Keg 40l",
+          "cantitate": 6,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2025-11-13T14:09:24.830Z"
+    },
+    {
+      "id": 18,
+      "fermentatorId": 1,
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": 450,
+      "unitate": "litri",
+      "dataInceput": "2025-11-14T11:09:32.159Z",
+      "dataAmbalare": "2025-11-14T11:10:40.460Z",
+      "packagingType": "sticle",
+      "bottleSize": "0.33l",
+      "boxType": "6 sticle",
+      "kegSize": null,
+      "materialsUsed": [
+        {
+          "denumire": "Sticle 0.33l",
+          "cantitate": 1364,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Capace",
+          "cantitate": 1364,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Etichete",
+          "cantitate": 1364,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Cutii 6 sticle",
+          "cantitate": 228,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2025-11-14T11:10:40.464Z"
+    },
+    {
+      "id": 19,
+      "fermentatorId": 1,
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": 450,
+      "unitate": "litri",
+      "dataInceput": "2025-11-14T11:09:32.159Z",
+      "dataAmbalare": "2025-11-14T11:10:55.355Z",
+      "packagingType": "keguri",
+      "bottleSize": null,
+      "boxType": null,
+      "kegSize": "Keg 40l",
+      "materialsUsed": [
+        {
+          "denumire": "Keg 40l",
+          "cantitate": 12,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2025-11-14T11:10:55.360Z"
+    },
+    {
+      "id": 20,
+      "fermentatorId": 6,
+      "reteta": "ADAPTOR LA SITUATIE - CB 01",
+      "cantitate": 513.01,
+      "unitate": "litri",
+      "dataInceput": "2025-11-15T12:25:20.361Z",
+      "dataAmbalare": "2025-11-15T12:27:43.268Z",
+      "packagingType": "sticle",
+      "bottleSize": "0.33l",
+      "boxType": "24 sticle",
+      "sticlePerCutie": 24,
+      "cantitateSticle": 5757,
+      "cantitateCutii": 239,
+      "sticleLibere": 21,
+      "descriereAmbalare": "239 cutii × 24 sticle + 21 libere",
+      "kegSize": null,
+      "materialsUsed": [
+        {
+          "denumire": "Sticle 0.33l",
+          "cantitate": 5758,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Capace",
+          "cantitate": 5758,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Etichete",
+          "cantitate": 5758,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Cutii 24 sticle",
+          "cantitate": 240,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2025-11-15T12:27:43.272Z",
+      "dataActualizare": "2025-11-15T12:29:19.158Z"
+    },
+    {
+      "id": 21,
+      "fermentatorId": 6,
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": 231,
+      "unitate": "litri",
+      "dataInceput": "2025-11-15T16:49:03.933Z",
+      "dataAmbalare": "2025-11-15T16:51:16.550Z",
+      "packagingType": "sticle",
+      "bottleSize": "0.33l",
+      "boxType": "6 sticle",
+      "sticlePerCutie": 6,
+      "cantitateSticle": 700,
+      "cantitateCutii": 116,
+      "sticleLibere": 4,
+      "descriereAmbalare": "116 cutii × 6 sticle + 4 libere",
+      "kegSize": null,
+      "materialsUsed": [
+        {
+          "denumire": "Sticle 0.33l",
+          "cantitate": 700,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Capace",
+          "cantitate": 700,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Etichete",
+          "cantitate": 700,
+          "unitate": "buc"
+        },
+        {
+          "denumire": "Cutii 6 sticle",
+          "cantitate": 117,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2025-11-15T16:51:16.555Z"
+    },
+    {
+      "id": 22,
+      "fermentatorId": 6,
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": 114,
+      "unitate": "litri",
+      "dataInceput": "2025-11-15T16:49:03.933Z",
+      "dataAmbalare": "2025-11-15T16:51:29.315Z",
+      "packagingType": "keguri",
+      "bottleSize": null,
+      "boxType": null,
+      "sticlePerCutie": null,
+      "cantitateSticle": null,
+      "cantitateCutii": null,
+      "sticleLibere": null,
+      "descriereAmbalare": null,
+      "kegSize": "Keg 40l",
+      "materialsUsed": [
+        {
+          "denumire": "Keg 40l",
+          "cantitate": 3,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2025-11-15T16:51:29.320Z"
+    },
+    {
+      "id": 23,
+      "fermentatorId": 1,
+      "reteta": "USB AMPER ALE - CB 03",
+      "cantitate": 460,
+      "unitate": "litri",
+      "dataInceput": "2025-11-14T20:00:42.681Z",
+      "dataAmbalare": "2025-12-27T11:49:00.543Z",
+      "packagingType": "keguri",
+      "bottleSize": null,
+      "boxType": null,
+      "sticlePerCutie": null,
+      "cantitateSticle": null,
+      "cantitateCutii": null,
+      "sticleLibere": null,
+      "descriereAmbalare": null,
+      "kegSize": "Keg 40l",
+      "materialsUsed": [
+        {
+          "denumire": "Keg 40l",
+          "cantitate": 23,
+          "unitate": "buc"
+        }
+      ],
+      "dataCreare": "2025-12-27T11:49:00.544Z",
+      "dataActualizare": "2025-12-27T11:49:33.452Z"
+    },
+    {
       "id": 24,
       "fermentatorId": 5,
       "reteta": "ADAPTOR LA SITUATIE - CB 01",
@@ -682,229 +899,5 @@
     }
   ],
   "iesiriBere": [],
-  "rebuturi": [],
-  "materiiPrime": [
-    {
-      "id": 1,
-      "denumire": "Malt",
-      "tip": "malt",
-      "cantitate": 2076.3,
-      "unitate": "kg",
-      "producator": "Generic Malt",
-      "codProdus": "MALT-001",
-      "lot": "",
-      "subcategorie": ""
-    },
-    {
-      "id": 2,
-      "denumire": "Malt Pale Ale",
-      "tip": "malt",
-      "cantitate": 1782.15,
-      "unitate": "kg",
-      "producator": "Generic Malt",
-      "codProdus": "MALT-002",
-      "lot": "",
-      "subcategorie": ""
-    },
-    {
-      "id": 3,
-      "denumire": "Drojdie F2",
-      "tip": "drojdie",
-      "cantitate": 619.888,
-      "unitate": "g",
-      "producator": "Fermentis",
-      "codProdus": "DROJDIE-002",
-      "lot": "",
-      "subcategorie": ""
-    },
-    {
-      "id": 4,
-      "denumire": "Drojdie U.S 05",
-      "tip": "drojdie",
-      "cantitate": 3450,
-      "unitate": "g",
-      "producator": "Fermentis",
-      "codProdus": "DROJDIE-003",
-      "lot": "",
-      "subcategorie": ""
-    },
-    {
-      "id": 5,
-      "denumire": "Drojdie B.E 256",
-      "tip": "drojdie",
-      "cantitate": 2870,
-      "unitate": "g",
-      "producator": "Fermentis",
-      "codProdus": "DROJDIE-004",
-      "lot": "",
-      "subcategorie": ""
-    },
-    {
-      "id": 6,
-      "denumire": "Hamei Bitter",
-      "tip": "hamei",
-      "cantitate": 990.839,
-      "unitate": "kg",
-      "producator": "Generic Hops",
-      "codProdus": "HAMEI-001",
-      "lot": "",
-      "subcategorie": ""
-    },
-    {
-      "id": 7,
-      "denumire": "Hamei Aroma",
-      "tip": "hamei",
-      "cantitate": 982.818,
-      "unitate": "kg",
-      "producator": "Generic Hops",
-      "codProdus": "HAMEI-002",
-      "lot": "",
-      "subcategorie": ""
-    },
-    {
-      "id": 8,
-      "denumire": "Irish Moss",
-      "tip": "aditiv",
-      "cantitate": 1096.803,
-      "unitate": "kg",
-      "producator": "Generic Additives",
-      "codProdus": "ADITIV-001",
-      "lot": "",
-      "subcategorie": ""
-    },
-    {
-      "id": 9,
-      "denumire": "Zahar brun",
-      "tip": "aditiv",
-      "cantitate": 1095.32,
-      "unitate": "kg",
-      "producator": "Generic Additives",
-      "codProdus": "ADITIV-002",
-      "lot": "",
-      "subcategorie": ""
-    }
-  ],
-  "materialeAmbalare": [
-    {
-      "id": 1,
-      "denumire": "Sticle 0.33l",
-      "tip": "sticle",
-      "cantitate": 3610,
-      "unitate": "buc",
-      "producator": "Generic Packaging",
-      "codProdus": "STICLA-001",
-      "lot": "",
-      "subcategorie": ""
-    },
-    {
-      "id": 2,
-      "denumire": "Cutii 6 sticle",
-      "tip": "cutii",
-      "cantitate": 1686,
-      "unitate": "buc",
-      "producator": "Generic Packaging",
-      "codProdus": "CUTIE-001",
-      "lot": "",
-      "subcategorie": ""
-    },
-    {
-      "id": 3,
-      "denumire": "Cutii 12 sticle",
-      "tip": "cutii",
-      "cantitate": 784,
-      "unitate": "buc",
-      "producator": "Generic Packaging",
-      "codProdus": "CUTIE-002",
-      "lot": "",
-      "subcategorie": ""
-    },
-    {
-      "id": 4,
-      "denumire": "Cutii 24 sticle",
-      "tip": "cutii",
-      "cantitate": 635,
-      "unitate": "buc",
-      "producator": "Generic Packaging",
-      "codProdus": "CUTIE-003",
-      "lot": "",
-      "subcategorie": ""
-    },
-    {
-      "id": 5,
-      "denumire": "Keg 10l",
-      "tip": "keg",
-      "cantitate": 429,
-      "unitate": "buc",
-      "producator": "Generic Kegs",
-      "codProdus": "KEG-001",
-      "lot": "",
-      "subcategorie": ""
-    },
-    {
-      "id": 6,
-      "denumire": "Keg 20l",
-      "tip": "keg",
-      "cantitate": 58,
-      "unitate": "buc",
-      "producator": "Generic Kegs",
-      "codProdus": "KEG-002",
-      "lot": "",
-      "subcategorie": ""
-    },
-    {
-      "id": 7,
-      "denumire": "Keg 30l",
-      "tip": "keg",
-      "cantitate": 100,
-      "unitate": "buc",
-      "producator": "Generic Kegs",
-      "codProdus": "KEG-003",
-      "lot": "",
-      "subcategorie": ""
-    },
-    {
-      "id": 8,
-      "denumire": "Keg 40l",
-      "tip": "keg",
-      "cantitate": 29,
-      "unitate": "buc",
-      "producator": "Generic Kegs",
-      "codProdus": "KEG-004",
-      "lot": "",
-      "subcategorie": ""
-    },
-    {
-      "id": 9,
-      "denumire": "Keg 50l",
-      "tip": "keg",
-      "cantitate": 100,
-      "unitate": "buc",
-      "producator": "Generic Kegs",
-      "codProdus": "KEG-005",
-      "lot": "",
-      "subcategorie": ""
-    },
-    {
-      "id": 10,
-      "denumire": "Etichete",
-      "tip": "etichete",
-      "cantitate": 615,
-      "unitate": "buc",
-      "producator": "Generic Labels",
-      "codProdus": "ETICHETA-001",
-      "lot": "",
-      "subcategorie": ""
-    },
-    {
-      "id": 11,
-      "denumire": "Capace",
-      "tip": "capace",
-      "cantitate": 1115,
-      "unitate": "buc",
-      "producator": "Generic Caps",
-      "codProdus": "CAPAC-001",
-      "lot": "",
-      "subcategorie": ""
-    }
-  ]
+  "rebuturi": []
 }
