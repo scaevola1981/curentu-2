@@ -263,7 +263,7 @@ const Productie = () => {
                   {f.ocupat ? (
                     <>
                       <p><strong>Rețetă:</strong> {f.reteta}</p>
-                      <p><strong>Cantitate:</strong> {f.cantitate}L</p>
+                      <p><strong>Cantitate:</strong> {parseFloat(f.cantitate).toFixed(2)}L</p>
                       <p><strong>Data:</strong> {new Date(f.dataInceput).toLocaleString('ro-RO', { dateStyle: 'short', timeStyle: 'short' })}</p>
                     </>
                   ) : (
