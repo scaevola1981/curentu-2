@@ -4,6 +4,8 @@ import NavBar from "../../Componente/NavBar/NavBar";
 import styles from "./Depozitare.module.css";
 import { fetchGetWithRetry } from "../../utils/fetchWithRetry";
 
+const API_URL = "http://127.0.0.1:3001/api";
+
 // ... existing helper functions (getSticlePerCutie) ...
 
 const Depozitare = () => {
