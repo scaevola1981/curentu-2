@@ -34,6 +34,8 @@ jobs:
       - name: Upload to Release
         uses: softprops/action-gh-release@v1
         with:
-          files: release/*.exe
+          files: |
+            release/*.exe
+            release/latest.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
