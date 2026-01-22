@@ -4,7 +4,7 @@ import styles from "./Ambalare.module.css";
 import Modal from "../../Componente/Modal";
 import { fetchGetWithRetry } from "../../utils/fetchWithRetry";
 
-const API_URL = "http://127.0.0.1:3001/api";
+const API_URL = "http://127.0.0.1:3001";
 const SERVER_URL = "http://127.0.0.1:3001";
 
 const Ambalare = () => {
@@ -39,7 +39,7 @@ const Ambalare = () => {
   // Data loading functions
   const loadMateriale = useCallback(async () => {
     try {
-      const data = await fetchGetWithRetry(`${API_URL}/materiale-ambalare`);
+      const data = await fetchGetWithRetry(`${API_URL}/api/materiale-ambalare`);
       setMateriale(data);
     } catch (error) {
       setError(`Eroare la încărcarea materialelor: ${error.message}`);
@@ -48,7 +48,7 @@ const Ambalare = () => {
 
   const loadFermentatoare = useCallback(async () => {
     try {
-      const data = await fetchGetWithRetry(`${API_URL}/fermentatoare`);
+      const data = await fetchGetWithRetry(`${API_URL}/api/fermentatoare`);
       setFermentatoare(data.filter((f) => f.ocupat && f.cantitate > 0));
     } catch (error) {
       setError(`Eroare la încărcarea fermentatoarelor: ${error.message}`);
@@ -83,7 +83,7 @@ const Ambalare = () => {
 
     try {
       const newCantitate = material.cantitate + cantitateSuplimentara;
-      const res = await fetch(`${API_URL}/materiale-ambalare/${id}`, {
+      const res = await fetch(`${API_URL}/api/materiale-ambalare/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...material, cantitate: newCantitate }),
@@ -131,7 +131,7 @@ const Ambalare = () => {
       };
 
       const res = await fetch(
-        `${API_URL}/materiale-ambalare/${isEditing ? editId : ""}`,
+        `${API_URL}/api/materiale-ambalare/${isEditing ? editId : ""}`,
         {
           method: isEditing ? "PUT" : "POST",
           headers: { "Content-Type": "application/json" },
@@ -211,7 +211,7 @@ const Ambalare = () => {
     setError("Sigur doriți să ștergeți acest material?");
     setConfirmAction(() => async () => {
       try {
-        const res = await fetch(`${API_URL}/materiale-ambalare/${id}`, {
+        const res = await fetch(`${API_URL}/api/materiale-ambalare/${id}`, {
           method: "DELETE",
         });
         if (!res.ok) throw new Error("Eroare la ștergerea materialului");
@@ -232,7 +232,7 @@ const Ambalare = () => {
 
   const handleExport = async () => {
     try {
-      const res = await fetch(`${API_URL}/materiale-ambalare/export`);
+      const res = await fetch(`${API_URL}/api/materiale-ambalare/export`);
       if (!res.ok) throw new Error("Eroare la exportarea materialelor");
       const csv = await res.text();
       const blob = new Blob([csv], { type: "text/csv" });
@@ -453,7 +453,7 @@ const Ambalare = () => {
 
         if (stoc) {
           const newCantitate = stoc.cantitate - amb.cantitate;
-          await fetch(`${API_URL}/materiale-ambalare/${stoc.id}`, {
+          await fetch(`${API_URL}/api/materiale-ambalare/${stoc.id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -481,7 +481,7 @@ const Ambalare = () => {
         cantitate: remainingQuantity,
       };
 
-      await fetch(`${API_URL}/fermentatoare/${selectedFermentator.id}`, {
+      await fetch(`${API_URL}/api/fermentatoare/${selectedFermentator.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedFermentator),
@@ -583,7 +583,7 @@ const Ambalare = () => {
 
       // Create all lots in db.json
       for (const lot of lotsToCreate) {
-        const lotResponse = await fetch(`${API_URL}/loturi-ambalate`, {
+        const lotResponse = await fetch(`${API_URL}/api/loturi-ambalate`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(lot),
