@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import NavBar from "../../Componente/NavBar/NavBar.jsx";
 import styles from "./Rebuturi.module.css";
+import Modal from "../../Componente/Modal";
 import { fetchGetWithRetry } from "../../utils/fetchWithRetry";
 import {
   PieChart,
@@ -69,10 +70,6 @@ const calculeazaTotaluri = (rebuturi) => {
     };
   }, initial);
 };
-
-import Modal from "../../Componente/Modal";
-
-// ... existing imports ...
 
 const Rebuturi = () => {
   const [rebuturi, setRebuturi] = useState([]);

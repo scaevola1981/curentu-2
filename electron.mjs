@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain, Menu } from "electron";
-import electronUpdater from "electron-updater";
-const { autoUpdater } = electronUpdater;
+import pkg from 'electron-updater';
+const { autoUpdater } = pkg;
 import path from "path";
 import { fileURLToPath } from "url";
 import { existsSync, appendFileSync } from "fs";
