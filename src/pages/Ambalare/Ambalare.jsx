@@ -4,8 +4,7 @@ import styles from "./Ambalare.module.css";
 import Modal from "../../Componente/Modal";
 import { fetchGetWithRetry } from "../../utils/fetchWithRetry";
 
-const API_URL = "http://127.0.0.1:3001";
-const SERVER_URL = "http://127.0.0.1:3001";
+import { API_URL } from "../../utils/config";
 
 const Ambalare = () => {
   const [materiale, setMateriale] = useState([]);
@@ -673,7 +672,7 @@ const Ambalare = () => {
                     onClick={() => setSelectedFermentator(fermentator)}
                     style={{
                       backgroundImage: fermentator.imagine
-                        ? `url(${SERVER_URL}${fermentator.imagine})`
+                        ? `url(${API_URL}${fermentator.imagine})`
                         : "none",
                       backgroundSize: "cover",
                       backgroundPosition: "center",
@@ -682,7 +681,7 @@ const Ambalare = () => {
                     <div className={styles.fermentatorCardOverlay}>
                       <h3>{fermentator.nume}</h3>
                       <p>Rețetă: {fermentator.reteta}</p>
-                      <p>Cantitate: {fermentator.cantitate}L</p>
+                      <p>Cantitate: {Number(fermentator.cantitate).toFixed(2)}L</p>
                       <p>
                         Data:{" "}
                         {new Date(fermentator.dataInceput).toLocaleDateString()}
@@ -707,7 +706,7 @@ const Ambalare = () => {
                     min="0"
                     max={selectedFermentator.cantitate}
                     step="0.1"
-                    placeholder={`Max: ${selectedFermentator.cantitate}L`}
+                    placeholder={`Max: ${Number(selectedFermentator.cantitate).toFixed(2)}L`}
                   />
                 </div>
 
