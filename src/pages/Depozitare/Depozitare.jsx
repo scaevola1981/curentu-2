@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Modal from "../../Componente/Modal";
+import NavBar from "../../Componente/NavBar/NavBar";
+import styles from "./Depozitare.module.css";
+import { fetchGetWithRetry } from "../../utils/fetchWithRetry";
 
 // ... existing helper functions (getSticlePerCutie) ...
 
