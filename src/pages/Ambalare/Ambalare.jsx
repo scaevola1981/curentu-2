@@ -428,6 +428,8 @@ const Ambalare = () => {
     setAmbalareInsuficiente(insuficiente);
 
     if (insuficiente.length > 0 && !force) {
+      setModalType("error");
+      setModalTitle("ATENȚIE");
       setError(
         `Materiale insuficiente pentru ${cantitateDeAmbalatNum}L:\n` +
         insuficiente
@@ -608,6 +610,8 @@ const Ambalare = () => {
         ? ` (${lotsToCreate.length} loturi create automat)`
         : "";
 
+      setModalType("success");
+      setModalTitle("SUCCES");
       setError(
         `Ambalare realizată cu succes! ${cantitateDeAmbalatNum}L au fost ambalate${lotMsg}.${remainingQuantity > 0
           ? ` Au rămas ${remainingQuantity}L în fermentator.`
@@ -615,6 +619,8 @@ const Ambalare = () => {
         }`
       );
     } catch (error) {
+      setModalType("error");
+      setModalTitle("EROARE");
       setError(`Eroare la ambalare: ${error.message}`);
     }
   };
