@@ -31,28 +31,12 @@
   color: #f8fbff;
 }
 
-/* ---- TOOLBAR ---- */
-.toolbar {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1.8rem;
-}
-
-.buttonDeleteAll {
-  padding: 0.8rem 1.5rem;
-  border: none;
-  border-radius: 25px;
-  font-weight: 600;
-  color: #ffffff;
-  background: rgba(231, 76, 60, 0.7);
-  cursor: pointer;
-  transition: 0.25s ease;
-}
-
-.buttonDeleteAll:hover {
-  background: rgba(231, 76, 60, 0.95);
-  transform: translateY(-3px);
-  box-shadow: 0 0 18px rgba(255, 100, 100, 0.4);
+.subtitle {
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 0.5rem;
 }
 
 /* ---- GRID CARDURI ---- */
@@ -63,7 +47,7 @@
   padding: 0 10px;
 }
 
-/* ---- CARD LOT ---- */
+/* ---- CARD LOT / REBUT ---- */
 .lotCard {
   position: relative;
   background: rgba(255, 255, 255, 0.08);
@@ -72,38 +56,17 @@
   border: 1px solid rgba(255,255,255,0.10);
   transition: 0.35s ease;
   box-shadow: 0 4px 12px rgba(0,0,0,0.35);
- 
+  display: flex;
+  flex-direction: column;
 }
 
 .lotCard:hover {
-  transform: translateY(-10px);
+  transform: translateY(-5px);
   background: rgba(255,255,255,0.14);
   box-shadow:
-    0 0 15px rgba(0, 220, 255, 0.45),
-    0 0 30px rgba(0, 200, 240, 0.25),
+    0 0 15px rgba(0, 220, 255, 0.3),
+    0 0 30px rgba(0, 200, 240, 0.15),
     0 8px 25px rgba(0,0,0,0.45);
-}
-
-/* ---- BUTON X ---- */
-.deleteCardBtn {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
-  background: #e63946;
-  border: none;
-  color: white;
-  padding: 7px 11px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: 0.25s ease;
-}
-
-.deleteCardBtn:hover {
-  background: #cc2a35;
-  transform: scale(1.1);
-  box-shadow: 0 0 12px rgba(255, 80, 90, 0.5);
 }
 
 /* ---- HEADER CARD ---- */
@@ -113,22 +76,29 @@
   border-bottom: 1px solid rgba(255,255,255,0.12);
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
-.cardHeader h2 {
-  font-size: 1.5rem;
+.cardHeader h3 {
+  font-size: 1.4rem;
   margin: 0;
   font-weight: 700;
+  color: #fff;
 }
 
-.lotDate {
-  font-size: 0.9rem;
-  color: #d6d6d6;
+.badge {
+  background: rgba(231, 76, 60, 0.2);
+  color: #ff6b6b;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid rgba(231, 76, 60, 0.3);
 }
 
-/* ---- SUMMARY ---- */
-.cardSummary {
-  margin-bottom: 1.2rem;
+/* ---- BODY CARD ---- */
+.cardBody {
+  flex: 1;
 }
 
 .summaryItem {
@@ -139,149 +109,136 @@
 
 .summaryLabel {
   font-weight: 600;
-  opacity: 0.85;
+  opacity: 0.7;
 }
 
 .summaryValue {
   opacity: 1;
   color: #ffffff;
+  font-weight: 500;
 }
 
-/* ---- MATERIAL GRID ---- */
+/* ---- MATERIALS ---- */
+.materialsUsed {
+  background: rgba(0,0,0,0.2);
+  border-radius: 8px;
+  padding: 0.8rem;
+}
+
 .materialsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 0.5rem;
 }
 
 .materialItem {
   display: flex;
   justify-content: space-between;
-  padding: 0.25rem 0;
+  font-size: 0.9rem;
 }
 
 .materialLabel {
-  opacity: 0.85;
+  opacity: 0.7;
+}
+
+/* ---- FOOTER CARD ---- */
+.cardFooter {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ---- BUTON deleteCardBtn ---- */
+.deleteCardBtn {
+  background: rgba(220, 53, 69, 0.15);
+  border: 1px solid rgba(220, 53, 69, 0.5);
+  color: #ff6b6b;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
   font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+  backdrop-filter: blur(4px);
 }
 
-.materialValue {
-  color: #ffffff;
+.deleteCardBtn:hover {
+  background: rgba(220, 53, 69, 0.8);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
 }
 
-/* ---- TOTAL GENERAL ---- */
-.totalSection {
-  margin-top: 3rem;
-  background: rgba(255,255,255,0.08);
-  padding: 1.8rem;
+/* ---- TOP SECTION (Chart + Totals) ---- */
+.topSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.chartCard, .summaryCard {
+  background: rgba(255,255,255,0.05);
   border-radius: 16px;
-  box-shadow: 0 8px 26px rgba(0,0,0,0.35);
-  border: 1px solid rgba(255,255,255,0.10);
+  padding: 1.5rem;
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
-.totalSection h3 {
-  font-size: 1.6rem;
-  font-weight: 700;
-  margin-bottom: 1.2rem;
+.summaryCard h2, .chartCard h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.4rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 0.5rem;
 }
 
 .totalGrid {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
 }
 
 .totalItem {
-  display: flex;
-  justify-content: space-between;
-  padding-bottom: 0.4rem;
-  border-bottom: 1px solid rgba(255,255,255,0.12);
+    display: flex;
+    flex-direction: column;
+    background: rgba(0,0,0,0.2);
+    padding: 1rem;
+    border-radius: 10px;
 }
 
 .totalLabel {
-  opacity: 0.85;
-  font-weight: 600;
+    font-size: 0.9rem;
+    opacity: 0.7;
+    margin-bottom: 0.3rem;
 }
 
 .totalValue {
-  font-weight: 600;
-  color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #4bd;
 }
 
 /* ---- NO DATA ---- */
 .noData {
   margin-top: 2rem;
   text-align: center;
-  padding: 1.6rem;
+  padding: 3rem;
   border-radius: 12px;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.10);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-}
-
-/* ---- MODAL ---- */
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.75);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-}
-
-.modalContent {
-  background: #0f2537;
-  padding: 2rem;
-  border-radius: 14px;
-  max-width: 450px;
-  width: 90%;
-  border: 1px solid rgba(255,255,255,0.15);
-  box-shadow: 0 0 30px rgba(0,200,255,0.25);
-}
-
-.modalContent p {
-  color: #ffffff;
-  margin-bottom: 1.4rem;
-  font-size: 1.1rem;
-  text-align: center;
-}
-
-.modalButton {
-  background: #e63946;
-  padding: 0.7rem 1.4rem;
-  border: none;
-  border-radius: 25px;
-  color: white;
-  font-weight: 700;
-  cursor: pointer;
-  transition: 0.25s ease;
-}
-
-.modalButton:hover {
-  background: #cc2a35;
-  transform: translateY(-2px);
+  color: rgba(255,255,255,0.5);
+  font-style: italic;
 }
 
 /* ---- RESPONSIVE ---- */
+@media (max-width: 900px) {
+  .topSection {
+    grid-template-columns: 1fr;
+  }
+}
 
 @media (max-width: 768px) {
   .gridContainer {
     grid-template-columns: 1fr;
-  }
-  .materialsGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 480px) {
-  .materialsGrid {
-    grid-template-columns: 1fr;
-  }
-  .totalGrid {
-    grid-template-columns: 1fr;
-  }
-  .title {
-    margin-top: 3rem;
   }
 }

@@ -244,46 +244,52 @@ const Rebuturi = () => {
 
         {/* 🔹 LISTA DE REBUTURI (Cards) */}
         <h2 className={styles.subtitle}>Istoric Rebuturi ({rebuturi.length})</h2>
-        <div className={styles.cardsGrid}>
+        <div className={styles.gridContainer}>
           {rebuturi.map((rebut) => (
-            <div key={rebut.id} className={styles.rebutCard}>
+            <div key={rebut.id} className={styles.lotCard}>
               <div className={styles.cardHeader}>
                 <h3>{rebut.reteta || "Necunoscut"}</h3>
                 <span className={styles.badge}>{rebut.motiv}</span>
               </div>
 
               <div className={styles.cardBody}>
-                <p>
-                  <strong>Cantitate:</strong> {parseFloat(rebut.cantitate).toFixed(2)}L
-                </p>
-                <p>
-                  <strong>Ambalaj:</strong> {rebut.ambalaj}
-                </p>
-                <p>
-                  <strong>Data:</strong>{" "}
-                  {new Date(rebut.dataIesire).toLocaleDateString("ro-RO")}
-                </p>
-                <p className={styles.details}>{rebut.detaliiIesire}</p>
+                <div className={styles.summaryItem}>
+                  <span className={styles.summaryLabel}>Cantitate:</span>
+                  <span className={styles.summaryValue}>{parseFloat(rebut.cantitate).toFixed(2)}L</span>
+                </div>
+                <div className={styles.summaryItem}>
+                  <span className={styles.summaryLabel}>Ambalaj:</span>
+                  <span className={styles.summaryValue}>{rebut.ambalaj}</span>
+                </div>
+                <div className={styles.summaryItem}>
+                  <span className={styles.summaryLabel}>Data:</span>
+                  <span className={styles.summaryValue}>{new Date(rebut.dataIesire).toLocaleDateString("ro-RO")}</span>
+                </div>
+                
+                {rebut.detaliiIesire && (
+                  <p className={styles.details} style={{marginTop:'1rem', fontStyle:'italic', opacity:0.8}}>{rebut.detaliiIesire}</p>
+                )}
 
                 {rebut.materiale && (
-                  <div className={styles.materialsUsed}>
-                    <strong>Materiale pierdute:</strong>
-                    <ul>
+                  <div className={styles.materialsUsed} style={{marginTop:'1rem'}}>
+                    <strong style={{display:'block', marginBottom:'0.5rem', borderBottom:'1px solid rgba(255,255,255,0.1)'}}>Materiale:</strong>
+                    <div className={styles.materialsGrid}>
                       {Object.entries(rebut.materiale).map(([key, val]) =>
                         val > 0 ? (
-                          <li key={key}>
-                            {key}: {val}
-                          </li>
+                          <div key={key} className={styles.materialItem}>
+                            <span className={styles.materialLabel}>{key}:</span>
+                            <span className={styles.materialValue}>{val}</span>
+                          </div>
                         ) : null
                       )}
-                    </ul>
+                    </div>
                   </div>
                 )}
               </div>
 
               <div className={styles.cardFooter}>
                 <button
-                  className={styles.deleteBtn}
+                  className={styles.deleteCardBtn}
                   onClick={() => handleDeleteRebut(rebut.id)}
                 >
                   Șterge Rebut
@@ -293,7 +299,9 @@ const Rebuturi = () => {
           ))}
 
           {rebuturi.length === 0 && (
-            <p className={styles.emptyMsg}>Nu există rebuturi înregistrate.</p>
+            <div className={styles.noData}>
+              <p>Nu există rebuturi înregistrate.</p>
+            </div>
           )}
         </div>
       </div>
