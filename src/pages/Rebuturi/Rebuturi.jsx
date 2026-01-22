@@ -58,6 +58,11 @@ const calculeazaTotaluri = (rebuturi) => {
   };
 
   return rebuturi.reduce((tot, r) => {
+    // Dacă este o intrare din 'iesiri' (nu din tabelul 'rebuturi' dedicat), verificăm motivul
+    if (r.motiv && r.motiv.toLowerCase() !== 'rebut') {
+        return tot;
+    }
+
     const m = r.materiale || {};
 
     return {
