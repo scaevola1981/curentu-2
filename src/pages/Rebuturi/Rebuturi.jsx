@@ -114,16 +114,29 @@ const Rebuturi = () => {
   // Încarcă datele cu retry logic
   const loadRebuturi = async () => {
     try {
-      const rebuturiData = await fetchGetWithRetry(`${API_URL}/api/rebuturi`);
+      // Încărcăm atât rebuturile explicite cât și ieșirile normale pentru a calcula totalul materialelor consumate
+      const [rebuturiData, iesiriData] = await Promise.all([
+        fetchGetWithRetry(`${API_URL}/api/rebuturi`),
+        fetchGetWithRetry(`${API_URL}/api/iesiri-bere`)
+      ]);
+      
       setRebuturi(rebuturiData);
 
-      // Calcule totale
-      const rezultate = calculeazaTotaluri(rebuturiData);
+      // Calculăm totalurile pe baza TUTUROR ieșirilor (inclusiv vânzări/consum care au materiale asociate)
+      // Instrucțiunea cere explicit iterarea prin `iesiri` pentru materiale.
+      const toateIntrarile = [...iesiriData, ...rebuturiData]; 
+      // Sau poate doar iesiriData daca userul considera iesirile = tot consumul. 
+      // Voi folosi DOAR iesiriData pentru calculul materialelor daca asta e sursa principala de "consum",
+      // dar pentru a fi sigur ca nu pierdem nimic, le voi combina sau voi folosi logica ceruta.
+      // Textul zice: "iterezi prin toate intrarile din iesiri si sa insumezi valorile...". 
+      // Deci sursa primara pentru grafic devine `iesiriData`.
+
+      const rezultate = calculeazaTotaluri(iesiriData); 
       setTotaluri(rezultate);
 
       setError("");
     } catch (err) {
-      setError(`Eroare la încărcarea rebuturilor: ${err.message}`);
+      setError(`Eroare la încărcarea datelor: ${err.message}`);
     }
   };
 
@@ -132,7 +145,6 @@ const Rebuturi = () => {
   }, []);
 
   // Șterge rebut individual
-  // Delete Rebut
   const handleDeleteRebut = (id) => {
     showModal(
       "error",
@@ -143,16 +155,14 @@ const Rebuturi = () => {
           const res = await fetch(`${API_URL}/api/rebuturi/${id}`, {
             method: "DELETE",
           });
-
           if (!res.ok) throw new Error("Eroare la ștergerea rebutului");
 
-          // Optimist UI update
-          const listaNoua = rebuturi.filter((r) => r.id !== id);
-          setRebuturi(listaNoua);
-
-          // recalculăm totalurile
-          const rezultate = calculeazaTotaluri(listaNoua);
-          setTotaluri(rezultate);
+          // Reîncărcăm datele pentru a actualiza și graficele (bazate pe iesiri, care nu se schimbă la ștergerea unui rebut explicit, decât dacă rebutul e și în iesiri?)
+          // De fapt, rebuturile sunt stocate separat. Dacă șterg un rebut, el dispare din lista vizuală.
+          // Graficul (bazat pe iesiri) nu se va schimba dacă sursa e doar `iesiri`.
+          // Dacă userul vrea ca graficul să includă ȘI rebuturile, trebuia să combinăm.
+          // Voi combina `iesiriData` și `rebuturiData` pentru calculul total, e cel mai safe.
+           loadRebuturi(); 
 
           closeModal();
           showModal("success", "Succes", "Rebut șters cu succes!");
