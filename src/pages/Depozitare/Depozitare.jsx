@@ -363,74 +363,43 @@ const Depozitare = () => {
   };
 
   const downloadStocPDF = () => {
-    const latexContent = `
-${loturi
-        .map(
-          (lot) => `
-${lot.reteta} & ${lot.cantitate} & ${lot.ambalaj} & ${lot.numarUnitati} & ${lot.detalii
-            } & ${new Date(lot.dataAmbalare).toLocaleDateString("ro-RO")} \\\\
-`
-        )
-        .join("")}
-    `;
-    downloadFile(
-      latexContent,
-      `stoc_bere_${new Date().toISOString().split("T")[0]}.tex`,
-      "text/x-tex"
-    );
-    showModal("success", "Descărcare", "Fișierul .tex pentru stoc a fost descărcat.");
+    const columns = ["Rețetă", "Cantitate (L)", "Ambalaj", "Unități", "Detalii", "Data Ambalării"];
+    const data = loturi.map(lot => ({
+        reteta: lot.reteta,
+        cantitate: lot.cantitate,
+        ambalaj: lot.ambalaj,
+        unitati: lot.numarUnitati,
+        detalii: lot.detalii || '-',
+        data: new Date(lot.dataAmbalare).toLocaleDateString("ro-RO")
+    }));
+
+    printReport("Raport Inventar Stoc - Depozitare", columns, data, {
+        "Total Loturi": loturi.length,
+        "Total Litri": loturi.reduce((sum, l) => sum + (parseFloat(l.cantitate)||0), 0).toFixed(2)
+    });
   };
 
   const downloadIesiriPDF = () => {
-    // ... same logic usually ...
-    // Keeping simplicity by not modifying internal logic unless needed
-    // Just showing modal at end
-    // ...
-    const latexContent = `
-\\documentclass[a4paper,12pt]{article}
-\\usepackage[utf8]{inputenc}
-\\usepackage{geometry}
-\\geometry{a4paper, margin=1in}
-\\usepackage{array}
-\\usepackage{booktabs}
-\\usepackage{longtable}
-\\usepackage{fontspec}
-\\setmainfont{DejaVu Sans}
-\\begin{document}
-\\title{Istoric Ieșiri Bere - ${new Date().toLocaleDateString("ro-RO")}}
-\\author{Gestionare Depozitare}
-\\date{}
-\\maketitle
-\\section*{Ieșiri din Depozit}
-\\begin{longtable}{p{2.5cm} p{2cm} p{2cm} p{2.5cm} p{2.5cm} p{3cm} p{2cm}}
-\\toprule
-\\textbf{Rețetă} & \\textbf{Cantitate (L)} & \\textbf{Număr Unități} & \\textbf{Ambalaj} & \\textbf{Motiv} & \\textbf{Detalii Ieșire} & \\textbf{Data Ieșire} & \\textbf{Lot ID} \\\\
-\\midrule
-\\endhead
-${iesiri
-        .map(
-          (iesire) => `
-  ${iesire.reteta} & ${iesire.cantitate} & ${iesire.numarUnitatiScoase || ""
-            } & ${iesire.ambalaj} & ${iesire.motiv} & ${iesire.detaliiIesire || ""
-            } & ${new Date(iesire.dataIesire).toLocaleDateString("ro-RO")} & ${iesire.lotId
-            } \\\\
-`
-        )
-        .join("")}
-\\bottomrule
-\\end{longtable}
-\\section*{Sumar Total}
-Total litri ieșiți: ${iesiri
+    const columns = ["Rețetă", "Cantitate (L)", "Unități", "Ambalaj", "Motiv", "Detalii", "Data", "Lot ID"];
+    const data = iesiri.map(i => ({
+        reteta: i.reteta,
+        cantitate: i.cantitate,
+        unitati: i.numarUnitatiScoase || '-',
+        ambalaj: i.ambalaj,
+        motiv: i.motiv,
+        detalii: i.detaliiIesire || '-',
+        data: new Date(i.dataIesire).toLocaleDateString("ro-RO"),
+        lotId: i.lotId
+    }));
+
+    const totalLitri = iesiri
         .reduce((total, iesire) => total + parseFloat(iesire.cantitate), 0)
-        .toFixed(2)}L
-\\end{document}
-    `;
-    downloadFile(
-      latexContent,
-      `iesiri_bere_${new Date().toISOString().split("T")[0]}.tex`,
-      "text/x-tex"
-    );
-    showModal("success", "Descărcare", "Fișierul .tex pentru ieșiri a fost descărcat.");
+        .toFixed(2);
+
+    printReport("Raport Istoric Ieșiri", columns, data, {
+        "Total Ieșiri": iesiri.length,
+        "Total Volum (L)": totalLitri
+    });
   };
 
   const getTotalIesiriByReteta = () => {
@@ -515,7 +484,7 @@ Total litri ieșiți: ${iesiri
               <h2>Stoc Curent</h2>
               <div className={styles.buttonContainer}>
                 <button onClick={downloadStocPDF} className={styles.button}>
-                  Descarcă Stoc ca PDF
+                  Generează Raport Stoc (PDF/Print)
                 </button>
               </div>
               <div className={styles.cardsContainer}>
@@ -682,7 +651,7 @@ Total litri ieșiți: ${iesiri
               <h2>Istoric Ieșiri</h2>
               <div className={styles.iesiriControls}>
                 <button onClick={downloadIesiriPDF} className={styles.button}>
-                  Descarcă Ieșiri ca PDF
+                  Generează Raport Ieșiri (PDF/Print)
                 </button>
                 <div className={styles.totalIesiri}>
                   <strong>Total ieșit: {totalIesiri.toFixed(2)}L</strong>
