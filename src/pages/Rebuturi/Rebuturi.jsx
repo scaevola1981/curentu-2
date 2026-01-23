@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import NavBar from "../../Componente/NavBar/NavBar.jsx";
+import NavBar from "../../Componente/NavBar/NavBar";
 import styles from "./Rebuturi.module.css";
 import Modal from "../../Componente/Modal";
 import { fetchGetWithRetry } from "../../utils/fetchWithRetry";
@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import { processRebuturiData } from '../../utils/rebutUtils';
 
 const API_URL = "http://127.0.0.1:3001";
 
@@ -46,35 +47,7 @@ const CustomTooltip = ({ active, payload }) => {
   );
 };
 
-// 🔥 Funcție: calculează totalurile din lista de rebuturi
-const calculeazaTotaluri = (rebuturi) => {
-  const initial = {
-    litri: 0,
-    capace: 0,
-    etichete: 0,
-    cutii: 0,
-    sticle: 0,
-    keguri: 0,
-  };
 
-  return rebuturi.reduce((tot, r) => {
-    // Dacă este o intrare din 'iesiri' (nu din tabelul 'rebuturi' dedicat), verificăm motivul
-    if (r.motiv && r.motiv.toLowerCase() !== 'rebut') {
-        return tot;
-    }
-
-    const m = r.materiale || {};
-
-    return {
-      litri: tot.litri + parseFloat(r.cantitate || 0),
-      capace: tot.capace + (m.capace || 0),
-      etichete: tot.etichete + (m.etichete || 0),
-      cutii: tot.cutii + (m.cutii || 0),
-      sticle: tot.sticle + (m.sticle || 0),
-      keguri: tot.keguri + (m.keguri || 0),
-    };
-  }, initial);
-};
 
 const Rebuturi = () => {
   const [rebuturi, setRebuturi] = useState([]);
@@ -129,14 +102,17 @@ const Rebuturi = () => {
 
       // Calculăm totalurile pe baza TUTUROR ieșirilor (inclusiv vânzări/consum care au materiale asociate)
       // Instrucțiunea cere explicit iterarea prin `iesiri` pentru materiale.
-      const toateIntrarile = [...iesiriData, ...rebuturiData]; 
+ 
       // Sau poate doar iesiriData daca userul considera iesirile = tot consumul. 
       // Voi folosi DOAR iesiriData pentru calculul materialelor daca asta e sursa principala de "consum",
       // dar pentru a fi sigur ca nu pierdem nimic, le voi combina sau voi folosi logica ceruta.
       // Textul zice: "iterezi prin toate intrarile din iesiri si sa insumezi valorile...". 
       // Deci sursa primara pentru grafic devine `iesiriData`.
 
-      const rezultate = calculeazaTotaluri(iesiriData); 
+
+      // Combinăm ambele surse de date pentru un calcul complet
+      const toateIntrarile = [...(rebuturiData || []), ...(iesiriData || [])];
+      const rezultate = processRebuturiData(toateIntrarile); 
       setTotaluri(rezultate);
 
       setError("");

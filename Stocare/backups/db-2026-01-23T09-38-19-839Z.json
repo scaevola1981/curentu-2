@@ -278,7 +278,7 @@
       "capacitate": 1000,
       "ocupat": true,
       "reteta": "ADAPTOR LA SITUATIE - CB 01",
-      "cantitate": 331,
+      "cantitate": 111,
       "dataInceput": "2026-01-19T09:00:00.000Z",
       "imagine": "/Imagini/fermentator.png"
     },
@@ -523,7 +523,7 @@
       "id": 25,
       "fermentatorId": 4,
       "reteta": "INTRERUPATOR DE MUNCA - CB 02",
-      "cantitate": 14,
+      "cantitate": 234,
       "unitate": "litri",
       "dataInceput": "2025-11-15T16:48:24.774Z",
       "dataAmbalare": "2026-01-14T15:31:36.623Z",
@@ -543,8 +543,7 @@
           "unitate": "buc"
         }
       ],
-      "dataCreare": "2026-01-14T15:31:36.623Z",
-      "dataActualizare": "2026-01-23T09:38:19.839Z"
+      "dataCreare": "2026-01-14T15:31:36.623Z"
     },
     {
       "id": 26,

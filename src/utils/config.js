@@ -1,6 +1,7 @@
 // src/utils/config.js
 
 export const API_URL = "http://127.0.0.1:3001";
+export const LOT_UPDATE_ENDPOINT = "/api/ambalare";
 
 export const getSticlePerCutie = (boxType) => {
   if (!boxType) return 20; // Default fallback

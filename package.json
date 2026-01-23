@@ -1,6 +1,6 @@
 {
   "name": "curentu-app",
-  "version": "1.6.9",
+  "version": "1.7.0",
   "private": false,
   "description": "Aplicația Curentu - Gestiune Marfuri",
   "type": "module",
@@ -8,7 +8,7 @@
   "author": "Curentu Team",
   "repository": {
     "type": "git",
-    "url": "https://github.com/scaevola1981/curentu-2"
+    "url": "https://github.com/scaevola1981/curentu-2.git"
   },
   "scripts": {
     "dev": "vite",

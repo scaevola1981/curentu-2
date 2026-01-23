@@ -248,7 +248,7 @@
       "capacitate": 1000,
       "ocupat": true,
       "reteta": "USB AMPER ALE - CB 03",
-      "cantitate": 177.12,
+      "cantitate": 90,
       "dataInceput": "2026-01-23T09:30:00.000Z",
       "imagine": "/Imagini/fermentator.png"
     },
@@ -278,7 +278,7 @@
       "capacitate": 1000,
       "ocupat": true,
       "reteta": "ADAPTOR LA SITUATIE - CB 01",
-      "cantitate": 331,
+      "cantitate": 111,
       "dataInceput": "2026-01-19T09:00:00.000Z",
       "imagine": "/Imagini/fermentator.png"
     },
@@ -523,7 +523,7 @@
       "id": 25,
       "fermentatorId": 4,
       "reteta": "INTRERUPATOR DE MUNCA - CB 02",
-      "cantitate": 14,
+      "cantitate": 234,
       "unitate": "litri",
       "dataInceput": "2025-11-15T16:48:24.774Z",
       "dataAmbalare": "2026-01-14T15:31:36.623Z",
@@ -543,8 +543,7 @@
           "unitate": "buc"
         }
       ],
-      "dataCreare": "2026-01-14T15:31:36.623Z",
-      "dataActualizare": "2026-01-23T09:38:19.839Z"
+      "dataCreare": "2026-01-14T15:31:36.623Z"
     },
     {
       "id": 26,
@@ -712,7 +711,7 @@
       "id": 31,
       "fermentatorId": 1,
       "reteta": "ADAPTOR LA SITUATIE - CB 01",
-      "cantitate": 2.88,
+      "cantitate": 90,
       "unitate": "litri",
       "dataInceput": "2026-01-22T09:30:00.000Z",
       "dataAmbalare": "2026-01-22T09:27:26.399Z",
@@ -747,8 +746,7 @@
           "unitate": "buc"
         }
       ],
-      "dataCreare": "2026-01-22T09:27:26.401Z",
-      "dataActualizare": "2026-01-23T09:34:09.759Z"
+      "dataCreare": "2026-01-22T09:27:26.401Z"
     }
   ],
   "iesiriBere": [
@@ -800,63 +798,6 @@
         "cutii": 22,
         "sticle": 272,
         "keguri": 0
-      }
-    },
-    {
-      "id": 4,
-      "lotId": "31",
-      "reteta": "ADAPTOR LA SITUATIE - CB 01",
-      "cantitate": 89.76,
-      "numarUnitatiScoase": 272,
-      "ambalaj": "sticle",
-      "motiv": "rebut",
-      "dataIesire": "2026-01-23T09:21:52.610Z",
-      "utilizator": "Administrator",
-      "detaliiIesire": "22 cutii a 12 sticle + 8 sticle libere = 272 sticle (89.76L)",
-      "materiale": {
-        "capace": 272,
-        "etichete": 272,
-        "cutii": 22,
-        "sticle": 272,
-        "keguri": 0
-      }
-    },
-    {
-      "id": 5,
-      "lotId": "31",
-      "reteta": "ADAPTOR LA SITUATIE - CB 01",
-      "cantitate": 87.12,
-      "numarUnitatiScoase": 264,
-      "ambalaj": "sticle",
-      "motiv": "vanzare",
-      "dataIesire": "2026-01-23T09:34:09.738Z",
-      "utilizator": "Administrator",
-      "detaliiIesire": "22 cutii a 12 sticle + 0 sticle libere = 264 sticle (87.12L)",
-      "materiale": {
-        "capace": 264,
-        "etichete": 264,
-        "cutii": 22,
-        "sticle": 264,
-        "keguri": 0
-      }
-    },
-    {
-      "id": 6,
-      "lotId": "25",
-      "reteta": "INTRERUPATOR DE MUNCA - CB 02",
-      "cantitate": 220,
-      "numarUnitatiScoase": 11,
-      "ambalaj": "keguri",
-      "motiv": "rebut",
-      "dataIesire": "2026-01-23T09:38:19.828Z",
-      "utilizator": "Administrator",
-      "detaliiIesire": "11 keguri (220.00L)",
-      "materiale": {
-        "capace": 0,
-        "etichete": 0,
-        "cutii": 0,
-        "sticle": 0,
-        "keguri": 11
       }
     }
   ],

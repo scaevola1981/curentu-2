@@ -45,7 +45,7 @@ autoUpdater.logger = {
 };
 
 // Security: Only check for updates in production mode
-autoUpdater.autoDownload = !app.isPackaged ? false : true;
+autoUpdater.autoDownload = false; // 🛑 Disable auto-download (manual only)
 autoUpdater.autoInstallOnAppQuit = true;
 
 // Auto-updater events
@@ -353,10 +353,25 @@ ipcMain.handle("check-for-updates", async () => {
   console.log("📢 Manual update check requested");
   if (!app.isPackaged) {
     console.log("⚠️ Updates disabled in development mode");
-    return { message: "Updates disabled in development mode" };
+    return { status: "disabled", message: "Updates disabled in dev mode" };
   }
-  return autoUpdater.checkForUpdates();
+  
+  try {
+    const result = await autoUpdater.checkForUpdates();
+    // ⚠️ CRITICAL FIX: Return simple object, NOT the full result (contains complex types)
+    return result ? { version: result.updateInfo.version } : null;
+  } catch (e) {
+    console.error("Update check failed:", e);
+    throw new Error(e.message);
+  }
 });
+
+// 🆕 Start download manually
+ipcMain.handle("start-download", () => {
+  console.log("📢 Start download requested");
+  autoUpdater.downloadUpdate();
+});
+
 
 ipcMain.handle("install_update", () => {
   console.log("📢 Install update requested");

@@ -3,7 +3,7 @@ import Modal from "../../Componente/Modal";
 import NavBar from "../../Componente/NavBar/NavBar";
 import styles from "./Depozitare.module.css";
 import { fetchGetWithRetry } from "../../utils/fetchWithRetry";
-import { API_URL, getSticlePerCutie } from "../../utils/config";
+import { API_URL, getSticlePerCutie, LOT_UPDATE_ENDPOINT } from "../../utils/config";
 
 const Depozitare = () => {
   const [loturi, setLoturi] = useState([]);
