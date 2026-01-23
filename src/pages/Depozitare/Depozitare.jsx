@@ -640,8 +640,7 @@ Total litri ieșiți: ${iesiri
                           className={styles.select}
                         >
                           <option value="vanzare">Vânzare</option>
-                          <option value="rebut">Rebut</option>
-                          <option value="consum_intern">Consum intern</option>
+                          <option value="rebut">Rebut/Pierdere</option>
                         </select>
                       </div>
                       <div className={styles.buttonsGroup}>
