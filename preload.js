@@ -28,6 +28,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
   installUpdate: () => ipcRenderer.invoke("install_update"),
 
   // ============================
+  // 🖨️ PDF GENERATION
+  // ============================
+  generatePDF: (htmlContent, title) => ipcRenderer.invoke("print-to-pdf", htmlContent, title),
+
+  // ============================
   // ℹ️ INFORMAȚII SISTEM
   // ============================
   platform: process.platform,

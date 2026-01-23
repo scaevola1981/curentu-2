@@ -4,6 +4,7 @@ import NavBar from "../../Componente/NavBar/NavBar";
 import styles from "./Depozitare.module.css";
 import { fetchGetWithRetry } from "../../utils/fetchWithRetry";
 import { API_URL, getSticlePerCutie, LOT_UPDATE_ENDPOINT } from "../../utils/config";
+import { printReport } from "../../utils/printReport";
 
 const Depozitare = () => {
   const [loturi, setLoturi] = useState([]);

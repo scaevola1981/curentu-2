@@ -3,6 +3,7 @@ import NavBar from "../../Componente/NavBar/NavBar";
 import styles from "./Ambalare.module.css";
 import Modal from "../../Componente/Modal";
 import { fetchGetWithRetry } from "../../utils/fetchWithRetry";
+import { convertQuantity, areUnitsCompatible } from "../../utils/conversionUtils";
 
 import { API_URL } from "../../utils/config";
 
@@ -33,6 +34,7 @@ const Ambalare = () => {
   const [kegSize, setKegSize] = useState("");
   const [ambalareInsuficiente, setAmbalareInsuficiente] = useState([]);
   const [supplementCantitati, setSupplementCantitati] = useState({});
+  const [supplementUnits, setSupplementUnits] = useState({});
   const [cantitateDeAmbalat, setCantitateDeAmbalat] = useState("");
 
   // Data loading functions
@@ -66,6 +68,13 @@ const Ambalare = () => {
       [id]: value ? Number(value) : "",
     }));
   };
+  
+  const handleSupplementUnitChange = (id, value) => {
+    setSupplementUnits((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
+  };
 
   const handleSupplementMaterial = async (id) => {
     const cantitateSuplimentara = supplementCantitati[id];
@@ -81,7 +90,19 @@ const Ambalare = () => {
     }
 
     try {
-      const newCantitate = material.cantitate + cantitateSuplimentara;
+      const selectedUnit = supplementUnits[id] || material.unitate;
+      let finalCantToAdd = cantitateSuplimentara;
+
+      if (selectedUnit !== material.unitate) {
+        try {
+          finalCantToAdd = convertQuantity(cantitateSuplimentara, selectedUnit, material.unitate);
+        } catch (err) {
+          setError("Eroare conversie: " + err.message);
+          return;
+        }
+      }
+
+      const newCantitate = material.cantitate + finalCantToAdd;
       const res = await fetch(`${API_URL}/api/materiale-ambalare/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -128,6 +149,20 @@ const Ambalare = () => {
         ...newMaterial,
         cantitate: Number(newMaterial.cantitate),
       };
+
+      if (isEditing) {
+          const original = materiale.find(m => m.id === parseInt(editId));
+          if (original && newMaterial.unitate && newMaterial.unitate !== original.unitate) {
+             // If user changed unit during edit, we might want to convert the OLD quantity to new unit OR 
+             // assumed user means to update the unit definition. 
+             // Typically in 'Edit' mode, you overwrite values. 
+             // BUT if we were adding to stock via Edit (not the intended flow here, intend flow is Supplement), 
+             // here we just save what user typed. 
+             // Wait, handleAddMaterial handles BOTH create and update.
+             // If updating, we update the entire object. So if user changes unit from 'kg' to 'g', the new quantity should probably align.
+             // But let's assume user knows what they are doing in Edit mode.
+          }
+      }
 
       const res = await fetch(
         `${API_URL}/api/materiale-ambalare/${isEditing ? editId : ""}`,
@@ -1033,6 +1068,19 @@ const Ambalare = () => {
                             >
                               + Adaugă
                             </button>
+                             <select
+                                className={styles.inputSmall}
+                                value={supplementUnits[material.id] || material.unitate}
+                                onChange={(e) => handleSupplementUnitChange(material.id, e.target.value)}
+                                style={{ marginLeft: "5px", width: "70px", padding: "2px" }}
+                              >
+                                {["kg", "g", "buc", "pachete", "l", "ml"].includes(material.unitate) 
+                                    ? ["kg", "g", "buc", "pachete", "l", "ml"].filter(u => areUnitsCompatible(u, material.unitate)).map(u => (
+                                        <option key={u} value={u}>{u}</option>
+                                      ))
+                                    : <option value={material.unitate}>{material.unitate}</option>
+                                }
+                              </select>
                           </div>
                         </div>
                       </div>

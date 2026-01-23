@@ -135,7 +135,8 @@ const DEFAULT_DATA = {
   ],
   loturiAmbalate: [],
   iesiriBere: [],
-  rebuturi: []
+  rebuturi: [],
+  auditLogs: []
 };
 
 // Database helper functions
@@ -899,6 +900,41 @@ app.get("/api/rebuturi", (req, res) => {
   } catch (error) {
     console.error("Error getting rebuturi:", error);
     res.status(500).json({ error: "Eroare la preluarea datelor" });
+  }
+});
+
+// --- AUDIT LOGS ---
+app.get("/api/audit-logs", (req, res) => {
+  try {
+    dbData = readDb();
+    res.json(dbData.auditLogs || []);
+  } catch (error) {
+    console.error("Error getting audit logs:", error);
+    res.status(500).json({ error: "Eroare la preluarea datelor" });
+  }
+});
+
+app.post("/api/audit-logs", (req, res) => {
+  try {
+    dbData = readDb();
+    const log = req.body;
+    const maxId = (dbData.auditLogs || []).length > 0 ? Math.max(...dbData.auditLogs.map(a => a.id)) : 0;
+    
+    // Ensure auditLogs array exists (migration safety)
+    if (!dbData.auditLogs) dbData.auditLogs = [];
+
+    const newLog = { 
+        id: maxId + 1, 
+        ...log, 
+        timestamp: log.timestamp || new Date().toISOString() 
+    };
+    
+    dbData.auditLogs.push(newLog);
+    writeDb(dbData);
+    res.status(201).json(newLog);
+  } catch (error) {
+    console.error("Error adding audit log:", error);
+    res.status(500).json({ error: "Eroare la salvare" });
   }
 });
 

@@ -11,9 +11,10 @@ const AuditSidebar = () => {
 
     const fetchLogs = async () => {
         try {
-            const [iesiri, loturi] = await Promise.all([
+            const [iesiri, loturi, systemLogs] = await Promise.all([
                 fetchGetWithRetry(`${API_URL}/api/iesiri-bere`),
-                fetchGetWithRetry(`${API_URL}/api/loturi-ambalate`)
+                fetchGetWithRetry(`${API_URL}/api/loturi-ambalate`),
+                fetchGetWithRetry(`${API_URL}/api/audit-logs`).catch(() => []) // Graceful fail
             ]);
 
             // Normalize and Combine
@@ -35,10 +36,19 @@ const AuditSidebar = () => {
                 stornat: l.stornat
             }));
 
-            const combined = [...formattedIesiri, ...formattedLoturi];
+            const formattedSystem = Array.isArray(systemLogs) ? systemLogs.map(s => ({
+                id: s.id,
+                type: 'SYSTEM',
+                label: s.action.replace('_', ' '),
+                details: s.details,
+                date: new Date(s.timestamp),
+                stornat: s.action.includes('STORNO')
+            })) : [];
+
+            const combined = [...formattedIesiri, ...formattedLoturi, ...formattedSystem];
             
             // Sort desc
-            const sorted = combined.sort((a, b) => b.date - a.date).slice(0, 10);
+            const sorted = combined.sort((a, b) => b.date - a.date).slice(0, 15);
             setLogs(sorted);
         } catch (error) {
             console.error("Failed to fetch logs", error);

@@ -317,12 +317,16 @@ async function createWindow() {
   console.log(`🔍 [LOAD] indexFile path: ${indexFile}`);
   console.log(`🔍 [LOAD] File exists: ${existsSync(indexFile)}`);
 
-  if (existsSync(indexFile)) {
+  // ✅ CONSTANT FIX: Prioritize Dev Server in Development Mode
+  if (!app.isPackaged && process.env.NODE_ENV === 'development') {
+    console.log(`🌐 [LOAD] Loading from Vite dev server (DEVELOPMENT)`);
+    await mainWindow.loadURL("http://localhost:5173");
+  } else if (existsSync(indexFile)) {
     console.log(`✅ [LOAD] Loading from file: ${indexFile}`);
     await mainWindow.loadFile(indexFile);
   } else {
-    // Development mode - Vite dev server
-    console.log(`🌐 [LOAD] Loading from Vite dev server`);
+    // Fallback or error
+    console.log(`🌐 [LOAD] Loading from Vite dev server (Fallback)`);
     await mainWindow.loadURL("http://localhost:5173");
   }
 
@@ -363,6 +367,73 @@ ipcMain.handle("check-for-updates", async () => {
   } catch (e) {
     console.error("Update check failed:", e);
     throw new Error(e.message);
+  }
+});
+
+// 🆕 Print to PDF
+ipcMain.handle("print-to-pdf", async (event, htmlContent, title) => {
+  console.log("📢 Print to PDF requested:", title);
+  
+  // Create a hidden window for rendering
+  let printWindow = new BrowserWindow({
+    show: false,
+    width: 800,
+    height: 1200, // A4 aspect ratio approx
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      offscreen: true // Enable offscreen rendering
+    }
+  });
+
+  try {
+    // Load the HTML content
+    const fullHtml = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>${title}</title>
+          <style>
+             /* Add basic print styles */
+             body { background: white; margin: 0; padding: 0; }
+          </style>
+        </head>
+        <body>
+          ${htmlContent}
+        </body>
+      </html>
+    `;
+    
+    // Load content directly via data URL to avoid file IO overhead for temp files
+    await printWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`);
+    
+    // Generate PDF
+    const data = await printWindow.webContents.printToPDF({
+      printBackground: true,
+      pageSize: 'A4',
+      margins: { top: 0, bottom: 0, left: 0, right: 0 } // Margins are handled by CSS in printReport
+    });
+    
+    // Save file
+    const fs = await import('fs');
+    const path = await import('path');
+    const downloadsPath = app.getPath('downloads');
+    const safeTitle = title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const filename = `${safeTitle}_${Date.now()}.pdf`;
+    const filePath = path.join(downloadsPath, filename);
+    
+    fs.writeFileSync(filePath, data);
+    console.log(`✅ PDF saved to: ${filePath}`);
+    
+    // Clean up
+    printWindow.close();
+    printWindow = null;
+    
+    return { success: true, filePath };
+  } catch (error) {
+    console.error("❌ PDF Generation Error:", error);
+    if (printWindow) printWindow.close();
+    throw error;
   }
 });
 
