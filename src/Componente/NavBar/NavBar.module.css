@@ -1,4 +1,4 @@
-/* === ULTRA MODERN NAVBAR - Glassmorphism Alternative === */
+/* === ULTRA MODERN NAVBAR - Theme Aware === */
 
 .navbar {
   position: fixed;
@@ -12,16 +12,13 @@
   padding: 0 3rem;
   z-index: 999;
   
-  /* Alternative to backdrop-filter - layered semi-transparent backgrounds */
-  background: 
-    linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95)),
-    linear-gradient(90deg, rgba(56, 189, 248, 0.03), rgba(168, 85, 247, 0.03));
+  /* Background using CSS variables */
+  background: var(--nav-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    0 4px 16px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--nav-border);
+  box-shadow: var(--shadow-card);
   
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -36,11 +33,10 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(56, 189, 248, 0.4) 20%,
-    rgba(168, 85, 247, 0.4) 50%,
-    rgba(236, 72, 153, 0.4) 80%,
+    var(--accent-color) 50%,
     transparent 100%
   );
+  opacity: 0.5;
   animation: shimmer 3s linear infinite;
 }
 
@@ -144,15 +140,13 @@
   font-size: 0.95rem;
   font-weight: 600;
   text-decoration: none;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-secondary);
   position: relative;
   overflow: hidden;
   
   /* Neumorphism soft effect */
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: 
-    inset 2px 2px 5px rgba(0, 0, 0, 0.1),
-    inset -2px -2px 5px rgba(255, 255, 255, 0.05);
+  background: transparent;
+  box-shadow: none;
   
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -182,12 +176,9 @@
 
 .navLink:hover {
   transform: translateY(-3px);
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 
-    0 4px 16px rgba(56, 189, 248, 0.2),
-    inset 2px 2px 5px rgba(0, 0, 0, 0.1),
-    inset -2px -2px 5px rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  background: rgba(125, 125, 125, 0.1);
+  box-shadow: none;
 }
 
 .navLink:hover::before {
@@ -199,13 +190,10 @@
 }
 
 .navLink.active {
-  color: #ffffff;
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(168, 85, 247, 0.15));
-  border: 1px solid rgba(56, 189, 248, 0.4);
-  box-shadow: 
-    0 0 20px rgba(56, 189, 248, 0.3),
-    0 4px 16px rgba(168, 85, 247, 0.2),
-    inset 0 0 20px rgba(56, 189, 248, 0.1);
+  color: var(--accent-color);
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid var(--accent-color);
+  box-shadow: var(--shadow-glow);
 }
 
 .navLink.active::after {

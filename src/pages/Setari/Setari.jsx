@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import NavBar from "../../Componente/NavBar/NavBar";
 import Modal from "../../Componente/Modal";
 import styles from "./Setari.module.css";
+import { useTheme } from "../../context/ThemeContext";
 
 const Setari = () => {
+    const { theme, toggleTheme } = useTheme();
     const [appVersion, setAppVersion] = useState("Loading...");
     const [updateStatus, setUpdateStatus] = useState("Apasă pentru verificare");
     const [isChecking, setIsChecking] = useState(false);
@@ -158,12 +160,16 @@ const Setari = () => {
                             <span className={styles.label}>Mod Întunecat (Dark Mode)</span>
                             <div className={styles.themeToggle}>
                                 <label className={styles.switch}>
-                                    <input type="checkbox" defaultChecked disabled />
+                                    <input 
+                                        type="checkbox" 
+                                        checked={theme === 'dark'}
+                                        onChange={toggleTheme}
+                                        disabled={false} 
+                                    />
                                     <span className={`${styles.slider} ${styles.round}`}></span>
                                 </label>
                             </div>
                         </div>
-                        <span className={styles.comingSoon}>Opțiune blocată temporar (Beta)</span>
                     </div>
                 </div>
             </div>

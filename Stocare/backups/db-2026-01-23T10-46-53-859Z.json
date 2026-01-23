@@ -481,7 +481,7 @@
       "id": 24,
       "fermentatorId": 5,
       "reteta": "ADAPTOR LA SITUATIE - CB 01",
-      "cantitate": 123,
+      "cantitate": 0.24,
       "unitate": "litri",
       "dataInceput": "2025-11-15T16:48:40.244Z",
       "dataAmbalare": "2026-01-14T15:30:59.341Z",
@@ -762,9 +762,7 @@
       "motiv": "rebut",
       "dataIesire": "2026-01-21T12:51:14.622Z",
       "utilizator": "Administrator",
-      "detaliiIesire": "62 cutii a 6 sticle + 0 sticle libere = 372 sticle (122.76L)",
-      "stornat": true,
-      "dataStornare": "2026-01-23T10:46:53.859Z"
+      "detaliiIesire": "62 cutii a 6 sticle + 0 sticle libere = 372 sticle (122.76L)"
     },
     {
       "id": 2,

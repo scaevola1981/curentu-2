@@ -5,7 +5,7 @@
  */
 export const processRebuturiData = (iesiri) => {
   const totaluriGenerale = iesiri
-    .filter((item) => item.motiv && item.motiv.toLowerCase() === 'rebut' && item.materiale)
+    .filter((item) => item.motiv && (item.motiv.toLowerCase() === 'rebut' || item.motiv.toLowerCase() === 'pierdere') && item.materiale)
     .reduce(
       (acc, item) => {
         const { materiale } = item;

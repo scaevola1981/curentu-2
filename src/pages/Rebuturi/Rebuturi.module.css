@@ -1,17 +1,250 @@
 /* ============================================================
-   REBUTURI – GLASSMORPHISM + ELECTRIC GLOW (stil unitar CURENTU’)
+   REBUTURI – Theme Aware
    ============================================================ */
 
 /* ---- CONTAINER ---- */
 .container {
   padding: clamp(1rem, 2vw, 2rem);
   min-height: 100vh;
-  background: #00203df8;
-  background-size: 300% 300%;
-  animation: gradientMove 15s ease infinite;
-  color: #ffffff;
-  font-family: "Segoe UI", sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-title);
   overflow-x: hidden;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.title {
+  text-align: center;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  margin-bottom: 2rem;
+  margin-top: 4rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+/* ---- GRID CARDURI ---- */
+.gridContainer {
+  display: grid;
+  gap: 25px;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  padding: 0 10px;
+}
+
+/* ---- CARD LOT / REBUT ---- */
+.lotCard {
+  position: relative;
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  transition: 0.35s ease;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+}
+
+.lotCard:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-glow);
+  border-color: var(--accent-color);
+}
+
+/* ---- HEADER CARD ---- */
+.cardHeader {
+  margin-bottom: 1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cardHeader h3 {
+  font-size: 1.4rem;
+  margin: 0;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.badge {
+  background: rgba(231, 76, 60, 0.2);
+  color: #ff6b6b;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+/* ---- BODY CARD ---- */
+.cardBody {
+  flex: 1;
+}
+
+.summaryItem {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.summaryLabel {
+  font-weight: 600;
+  opacity: 0.7;
+  color: var(--text-secondary);
+}
+
+.summaryValue {
+  opacity: 1;
+  color: var(--text-primary);
+  font-weight: 500;
+  font-family: var(--font-mono);
+}
+
+/* ---- MATERIALS ---- */
+.materialsUsed {
+  background: var(--bg-primary);
+  border-radius: 8px;
+  padding: 0.8rem;
+  border: 1px solid var(--border-color);
+}
+
+.materialsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 0.5rem;
+}
+
+.materialItem {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.materialLabel {
+  opacity: 0.7;
+  color: var(--text-secondary);
+}
+
+.materialValue {
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+/* ---- FOOTER CARD ---- */
+.cardFooter {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ---- BUTON deleteCardBtn (Now Storneaza) ---- */
+.deleteCardBtn {
+  background: var(--btn-danger);
+  /* border: 1px solid var(--btn-danger); */
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+  border: none;
+}
+
+.deleteCardBtn:hover {
+  background: var(--btn-danger-hover);
+  transform: translateY(-2px);
+  /* box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4); */
+}
+
+/* ---- TOP SECTION (Chart + Totals) ---- */
+.topSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.chartCard, .summaryCard {
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-card);
+}
+
+.summaryCard h2, .chartCard h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.4rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.totalGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.totalItem {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-primary);
+    padding: 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+}
+
+.totalLabel {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-bottom: 0.3rem;
+    color: var(--text-secondary);
+}
+
+.totalValue {
+    font-size: 1.3rem;
+    font-weight: 800; /* Bold */
+    color: var(--accent-color);
+    font-family: var(--font-mono); /* Mono font for precision */
+}
+
+/* ---- NO DATA ---- */
+.noData {
+  margin-top: 2rem;
+  text-align: center;
+  padding: 3rem;
+  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 900px) {
+  .topSection {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .gridContainer {
+    grid-template-columns: 1fr;
+  }
 }
 
 @keyframes gradientMove {

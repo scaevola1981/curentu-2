@@ -4,8 +4,85 @@
   box-sizing: border-box;
 }
 
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&family=Space+Mono:wght@400;700&display=swap');
+
 ::-webkit-scrollbar {
   display: none;
+}
+
+:root {
+  /* --- LIGHT THEME: 'Industrial Paper' --- */
+  --font-title: 'Outfit', sans-serif;
+  --font-mono: 'Space Mono', monospace; /* v1.7.2 Update */
+
+  --bg-primary: #F4F7F6;       /* Industrial Paper Off-White */
+  --bg-card: #FFFFFF;          /* Pure White */
+  --bg-overlay: rgba(244, 247, 246, 0.9);
+  
+  --text-primary: #1F2937;     /* Dark Grey/Blue */
+  --text-secondary: #4B5563;   /* Slate */
+  
+  --accent-color: #2563eb;     /* Professional Blue */
+  --accent-hover: #1d4ed8;
+  
+  --border-color: #94A3B8;     /* Blue-Grey Border (Fine) */
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-glow: none;         
+  
+  --nav-bg: rgba(255, 255, 255, 0.95);
+  --nav-border: rgba(15, 23, 42, 0.1);
+
+  --btn-danger: #FFB74D;       /* Amber for Alert/Storno (Light Mode) */
+  --btn-danger-hover: #F57C00;
+}
+
+[data-theme='dark'] {
+  /* --- DARK THEME: 'Deep Space' --- */
+  --bg-primary: #0F1115;       /* Anthracite */
+  
+  --bg-card: #161B22;          /* Slightly Lighter */
+  --bg-overlay: rgba(15, 17, 21, 0.95);
+  
+  --text-primary: #E2E8F0;     
+  --text-secondary: #94A3B8;
+  
+  --accent-color: #A7FFEB;     /* Green Mint (Positive Actions) */
+  --accent-hover: #64FFDA;
+  
+  --border-color: #30363D;
+  --shadow-card: 0 10px 15px -3px rgba(0, 0, 0, 0.8);
+  --shadow-glow: 0 0 20px rgba(167, 255, 235, 0.1); /* Mint Glow */
+  
+  --nav-bg: rgba(15, 17, 21, 0.95);
+  --nav-border: rgba(167, 255, 235, 0.1);
+
+  --btn-danger: #FFB74D;       /* Amber for Alert/Storno (Dark Mode) */
+  --btn-danger-hover: #FFA726;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-title);
+  
+  /* Apply Noise to Body in Dark Mode ONLY via pseudo-element */
+  position: relative;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+[data-theme='dark'] body::before {
+  content: "";
+  position: fixed;
+  top: 0; 
+  left: 0;
+  width: 100%; 
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  /* Simple noise pattern - Grain */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
+  opacity: 0.15; /* Increased slightly for visibility on Deep Space */
 }
 
 .update-banner {

@@ -3,12 +3,208 @@
 .container {
   padding: clamp(1rem, 2vw, 2rem);
   min-height: 100vh;
-  background: #00203df8;
-  background-size: 300% 300%;
-  animation: gradientMove 15s ease infinite;
-  color: #ffffff;
+  background: var(--bg-primary);
+  color: var(--text-primary);
   font-family: "Segoe UI", sans-serif;
   overflow-x: hidden;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.title {
+  text-transform: uppercase;
+  color: var(--text-primary);
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  background: none;
+  -webkit-text-fill-color: initial;
+}
+
+.settingsCard {
+  background: var(--bg-card);
+  padding: 22px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-color);
+}
+
+.settingsCard h2 {
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.infoRow:last-child {
+  border-bottom: none;
+}
+
+.label {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.value {
+  color: var(--accent-color);
+  font-weight: 600;
+  font-family: inherit;
+  background: none;
+  padding: 0;
+}
+
+.updateSection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-primary);
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 15px;
+  border: 1px solid var(--border-color);
+}
+
+.checkButton {
+  width: auto;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  background-color: var(--accent-color);
+  color: #ffffff;
+  cursor: pointer;
+  transition: 0.2s ease;
+  box-shadow: none;
+}
+
+.checkButton:hover {
+  background-color: var(--accent-hover);
+  transform: translateY(-2px);
+  background-image: none;
+}
+
+.checkButton:active {
+  transform: translateY(0);
+}
+
+.checkButton:disabled {
+  background-color: var(--text-secondary);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.checkButton.checking {
+  background-color: #ef4444;
+  cursor: wait;
+  opacity: 1;
+}
+
+.loader {
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 3px solid #ffffff;
+  width: 14px;
+  height: 14px;
+  -webkit-animation: spin 1s linear infinite;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.statusText {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-right: 15px;
+  font-style: normal;
+}
+
+.themeToggle {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* Switch Styles */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--text-secondary);
+  transition: 0.3s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+input:checked+.slider {
+  background-color: var(--accent-color);
+}
+
+input:checked+.slider:before {
+  transform: translateX(26px);
+}
+
+.comingSoon {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  margin-top: 5px;
+  text-align: right;
+  display: block;
 }
 
 @keyframes gradientMove {

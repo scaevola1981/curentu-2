@@ -131,30 +131,30 @@ const Depozitare = () => {
   const deleteLot = (lotId) => {
     showModal(
       "error",
-      "Confirmare Ștergere Lot",
-      `Sigur doriți să ștergeți lotul ${lotId}?`,
+      "Confirmare Stornare Lot",
+      `Sigur doriți să stornați/anulați lotul ${lotId}?`,
       async () => {
         try {
           const parsedLotId = parseInt(lotId);
           const res = await fetch(
-            `${API_URL}${LOT_UPDATE_ENDPOINT}/${parsedLotId}`,
+            `${API_URL}${LOT_UPDATE_ENDPOINT}/${parsedLotId}/storno`,
             {
-              method: "DELETE",
+              method: "PATCH",
               headers: { "Content-Type": "application/json" },
             }
           );
 
           if (!res.ok) {
-            throw new Error("Eroare la ștergerea lotului");
+            throw new Error("Eroare la stornarea lotului");
           }
 
           await loadData();
           closeModal();
-          showModal("success", "Succes", `Lotul ${parsedLotId} a fost șters cu succes!`);
+          showModal("success", "Succes", `Lotul ${parsedLotId} a fost stornat cu succes!`);
         } catch (error) {
-          console.error("Eroare la ștergerea lotului:", error.message);
+          console.error("Eroare la stornarea lotului:", error.message);
           closeModal();
-          showModal("error", "Eroare", `Eroare la ștergerea lotului: ${error.message}`);
+          showModal("error", "Eroare", `Eroare la stornarea lotului: ${error.message}`);
         }
       }
     );
@@ -452,26 +452,26 @@ Total litri ieșiți: ${iesiri
   const deleteIesire = (iesireId) => {
     showModal(
       "error",
-      "Confirmare Ștergere Ieșire",
-      `Sigur doriți să ștergeți ieșirea cu ID ${iesireId}?`,
+      "Confirmare Stornare Ieșire",
+      `Sigur doriți să stornați/anulați ieșirea cu ID ${iesireId}?`,
       async () => {
         try {
-          const res = await fetch(`${API_URL}/api/iesiri-bere/${iesireId}`, {
-            method: "DELETE",
+          const res = await fetch(`${API_URL}/api/iesiri-bere/${iesireId}/storno`, {
+            method: "PATCH",
             headers: { "Content-Type": "application/json" },
           });
 
           if (!res.ok) {
-            throw new Error("Eroare la ștergerea ieșirii");
+            throw new Error("Eroare la stornarea ieșirii");
           }
 
           await loadIesiri();
           closeModal();
-          showModal("success", "Succes", `Ieșirea cu ID ${iesireId} a fost ștearsă cu succes!`);
+          showModal("success", "Succes", `Ieșirea cu ID ${iesireId} a fost stornată cu succes!`);
         } catch (error) {
-          console.error("Eroare la ștergerea ieșirii:", error.message);
+          console.error("Eroare la stornarea ieșirii:", error.message);
           closeModal();
-          showModal("error", "Eroare", `Eroare la ștergerea ieșirii: ${error.message}`);
+          showModal("error", "Eroare", `Eroare la stornarea ieșirii: ${error.message}`);
         }
       }
     );
@@ -666,9 +666,9 @@ Total litri ieșiți: ${iesiri
                         </button>
                         <button
                           onClick={() => deleteLot(lot.id)}
-                          className={`${styles.buttonSmall} ${styles.deleteButton}`}
+                          className={`${styles.buttonSmall} ${styles.storeazaButton}`}
                         >
-                          Șterge
+                          Anulează/Stornează
                         </button>
                       </div>
                     </div>
@@ -769,10 +769,10 @@ Total litri ieșiți: ${iesiri
                     <div className={styles.cardActions}>
                       <button
                         onClick={() => deleteIesire(iesire.id)}
-                        className={`${styles.buttonSmall} ${styles.deleteButton}`}
-                        title="Șterge ieșirea"
+                        className={`${styles.buttonSmall} ${styles.storeazaButton}`}
+                        title="Stornează ieșirea"
                       >
-                        Șterge
+                        Anulează/Stornează
                       </button>
                     </div>
                   </div>

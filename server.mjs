@@ -631,12 +631,45 @@ app.delete("/api/ambalare/:id", (req, res) => {
   try {
     dbData = readDb();
     const id = parseInt(req.params.id);
-    dbData.loturiAmbalate = dbData.loturiAmbalate.filter(l => l.id !== id);
+    const index = dbData.loturiAmbalate.findIndex(l => l.id === id);
+    if (index === -1) return res.status(404).json({ error: "Lotul nu a fost găsit" });
+    
+    // Soft delete / Storno logic
+    dbData.loturiAmbalate[index].stornat = true;
+    dbData.loturiAmbalate[index].dataStornare = new Date().toISOString();
+    
     writeDb(dbData);
-    res.json({ message: "Lot șters cu succes" });
+    res.json({ message: "Lot stornat cu succes (Soft Delete)" });
   } catch (error) {
     console.error("Error deleting lot:", error);
     res.status(500).json({ error: "Eroare la ștergere" });
+  }
+});
+
+// Storno Explicit Route (Alternative to DELETE override)
+app.patch("/api/ambalare/:id/storno", (req, res) => {
+  try {
+    dbData = readDb();
+    const id = parseInt(req.params.id);
+    const index = dbData.loturiAmbalate.findIndex(l => l.id === id);
+    if (index === -1) return res.status(404).json({ error: "Lotul nu a fost găsit" });
+
+    if (dbData.loturiAmbalate[index].stornat) {
+        return res.status(400).json({ error: "Lotul este deja stornat" });
+    }
+
+    // Logic: Mark as stornat
+    dbData.loturiAmbalate[index].stornat = true;
+    dbData.loturiAmbalate[index].dataStornare = new Date().toISOString();
+    
+    // NOTE: We do NOT restore to fermenter automatically here as that physical link is complex reversibility.
+    // We just mark the Lot as removed/invalid.
+
+    writeDb(dbData);
+    res.json(dbData.loturiAmbalate[index]);
+  } catch (error) {
+    console.error("Error storno lot:", error);
+    res.status(500).json({ error: "Eroare la stornare" });
   }
 });
 
@@ -786,12 +819,73 @@ app.delete("/api/iesiri-bere/:id", (req, res) => {
   try {
     dbData = readDb();
     const id = parseInt(req.params.id);
-    dbData.iesiriBere = dbData.iesiriBere.filter(i => i.id !== id);
+    const index = dbData.iesiriBere.findIndex(i => i.id === id);
+    if (index === -1) return res.status(404).json({ error: "Ieșirea nu a fost găsită" });
+    
+    const iesire = dbData.iesiriBere[index];
+
+    // RESTORE STOCK LOGIC
+    if (!iesire.stornat) {
+        const lotId = parseInt(iesire.lotId);
+        const lotIndex = dbData.loturiAmbalate.findIndex(l => l.id === lotId);
+        
+        if (lotIndex !== -1) {
+            const currentQty = parseFloat(dbData.loturiAmbalate[lotIndex].cantitate || 0);
+            const restoreQty = parseFloat(iesire.cantitate || 0);
+            dbData.loturiAmbalate[lotIndex].cantitate = Number((currentQty + restoreQty).toFixed(2));
+            console.log(`[STORNO] Restored ${restoreQty}L to Lot ${lotId}`);
+        } else {
+            console.warn(`[STORNO] Lot ${lotId} not found, cannot restore stock.`);
+        }
+    }
+
+    // Mark as stornat instead of deleting
+    dbData.iesiriBere[index].stornat = true;
+    dbData.iesiriBere[index].dataStornare = new Date().toISOString();
+    
     writeDb(dbData);
-    res.json({ succes: true, message: "Ieșire ștearsă cu succes" });
+    res.json({ succes: true, message: "Ieșire stornată cu succes" });
   } catch (error) {
     console.error("Error deleting iesire:", error);
     res.status(500).json({ error: "Eroare la ștergere" });
+  }
+});
+
+app.patch("/api/iesiri-bere/:id/storno", (req, res) => {
+  try {
+    dbData = readDb();
+    const id = parseInt(req.params.id);
+    const index = dbData.iesiriBere.findIndex(i => i.id === id);
+    if (index === -1) return res.status(404).json({ error: "Ieșirea nu a fost găsită" });
+
+    const iesire = dbData.iesiriBere[index];
+
+    if (iesire.stornat) {
+        return res.status(400).json({ error: "Ieșirea este deja stornată" });
+    }
+
+    // RESTORE STOCK LOGIC
+    const lotId = parseInt(iesire.lotId);
+    const lotIndex = dbData.loturiAmbalate.findIndex(l => l.id === lotId);
+    
+    if (lotIndex !== -1) {
+        const currentQty = parseFloat(dbData.loturiAmbalate[lotIndex].cantitate || 0);
+        const restoreQty = parseFloat(iesire.cantitate || 0);
+        dbData.loturiAmbalate[lotIndex].cantitate = Number((currentQty + restoreQty).toFixed(2));
+        console.log(`[STORNO] Restored ${restoreQty}L to Lot ${lotId}`);
+    } else {
+        console.warn(`[STORNO] Lot ${lotId} not found, cannot restore stock for Iesire ${id}`);
+    }
+
+    // Mark as stornat
+    dbData.iesiriBere[index].stornat = true;
+    dbData.iesiriBere[index].dataStornare = new Date().toISOString();
+    
+    writeDb(dbData);
+    res.json({ succes: true, message: "Ieșire stornată cu succes" });
+  } catch (error) {
+    console.error("Error storno iesire:", error);
+    res.status(500).json({ error: "Eroare la stornare" });
   }
 });
 

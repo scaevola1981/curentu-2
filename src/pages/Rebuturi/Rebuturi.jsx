@@ -129,12 +129,14 @@ const Rebuturi = () => {
   const handleDeleteRebut = (id) => {
     showModal(
       "error",
-      "Confirmare Ștergere Rebut",
-      "Sigur doriți să ștergeți acest rebut?",
+      "Confirmare Stornare Rebut",
+      "Sigur doriți să stornați/anulați acest rebut?",
       async () => {
         try {
-          const res = await fetch(`${API_URL}/api/rebuturi/${id}`, {
-            method: "DELETE",
+          // Use the specific iesiri endpoint for storno since rebuturi are just iesiri
+          const res = await fetch(`${API_URL}/api/iesiri-bere/${id}/storno`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
           });
           if (!res.ok) throw new Error("Eroare la ștergerea rebutului");
 
@@ -146,7 +148,7 @@ const Rebuturi = () => {
            loadRebuturi(); 
 
           closeModal();
-          showModal("success", "Succes", "Rebut șters cu succes!");
+          showModal("success", "Succes", "Rebut stornat cu succes!");
         } catch (err) {
           console.error(err);
           closeModal();
@@ -283,7 +285,7 @@ const Rebuturi = () => {
                   className={styles.deleteCardBtn}
                   onClick={() => handleDeleteRebut(rebut.id)}
                 >
-                  Șterge Rebut
+                  Anulează/Stornează
                 </button>
               </div>
             </div>

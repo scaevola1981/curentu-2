@@ -12,6 +12,7 @@ import Depozitare from "./pages/Depozitare/Depozitare";
 import Rebuturi from "./pages/Rebuturi/Rebuturi";
 
 import Setari from "./pages/Setari/Setari";
+import AuditSidebar from "./Componente/AuditSidebar/AuditSidebar";
 import "./index.css";
 
 const App = () => {
@@ -45,6 +46,7 @@ const App = () => {
       {/* ===============================
                🔥 ROUTING
       ================================= */}
+      <AuditSidebar />
       <div style={{ paddingTop: "4.5rem" }}>
         <Routes>
           <Route path="/" element={<Dashboard />} />
@@ -53,7 +55,7 @@ const App = () => {
           <Route path="/ambalare" element={<Ambalare />} />
           <Route path="/depozitare" element={<Depozitare />} />
           <Route path="/rebuturi" element={<Rebuturi />} />
-          <Route path="/rebuturi" element={<Rebuturi />} />
+          {/* <Route path="/rebuturi" element={<Rebuturi />} /> Removed duplicate route */}
           <Route path="/setari" element={<Setari />} />
         </Routes>
       </div>
